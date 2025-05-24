@@ -6,6 +6,7 @@ import { useAIFilter } from '@/hooks/useAIFilter';
 import { ContentColumn } from './ContentColumn';
 import { HackerNewsCard } from '@/components/news/HackerNewsCard';
 import { RedditCard } from '@/components/news/RedditCard';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 import { Loader2, Zap, MessageSquare } from 'lucide-react';
 
 export const DashboardLayout = () => {
@@ -28,18 +29,21 @@ export const DashboardLayout = () => {
       {/* Header */}
       <header className="relative z-10 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
-              <Zap className="w-5 h-5 text-slate-900" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
+                <Zap className="w-5 h-5 text-slate-900" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
+                  AI News Portal
+                </h1>
+                <p className="text-slate-400 text-sm">
+                  Curated intelligence from across the web
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-                AI News Portal
-              </h1>
-              <p className="text-slate-400 text-sm">
-                Curated intelligence from across the web
-              </p>
-            </div>
+            <RefreshButton />
           </div>
         </div>
       </header>
