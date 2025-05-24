@@ -1,9 +1,9 @@
 
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { CompactDashboardLayout } from '@/components/layout/CompactDashboardLayout';
 import '@/styles/ghibli-theme.css';
 
 const Index = () => {
-  return <DashboardLayout />;
+  return <CompactDashboardLayout />;
 };
 
 export default Index;
