@@ -1,0 +1,66 @@
+
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+
+export interface RedditPost {
+  id: string;
+  title: string;
+  url: string;
+  score: number;
+  author: string;
+  created_utc: number;
+  num_comments: number;
+  subreddit: string;
+  permalink: string;
+  selftext?: string;
+}
+
+const fetchRedditPosts = async (): Promise<RedditPost[]> => {
+  try {
+    const subreddits = ['MachineLearning', 'artificial', 'OpenAI', 'ChatGPT', 'singularity'];
+    const allPosts: RedditPost[] = [];
+    
+    for (const subreddit of subreddits) {
+      const response = await axios.get(
+        `https://www.reddit.com/r/${subreddit}/hot.json?limit=20`,
+        {
+          headers: {
+            'User-Agent': 'AI-News-Aggregator/1.0'
+          }
+        }
+      );
+      
+      const posts = response.data.data.children.map((child: any) => ({
+        id: child.data.id,
+        title: child.data.title,
+        url: child.data.url,
+        score: child.data.score,
+        author: child.data.author,
+        created_utc: child.data.created_utc,
+        num_comments: child.data.num_comments,
+        subreddit: child.data.subreddit,
+        permalink: `https://reddit.com${child.data.permalink}`,
+        selftext: child.data.selftext
+      }));
+      
+      allPosts.push(...posts);
+    }
+    
+    // Sort by score and return top posts
+    return allPosts
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 30);
+  } catch (error) {
+    console.error('Error fetching Reddit posts:', error);
+    throw new Error('Failed to fetch Reddit posts');
+  }
+};
+
+export const useReddit = () => {
+  return useQuery({
+    queryKey: ['reddit'],
+    queryFn: fetchRedditPosts,
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
+  });
+};
