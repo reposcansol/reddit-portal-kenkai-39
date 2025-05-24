@@ -20,6 +20,9 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
     const subreddits = ['MachineLearning', 'artificial', 'OpenAI', 'ChatGPT', 'singularity'];
     const allPosts: RedditPost[] = [];
     
+    // Calculate 24 hours ago timestamp
+    const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
+    
     for (const subreddit of subreddits) {
       const response = await axios.get(
         `https://www.reddit.com/r/${subreddit}/hot.json?limit=20`,
@@ -30,18 +33,20 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
         }
       );
       
-      const posts = response.data.data.children.map((child: any) => ({
-        id: child.data.id,
-        title: child.data.title,
-        url: child.data.url,
-        score: child.data.score,
-        author: child.data.author,
-        created_utc: child.data.created_utc,
-        num_comments: child.data.num_comments,
-        subreddit: child.data.subreddit,
-        permalink: `https://reddit.com${child.data.permalink}`,
-        selftext: child.data.selftext
-      }));
+      const posts = response.data.data.children
+        .map((child: any) => ({
+          id: child.data.id,
+          title: child.data.title,
+          url: child.data.url,
+          score: child.data.score,
+          author: child.data.author,
+          created_utc: child.data.created_utc,
+          num_comments: child.data.num_comments,
+          subreddit: child.data.subreddit,
+          permalink: `https://reddit.com${child.data.permalink}`,
+          selftext: child.data.selftext
+        }))
+        .filter((post: RedditPost) => post.created_utc >= twentyFourHoursAgo);
       
       allPosts.push(...posts);
     }
