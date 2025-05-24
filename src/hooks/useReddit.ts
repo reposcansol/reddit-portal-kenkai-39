@@ -17,7 +17,7 @@ export interface RedditPost {
 
 const fetchRedditPosts = async (): Promise<RedditPost[]> => {
   try {
-    const subreddits = ['MachineLearning', 'artificial', 'OpenAI', 'ChatGPT', 'singularity'];
+    const subreddits = ['localllama', 'roocode', 'cline', 'chatgptcoding', 'cursor'];
     const allPosts: RedditPost[] = [];
     
     // Calculate 24 hours ago timestamp
