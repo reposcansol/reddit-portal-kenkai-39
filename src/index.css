@@ -86,7 +86,7 @@
   }
 }
 
-/* Studio Ghibli-inspired animations */
+/* Terminal/Matrix-inspired animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -107,27 +107,43 @@
   }
 }
 
+@keyframes blinkCursor {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Terminal cursor animation */
+.terminal-cursor::after {
+  content: '_';
+  animation: blinkCursor 1s infinite;
+  color: #4ade80;
+}
+
 /* Hide initial animation state */
 [style*="animation: fadeInUp"] {
   opacity: 0;
 }
 
-/* Custom scrollbar utilities */
+/* Custom scrollbar utilities for terminal theme */
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
+  background: #000;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 2px;
+  background: #4ade80;
+  border-radius: 0;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: #22c55e;
 }
 
 /* Line clamp utility */

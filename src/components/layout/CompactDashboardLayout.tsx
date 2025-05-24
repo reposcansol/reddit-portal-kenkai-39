@@ -22,21 +22,21 @@ export const CompactDashboardLayout = () => {
   }, [redditData]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900/20">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b border-green-400/30 bg-black backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
-                <Zap className="w-4 h-4 text-slate-900" />
+              <div className="w-8 h-8 bg-green-400 rounded-none flex items-center justify-center">
+                <Zap className="w-4 h-4 text-black" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-slate-100 tracking-tight">
-                  AI News Portal
+                <h1 className="text-lg font-bold text-green-400 tracking-tight font-mono">
+                  [AI_NEWS_TERMINAL]
                 </h1>
-                <p className="text-slate-400 text-xs">
-                  Curated intelligence from across the web
+                <p className="text-gray-500 text-xs font-mono">
+                  >> Accessing neural network feeds...
                 </p>
               </div>
             </div>
