@@ -26,19 +26,17 @@ export const CompactDashboardLayout = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-green-400/30 bg-black backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-400 rounded-none flex items-center justify-center">
-                <Zap className="w-4 h-4 text-black" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-green-400 tracking-tight font-mono">
-                  [AI_NEWS_TERMINAL]
-                </h1>
-                <p className="text-gray-500 text-xs font-mono">
-                  {'>> Accessing neural network feeds...'}
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-green-400 rounded-none flex items-center justify-center">
+              <Zap className="w-4 h-4 text-black" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-green-400 tracking-tight font-mono">
+                [AI_NEWS_TERMINAL]
+              </h1>
+              <p className="text-gray-500 text-xs font-mono">
+                {'>> Accessing neural network feeds...'}
+              </p>
             </div>
             <RefreshButton />
           </div>
