@@ -22,6 +22,8 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
     
     // Calculate 24 hours ago timestamp
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
+    console.log('24 hours ago timestamp:', twentyFourHoursAgo);
+    console.log('Current timestamp:', Math.floor(Date.now() / 1000));
     
     for (const subreddit of subreddits) {
       const response = await axios.get(
@@ -46,15 +48,25 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
           permalink: `https://reddit.com${child.data.permalink}`,
           selftext: child.data.selftext
         }))
-        .filter((post: RedditPost) => post.created_utc >= twentyFourHoursAgo);
+        .filter((post: RedditPost) => {
+          const isRecent = post.created_utc >= twentyFourHoursAgo;
+          const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
+          console.log(`Post "${post.title.substring(0, 50)}..." - ${hoursAgo}h ago - ${isRecent ? 'INCLUDED' : 'FILTERED OUT'}`);
+          return isRecent;
+        });
       
       allPosts.push(...posts);
     }
     
+    console.log(`Total posts after 24h filter: ${allPosts.length}`);
+    
     // Sort by score and return top posts
-    return allPosts
+    const finalPosts = allPosts
       .sort((a, b) => b.score - a.score)
       .slice(0, 30);
+      
+    console.log(`Final posts count: ${finalPosts.length}`);
+    return finalPosts;
   } catch (error) {
     console.error('Error fetching Reddit posts:', error);
     throw new Error('Failed to fetch Reddit posts');
