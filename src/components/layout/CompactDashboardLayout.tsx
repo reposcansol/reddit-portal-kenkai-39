@@ -36,7 +36,7 @@ export const CompactDashboardLayout = () => {
                   [AI_NEWS_TERMINAL]
                 </h1>
                 <p className="text-gray-500 text-xs font-mono">
-                  >> Accessing neural network feeds...
+                  {'>> Accessing neural network feeds...'}
                 </p>
               </div>
             </div>
