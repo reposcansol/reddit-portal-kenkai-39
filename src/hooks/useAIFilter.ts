@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 
 const AI_KEYWORDS = [
@@ -48,7 +47,7 @@ export const useAIFilter = <T extends PostLike>(posts: T[]): T[] => {
         relevanceScore: calculateRelevanceScore(post)
       }))
       .filter(post => post.relevanceScore > 0.5) // Only show posts with some AI relevance
-      .sort((a, b) => b.relevanceScore - a.relevanceScore)
-      .slice(0, 20); // Limit to top 20 most relevant posts
+      .sort((a, b) => (b.score || 0) - (a.score || 0)) // Sort by upvotes/score, not relevance
+      .slice(0, 20); // Limit to top 20 most upvoted posts
   }, [posts]);
 };

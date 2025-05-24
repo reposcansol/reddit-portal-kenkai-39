@@ -35,11 +35,14 @@ const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
     // Filter for valid stories and posts from last 24 hours
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
     
-    return stories.filter(story => 
+    const filteredStories = stories.filter(story => 
       story && 
       story.title && 
       story.time >= twentyFourHoursAgo
     );
+    
+    // Sort by score (upvotes) in descending order
+    return filteredStories.sort((a, b) => (b.score || 0) - (a.score || 0));
   } catch (error) {
     console.error('Error fetching Hacker News stories:', error);
     throw new Error('Failed to fetch Hacker News stories');
