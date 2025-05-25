@@ -6,26 +6,35 @@ import { HackerNewsColumn } from './HackerNewsColumn';
 export const HackerNewsSourcePanel = () => {
   const { data: hackerNewsData, isLoading, error } = useHackerNews();
 
-  // Group HackerNews posts into 4 columns for consistent layout
+  // Group HackerNews posts into 4 columns with 20 posts each
   const groupedPosts = React.useMemo(() => {
     if (!hackerNewsData) return [[], [], [], []];
     
+    // Take first 80 posts and distribute them into 4 columns of 20 each
+    const limitedPosts = hackerNewsData.slice(0, 80);
     const columns: typeof hackerNewsData[] = [[], [], [], []];
-    hackerNewsData.forEach((post, index) => {
-      columns[index % 4].push(post);
-    });
+    
+    // Fill each column with 20 posts sequentially
+    for (let i = 0; i < limitedPosts.length; i++) {
+      const columnIndex = Math.floor(i / 20);
+      if (columnIndex < 4) {
+        columns[columnIndex].push(limitedPosts[i]);
+      }
+    }
+    
+    console.log('HackerNews posts per column:', columns.map(col => col.length));
     
     return columns;
   }, [hackerNewsData]);
 
   return (
     <main 
-      className="p-4"
+      className="p-4 h-full"
       role="tabpanel"
       id="hackernews-panel"
       aria-label="Hacker News feeds"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 min-h-[calc(100vh-12rem)]">
+      <div className="flex gap-4 h-full min-h-[calc(100vh-12rem)]">
         {groupedPosts.map((posts, index) => (
           <HackerNewsColumn
             key={index}
