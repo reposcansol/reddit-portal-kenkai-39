@@ -1,0 +1,94 @@
+
+import React, { useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SourceTabs } from './SourceTabs';
+import { RedditSourcePanel } from './RedditSourcePanel';
+import { HackerNewsSourcePanel } from './HackerNewsSourcePanel';
+
+type NewsSource = 'reddit' | 'hackernews';
+
+export const SourceNavigator = () => {
+  const [activeSource, setActiveSource] = useState<NewsSource>('reddit');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleSourceChange = (source: NewsSource) => {
+    setActiveSource(source);
+    
+    if (scrollContainerRef.current) {
+      const targetPanel = scrollContainerRef.current.querySelector(
+        `[data-source="${source}"]`
+      ) as HTMLElement;
+      
+      if (targetPanel) {
+        targetPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  };
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -window.innerWidth, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: window.innerWidth, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      {/* Source Navigation Tabs */}
+      <div className="sticky top-0 z-50 bg-black border-b border-green-400/30">
+        <SourceTabs 
+          activeSource={activeSource} 
+          onSourceChange={handleSourceChange} 
+        />
+      </div>
+
+      {/* Content Container with Horizontal Scroll */}
+      <div className="relative">
+        {/* Scroll Navigation Buttons */}
+        <button
+          onClick={scrollLeft}
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/80 border border-green-400/50 rounded-none p-2 hover:border-green-400 transition-colors"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft className="w-4 h-4 text-green-400" />
+        </button>
+        
+        <button
+          onClick={scrollRight}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/80 border border-green-400/50 rounded-none p-2 hover:border-green-400 transition-colors"
+          aria-label="Scroll right"
+        >
+          <ChevronRight className="w-4 h-4 text-green-400" />
+        </button>
+
+        {/* Horizontal Scroll Container */}
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {/* Reddit Source Panel */}
+          <div 
+            data-source="reddit"
+            className="min-w-full snap-start"
+          >
+            <RedditSourcePanel />
+          </div>
+
+          {/* HackerNews Source Panel */}
+          <div 
+            data-source="hackernews"
+            className="min-w-full snap-start"
+          >
+            <HackerNewsSourcePanel />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

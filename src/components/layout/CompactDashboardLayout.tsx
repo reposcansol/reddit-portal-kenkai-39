@@ -1,26 +1,10 @@
 
 import React from 'react';
-import { useReddit } from '@/hooks/useReddit';
-import { SubredditColumn } from './SubredditColumn';
+import { SourceNavigator } from './SourceNavigator';
 import { RefreshButton } from '@/components/ui/RefreshButton';
 import { Zap } from 'lucide-react';
 
 export const CompactDashboardLayout = () => {
-  const { data: redditData, isLoading, error } = useReddit();
-
-  // Group posts by subreddit
-  const postsBySubreddit = React.useMemo(() => {
-    if (!redditData) return {};
-    
-    return redditData.reduce((acc, post) => {
-      if (!acc[post.subreddit]) {
-        acc[post.subreddit] = [];
-      }
-      acc[post.subreddit].push(post);
-      return acc;
-    }, {} as Record<string, typeof redditData>);
-  }, [redditData]);
-
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
@@ -43,20 +27,8 @@ export const CompactDashboardLayout = () => {
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="max-h-screen overflow-hidden p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 h-[calc(100vh-8rem)]">
-          {Object.entries(postsBySubreddit).map(([subreddit, posts]) => (
-            <SubredditColumn
-              key={subreddit}
-              subreddit={subreddit}
-              posts={posts}
-              isLoading={isLoading}
-              error={error?.message}
-            />
-          ))}
-        </div>
-      </main>
+      {/* Source Navigator with Content */}
+      <SourceNavigator />
     </div>
   );
 };
