@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Hash, Zap } from 'lucide-react';
 
@@ -38,7 +37,7 @@ export const SourceTabs: React.FC<SourceTabsProps> = ({
   return (
     <div className="container mx-auto px-4 py-3">
       <div 
-        className="flex space-x-4"
+        className="w-full flex space-x-4"
         role="tablist"
         aria-label="News source navigation"
       >
