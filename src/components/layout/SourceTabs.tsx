@@ -35,7 +35,7 @@ export const SourceTabs: React.FC<SourceTabsProps> = ({
   };
 
   return (
-    <div className="container mx-auto px-4 py-3">
+    <div className="w-full px-4 py-3">
       <div 
         className="w-full flex space-x-4"
         role="tablist"
