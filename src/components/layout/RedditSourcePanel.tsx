@@ -6,21 +6,26 @@ import { SubredditColumn } from './SubredditColumn';
 export const RedditSourcePanel = () => {
   const { data: redditData, isLoading, error } = useReddit();
 
-  // Group posts by subreddit
+  // Group posts by subreddit with case-insensitive matching
   const postsBySubreddit = React.useMemo(() => {
     if (!redditData) return {};
     
     return redditData.reduce((acc, post) => {
-      if (!acc[post.subreddit]) {
-        acc[post.subreddit] = [];
+      // Normalize subreddit name to lowercase for consistent grouping
+      const normalizedSubreddit = post.subreddit.toLowerCase();
+      if (!acc[normalizedSubreddit]) {
+        acc[normalizedSubreddit] = [];
       }
-      acc[post.subreddit].push(post);
+      acc[normalizedSubreddit].push(post);
       return acc;
     }, {} as Record<string, typeof redditData>);
   }, [redditData]);
 
   // Define the order of subreddits to ensure consistent layout
   const subredditOrder = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
+
+  console.log('Posts by subreddit:', Object.keys(postsBySubreddit));
+  console.log('Expected subreddits:', subredditOrder);
 
   return (
     <main 
