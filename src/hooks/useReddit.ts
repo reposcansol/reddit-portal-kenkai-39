@@ -25,47 +25,68 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
     console.log('24 hours ago timestamp:', twentyFourHoursAgo);
     console.log('Current timestamp:', Math.floor(Date.now() / 1000));
     
+    const postsBySubreddit: Record<string, RedditPost[]> = {};
+    
     for (const subreddit of subreddits) {
-      const response = await axios.get(
-        `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
-        {
-          headers: {
-            'User-Agent': 'AI-News-Aggregator/1.0'
+      try {
+        const response = await axios.get(
+          `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
+          {
+            headers: {
+              'User-Agent': 'AI-News-Aggregator/1.0'
+            }
           }
-        }
-      );
-      
-      const posts = response.data.data.children
-        .map((child: any) => ({
-          id: child.data.id,
-          title: child.data.title,
-          url: child.data.url,
-          score: child.data.score,
-          author: child.data.author,
-          created_utc: child.data.created_utc,
-          num_comments: child.data.num_comments,
-          subreddit: child.data.subreddit,
-          permalink: `https://reddit.com${child.data.permalink}`,
-          selftext: child.data.selftext
-        }))
-        .filter((post: RedditPost) => {
-          const isRecent = post.created_utc >= twentyFourHoursAgo;
-          const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
-          console.log(`Post "${post.title.substring(0, 50)}..." - ${hoursAgo}h ago - ${isRecent ? 'INCLUDED' : 'FILTERED OUT'}`);
-          return isRecent;
-        });
-      
-      allPosts.push(...posts);
+        );
+        
+        const posts = response.data.data.children
+          .map((child: any) => ({
+            id: child.data.id,
+            title: child.data.title,
+            url: child.data.url,
+            score: child.data.score,
+            author: child.data.author,
+            created_utc: child.data.created_utc,
+            num_comments: child.data.num_comments,
+            subreddit: child.data.subreddit,
+            permalink: `https://reddit.com${child.data.permalink}`,
+            selftext: child.data.selftext
+          }))
+          .filter((post: RedditPost) => {
+            const isRecent = post.created_utc >= twentyFourHoursAgo;
+            const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
+            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago - ${isRecent ? 'INCLUDED' : 'FILTERED OUT'}`);
+            return isRecent;
+          })
+          .sort((a: RedditPost, b: RedditPost) => b.score - a.score);
+        
+        postsBySubreddit[subreddit] = posts;
+        console.log(`r/${subreddit}: ${posts.length} posts after filtering`);
+        
+        // Take top posts from each subreddit to ensure representation
+        allPosts.push(...posts.slice(0, 15));
+      } catch (error) {
+        console.error(`Error fetching posts from r/${subreddit}:`, error);
+        postsBySubreddit[subreddit] = [];
+      }
     }
     
-    console.log(`Total posts after 24h filter: ${allPosts.length}`);
+    console.log(`Total posts before final sort: ${allPosts.length}`);
+    console.log('Posts per subreddit:', Object.entries(postsBySubreddit).map(([sub, posts]) => `${sub}: ${posts.length}`).join(', '));
     
     // Sort by score and return top posts
     const finalPosts = allPosts
       .sort((a, b) => b.score - a.score)
-      .slice(0, 50);
+      .slice(0, 80); // Increased to allow more posts per column
       
     console.log(`Final posts count: ${finalPosts.length}`);
+    
+    // Log distribution in final posts
+    const finalDistribution = finalPosts.reduce((acc, post) => {
+      acc[post.subreddit] = (acc[post.subreddit] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    console.log('Final distribution:', finalDistribution);
+    
     return finalPosts;
   } catch (error) {
     console.error('Error fetching Reddit posts:', error);
