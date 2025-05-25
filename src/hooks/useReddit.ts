@@ -17,7 +17,7 @@ export interface RedditPost {
 
 const fetchRedditPosts = async (): Promise<RedditPost[]> => {
   try {
-    const subreddits = ['localllama', 'roocode', 'cline', 'chatgptcoding', 'cursor'];
+    const subreddits = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
     const allPosts: RedditPost[] = [];
     
     // Calculate 24 hours ago timestamp
@@ -27,7 +27,7 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
     
     for (const subreddit of subreddits) {
       const response = await axios.get(
-        `https://www.reddit.com/r/${subreddit}/hot.json?limit=20`,
+        `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
         {
           headers: {
             'User-Agent': 'AI-News-Aggregator/1.0'
@@ -63,7 +63,7 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
     // Sort by score and return top posts
     const finalPosts = allPosts
       .sort((a, b) => b.score - a.score)
-      .slice(0, 30);
+      .slice(0, 50);
       
     console.log(`Final posts count: ${finalPosts.length}`);
     return finalPosts;
