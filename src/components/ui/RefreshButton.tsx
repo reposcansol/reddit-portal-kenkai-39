@@ -26,7 +26,7 @@ export const RefreshButton = () => {
       size="sm"
       onClick={handleRefresh}
       disabled={isRefreshing}
-      className="text-green-400 border-green-500 hover:bg-green-900/20 hover:text-green-300 hover:border-green-300 font-mono rounded-none"
+      className="bg-black text-green-400 border-green-500 hover:bg-green-900/30 hover:text-green-300 hover:border-green-300 font-mono rounded-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <RefreshCw 
         className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} 
