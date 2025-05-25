@@ -9,7 +9,7 @@ export const CompactDashboardLayout = () => {
     <div className="min-h-screen bg-black">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-green-400/30 bg-black backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="w-full px-4 py-4">
           <div className="w-full flex items-center justify-start gap-3">
             <div className="w-8 h-8 bg-green-400 rounded-none flex items-center justify-center">
               <Zap className="w-4 h-4 text-black" />
