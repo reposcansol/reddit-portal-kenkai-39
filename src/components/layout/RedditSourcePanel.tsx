@@ -1,84 +1,90 @@
 
 import React from 'react';
 import { useReddit } from '@/hooks/useReddit';
-import { SubredditColumn } from './SubredditColumn';
-import { DraggableContainer } from './DraggableContainer';
-import { DraggableColumn } from './DraggableColumn';
-import { useColumnOrder } from '@/hooks/useColumnOrder';
-import { RotateCcw } from 'lucide-react';
+import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
+import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
+import { useSortPreferences } from '@/hooks/useSortPreferences';
+import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
+import { Loader2, RefreshCw } from 'lucide-react';
 
-export const RedditSourcePanel = () => {
-  const { data: redditData, isLoading, error } = useReddit();
-
-  // Define the default order of subreddits
-  const defaultSubredditOrder = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
+export const RedditSourcePanel: React.FC = () => {
+  const { data: posts, isLoading, error, refetch } = useReddit();
+  const { preferences } = useHighlightPreferences();
+  const { currentSort } = useSortPreferences();
   
-  // Use the custom hook for managing column order
-  const { columnOrder, setColumnOrder, resetOrder } = useColumnOrder({
-    storageKey: 'reddit-column-order',
-    defaultOrder: defaultSubredditOrder
+  // Apply enhanced filtering
+  const enhancedPosts = useEnhancedFilter(posts || [], {
+    categories: preferences.categories,
+    enabledCategories: preferences.enabledCategories,
+    highlightThreshold: preferences.highlightThreshold,
+    primaryKeywords: preferences.primaryKeywords,
+    secondaryKeywords: preferences.secondaryKeywords
   });
 
-  // Group posts by subreddit with case-insensitive matching
-  const postsBySubreddit = React.useMemo(() => {
-    if (!redditData) return {};
+  // Apply sorting based on current sort preference
+  const sortedPosts = React.useMemo(() => {
+    if (!enhancedPosts) return [];
     
-    return redditData.reduce((acc, post) => {
-      // Normalize subreddit name to lowercase for consistent grouping
-      const normalizedSubreddit = post.subreddit.toLowerCase();
-      if (!acc[normalizedSubreddit]) {
-        acc[normalizedSubreddit] = [];
-      }
-      acc[normalizedSubreddit].push(post);
-      return acc;
-    }, {} as Record<string, typeof redditData>);
-  }, [redditData]);
+    const sorted = [...enhancedPosts];
+    
+    switch (currentSort) {
+      case 'newest':
+        return sorted.sort((a, b) => b.created_utc - a.created_utc);
+      case 'score':
+        return sorted.sort((a, b) => (b.score || 0) - (a.score || 0));
+      case 'comments':
+        return sorted.sort((a, b) => (b.num_comments || 0) - (a.num_comments || 0));
+      case 'relevance':
+      default:
+        // Already sorted by relevance from useEnhancedFilter
+        return sorted;
+    }
+  }, [enhancedPosts, currentSort]);
 
-  console.log('Posts by subreddit:', Object.keys(postsBySubreddit));
-  console.log('Current column order:', columnOrder);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-green-400" />
+      </div>
+    );
+  }
 
-  return (
-    <main 
-      className="p-4 h-full flex flex-col overflow-hidden"
-      role="tabpanel"
-      id="reddit-panel"
-      aria-label="Reddit feeds"
-    >
-      {/* Reset button */}
-      <div className="flex justify-end mb-2">
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <div className="text-red-400 mb-4">Error loading Reddit posts</div>
         <button
-          onClick={resetOrder}
-          className="text-xs text-gray-500 hover:text-green-400 transition-colors 
-                     flex items-center gap-1 font-mono
-                     bg-black border border-green-400/30 rounded-none px-2 py-1
-                     hover:border-green-400/50"
-          title="Reset column order"
+          onClick={() => refetch()}
+          className="flex items-center gap-2 px-4 py-2 bg-green-900/30 text-green-400 border border-green-500 rounded hover:bg-green-900/50 transition-colors"
         >
-          <RotateCcw className="w-3 h-3" />
-          [RESET_ORDER]
+          <RefreshCw className="w-4 h-4" />
+          Retry
         </button>
       </div>
+    );
+  }
 
-      <DraggableContainer
-        items={columnOrder}
-        onReorder={setColumnOrder}
-        className="flex gap-4 h-full overflow-hidden"
-      >
-        {columnOrder.map((subreddit) => (
-          <DraggableColumn
-            key={subreddit}
-            id={subreddit}
-            className="w-1/4"
-          >
-            <SubredditColumn
-              subreddit={subreddit}
-              posts={postsBySubreddit[subreddit] || []}
-              isLoading={isLoading}
-              error={error?.message}
-            />
-          </DraggableColumn>
+  return (
+    <div className="h-full flex flex-col">
+      <div className="p-4 border-b border-green-400/30">
+        <h2 className="text-lg font-bold text-green-400 font-mono">
+          [REDDIT_FEED] ({sortedPosts?.length || 0} posts)
+        </h2>
+        <p className="text-xs text-gray-500 font-mono">
+          Sort: {currentSort.toUpperCase()} | Highlighting: {preferences.enableHighlighting ? 'ON' : 'OFF'}
+        </p>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {sortedPosts?.map((post, index) => (
+          <EnhancedCompactArticleCard
+            key={post.id}
+            post={post}
+            index={index}
+            showHighlighting={preferences.enableHighlighting}
+          />
         ))}
-      </DraggableContainer>
-    </main>
+      </div>
+    </div>
   );
 };

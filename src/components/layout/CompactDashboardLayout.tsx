@@ -4,6 +4,7 @@ import { SourceNavigator } from './SourceNavigator';
 import { RefreshButton } from '@/components/ui/RefreshButton';
 import { HighlightControls } from '@/components/ui/HighlightControls';
 import { CategoryManager } from '@/components/ui/CategoryManager';
+import { KeywordManager } from '@/components/ui/KeywordManager';
 import { SortControls } from '@/components/ui/SortControls';
 import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { Zap } from 'lucide-react';
@@ -36,8 +37,9 @@ export const CompactDashboardLayout = () => {
                 onSortChange={setCurrentSort} 
               />
               <CategoryManager />
-              <RefreshButton />
+              <KeywordManager />
               <HighlightControls />
+              <RefreshButton />
             </div>
           </div>
         </div>
