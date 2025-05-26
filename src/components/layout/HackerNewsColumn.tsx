@@ -19,7 +19,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
 }) => {
   return (
     <div 
-      className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono w-1/4"
+      className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono w-1/4 overflow-hidden"
       role="region"
       aria-label={`Hacker News column ${columnIndex + 1}`}
     >
@@ -44,7 +44,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
       )}
 
       {/* Article List with Scrolling */}
-      <div className="flex-1 overflow-y-auto space-y-2 pr-2 scroll-smooth max-h-full scrollbar-thin scrollbar-thumb-green-500/50 scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto space-y-2 pr-2 scroll-smooth scrollbar-thin scrollbar-thumb-green-500/50 scrollbar-track-transparent">
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(10)].map((_, i) => (

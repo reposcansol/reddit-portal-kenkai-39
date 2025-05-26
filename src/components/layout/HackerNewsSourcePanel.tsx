@@ -29,12 +29,12 @@ export const HackerNewsSourcePanel = () => {
 
   return (
     <main 
-      className="p-4 h-full"
+      className="p-4 h-full flex flex-col overflow-hidden"
       role="tabpanel"
       id="hackernews-panel"
       aria-label="Hacker News feeds"
     >
-      <div className="flex gap-4 h-full min-h-[calc(100vh-12rem)]">
+      <div className="flex gap-4 h-full overflow-hidden">
         {groupedPosts.map((posts, index) => (
           <HackerNewsColumn
             key={index}

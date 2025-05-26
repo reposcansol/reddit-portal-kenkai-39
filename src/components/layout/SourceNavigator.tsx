@@ -38,17 +38,17 @@ export const SourceNavigator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="h-full bg-black flex flex-col overflow-hidden">
       {/* Source Navigation Tabs */}
-      <div className="sticky top-0 z-50 bg-black border-b border-green-400/30">
+      <div className="flex-shrink-0 bg-black border-b border-green-400/30">
         <SourceTabs 
           activeSource={activeSource} 
           onSourceChange={handleSourceChange} 
         />
       </div>
 
-      {/* Content Container with Horizontal Scroll */}
-      <div className="relative">
+      {/* Content Container with Horizontal Scroll - takes remaining height */}
+      <div className="flex-1 relative overflow-hidden">
         {/* Scroll Navigation Buttons */}
         <button
           onClick={scrollLeft}
@@ -69,13 +69,13 @@ export const SourceNavigator = () => {
         {/* Horizontal Scroll Container */}
         <div 
           ref={scrollContainerRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {/* Reddit Source Panel */}
           <div 
             data-source="reddit"
-            className="min-w-full snap-start"
+            className="min-w-full snap-start h-full"
           >
             <RedditSourcePanel />
           </div>
@@ -83,7 +83,7 @@ export const SourceNavigator = () => {
           {/* HackerNews Source Panel */}
           <div 
             data-source="hackernews"
-            className="min-w-full snap-start"
+            className="min-w-full snap-start h-full"
           >
             <HackerNewsSourcePanel />
           </div>

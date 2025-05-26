@@ -6,9 +6,9 @@ import { Zap } from 'lucide-react';
 
 export const CompactDashboardLayout = () => {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="h-screen bg-black flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-green-400/30 bg-black backdrop-blur-sm">
+      <header className="flex-shrink-0 border-b border-green-400/30 bg-black backdrop-blur-sm">
         <div className="w-full px-4 py-4">
           <div className="w-full flex items-center justify-start gap-3">
             <div className="w-8 h-8 bg-green-400 rounded-none flex items-center justify-center">
@@ -27,8 +27,10 @@ export const CompactDashboardLayout = () => {
         </div>
       </header>
 
-      {/* Source Navigator with Content */}
-      <SourceNavigator />
+      {/* Source Navigator with Content - takes remaining height */}
+      <div className="flex-1 overflow-hidden">
+        <SourceNavigator />
+      </div>
     </div>
   );
 };
