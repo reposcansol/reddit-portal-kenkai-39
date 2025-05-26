@@ -1,90 +1,87 @@
 
 import React from 'react';
 import { useHackerNews } from '@/hooks/useHackerNews';
-import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
-import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
-import { useSortPreferences } from '@/hooks/useSortPreferences';
-import { EnhancedCompactHackerNewsCard } from '@/components/news/EnhancedCompactHackerNewsCard';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { HackerNewsColumn } from './HackerNewsColumn';
+import { DraggableContainer } from './DraggableContainer';
+import { DraggableColumn } from './DraggableColumn';
+import { useColumnOrder } from '@/hooks/useColumnOrder';
+import { RotateCcw } from 'lucide-react';
 
-export const HackerNewsSourcePanel: React.FC = () => {
-  const { data: posts, isLoading, error, refetch } = useHackerNews();
-  const { preferences } = useHighlightPreferences();
-  const { currentSort } = useSortPreferences();
+export const HackerNewsSourcePanel = () => {
+  const { data: hackerNewsData, isLoading, error } = useHackerNews();
+
+  // Define the default order of columns (using indices as identifiers)
+  const defaultColumnOrder = ['0', '1', '2', '3'];
   
-  // Apply enhanced filtering
-  const enhancedPosts = useEnhancedFilter(posts || [], {
-    categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories,
-    highlightThreshold: preferences.highlightThreshold,
-    primaryKeywords: preferences.primaryKeywords,
-    secondaryKeywords: preferences.secondaryKeywords
+  // Use the custom hook for managing column order
+  const { columnOrder, setColumnOrder, resetOrder } = useColumnOrder({
+    storageKey: 'hackernews-column-order',
+    defaultOrder: defaultColumnOrder
   });
 
-  // Apply sorting based on current sort preference
-  const sortedPosts = React.useMemo(() => {
-    if (!enhancedPosts) return [];
+  // Group HackerNews posts into 4 columns with 20 posts each, respecting the column order
+  const groupedPosts = React.useMemo(() => {
+    if (!hackerNewsData) return { '0': [], '1': [], '2': [], '3': [] };
     
-    const sorted = [...enhancedPosts];
+    // Take first 80 posts and distribute them into 4 columns of 20 each
+    const limitedPosts = hackerNewsData.slice(0, 80);
+    const columns: Record<string, typeof hackerNewsData> = { '0': [], '1': [], '2': [], '3': [] };
     
-    switch (currentSort) {
-      case 'newest':
-        return sorted.sort((a, b) => b.time - a.time);
-      case 'score':
-        return sorted.sort((a, b) => (b.score || 0) - (a.score || 0));
-      case 'comments':
-        return sorted.sort((a, b) => (b.descendants || 0) - (a.descendants || 0));
-      case 'relevance':
-      default:
-        // Already sorted by relevance from useEnhancedFilter
-        return sorted;
+    // Fill each column with 20 posts sequentially
+    for (let i = 0; i < limitedPosts.length; i++) {
+      const columnIndex = Math.floor(i / 20).toString();
+      if (columnIndex in columns) {
+        columns[columnIndex].push(limitedPosts[i]);
+      }
     }
-  }, [enhancedPosts, currentSort]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-green-400" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 text-center">
-        <div className="text-red-400 mb-4">Error loading Hacker News posts</div>
-        <button
-          onClick={() => refetch()}
-          className="flex items-center gap-2 px-4 py-2 bg-green-900/30 text-green-400 border border-green-500 rounded hover:bg-green-900/50 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Retry
-        </button>
-      </div>
-    );
-  }
+    
+    console.log('HackerNews posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
+    
+    return columns;
+  }, [hackerNewsData]);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-green-400/30">
-        <h2 className="text-lg font-bold text-green-400 font-mono">
-          [HACKERNEWS_FEED] ({sortedPosts?.length || 0} posts)
-        </h2>
-        <p className="text-xs text-gray-500 font-mono">
-          Sort: {currentSort.toUpperCase()} | Highlighting: {preferences.enableHighlighting ? 'ON' : 'OFF'}
-        </p>
+    <main 
+      className="p-4 h-full flex flex-col overflow-hidden"
+      role="tabpanel"
+      id="hackernews-panel"
+      aria-label="Hacker News feeds"
+    >
+      {/* Reset button */}
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={resetOrder}
+          className="text-xs text-gray-500 hover:text-green-400 transition-colors 
+                     flex items-center gap-1 font-mono
+                     bg-black border border-green-400/30 rounded-none px-2 py-1
+                     hover:border-green-400/50"
+          title="Reset column order"
+        >
+          <RotateCcw className="w-3 h-3" />
+          [RESET_ORDER]
+        </button>
       </div>
-      
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {sortedPosts?.map((post, index) => (
-          <EnhancedCompactHackerNewsCard
-            key={post.id}
-            post={post}
-            index={index}
-            showHighlighting={preferences.enableHighlighting}
-          />
+
+      <DraggableContainer
+        items={columnOrder}
+        onReorder={setColumnOrder}
+        className="flex gap-4 h-full overflow-hidden"
+      >
+        {columnOrder.map((columnId) => (
+          <DraggableColumn
+            key={columnId}
+            id={columnId}
+            className="w-1/4"
+          >
+            <HackerNewsColumn
+              columnIndex={parseInt(columnId)}
+              posts={groupedPosts[columnId] || []}
+              isLoading={isLoading}
+              error={error?.message}
+            />
+          </DraggableColumn>
         ))}
-      </div>
-    </div>
+      </DraggableContainer>
+    </main>
   );
 };
