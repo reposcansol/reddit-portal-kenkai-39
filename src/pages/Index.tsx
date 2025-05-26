@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { CompactDashboardLayout } from '@/components/layout/CompactDashboardLayout';
-import { HighlightControls } from '@/components/ui/HighlightControls';
 
 const Index = () => {
   return (
@@ -14,28 +13,6 @@ const Index = () => {
         }}
       />
       
-      {/* Header */}
-      <header className="relative z-10 border-b border-green-400/30 bg-black/80 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-sm flex items-center justify-center">
-                <span className="text-black font-bold text-sm font-mono">[A]</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-green-400 tracking-tight font-mono">
-                  [AI_NEWS_TERMINAL]
-                </h1>
-                <p className="text-gray-400 text-xs font-mono">
-                  &gt; monitoring_feeds...
-                </p>
-              </div>
-            </div>
-            <HighlightControls />
-          </div>
-        </div>
-      </header>
-
       {/* Main content */}
       <main className="relative z-10">
         <CompactDashboardLayout />
