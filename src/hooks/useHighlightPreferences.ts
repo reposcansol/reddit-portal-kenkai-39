@@ -6,7 +6,8 @@ interface HighlightPreferences {
   enableHighlighting: boolean;
   enabledCategories: string[];
   highlightThreshold: number;
-  customKeywords: string[];
+  primaryKeywords: string[];
+  secondaryKeywords: string[];
   categories: KeywordCategory[];
 }
 
@@ -14,7 +15,8 @@ const DEFAULT_PREFERENCES: HighlightPreferences = {
   enableHighlighting: true,
   enabledCategories: ['ai', 'development'],
   highlightThreshold: 1.0,
-  customKeywords: [],
+  primaryKeywords: [],
+  secondaryKeywords: [],
   categories: DEFAULT_CATEGORIES
 };
 
@@ -62,19 +64,35 @@ export const useHighlightPreferences = () => {
     }));
   };
 
-  const addCustomKeyword = (keyword: string) => {
-    if (keyword.trim() && !preferences.customKeywords.includes(keyword.trim())) {
+  const addPrimaryKeyword = (keyword: string) => {
+    if (keyword.trim() && !preferences.primaryKeywords.includes(keyword.trim())) {
       setPreferences(prev => ({
         ...prev,
-        customKeywords: [...prev.customKeywords, keyword.trim()]
+        primaryKeywords: [...prev.primaryKeywords, keyword.trim()]
       }));
     }
   };
 
-  const removeCustomKeyword = (keyword: string) => {
+  const addSecondaryKeyword = (keyword: string) => {
+    if (keyword.trim() && !preferences.secondaryKeywords.includes(keyword.trim())) {
+      setPreferences(prev => ({
+        ...prev,
+        secondaryKeywords: [...prev.secondaryKeywords, keyword.trim()]
+      }));
+    }
+  };
+
+  const removePrimaryKeyword = (keyword: string) => {
     setPreferences(prev => ({
       ...prev,
-      customKeywords: prev.customKeywords.filter(k => k !== keyword)
+      primaryKeywords: prev.primaryKeywords.filter(k => k !== keyword)
+    }));
+  };
+
+  const removeSecondaryKeyword = (keyword: string) => {
+    setPreferences(prev => ({
+      ...prev,
+      secondaryKeywords: prev.secondaryKeywords.filter(k => k !== keyword)
     }));
   };
 
@@ -86,8 +104,10 @@ export const useHighlightPreferences = () => {
     preferences,
     updatePreferences,
     toggleCategory,
-    addCustomKeyword,
-    removeCustomKeyword,
+    addPrimaryKeyword,
+    addSecondaryKeyword,
+    removePrimaryKeyword,
+    removeSecondaryKeyword,
     resetPreferences
   };
 };

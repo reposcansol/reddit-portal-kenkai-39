@@ -18,21 +18,8 @@ export const HighlightControls: React.FC = () => {
     preferences,
     updatePreferences,
     toggleCategory,
-    addCustomKeyword,
-    removeCustomKeyword,
     resetPreferences
   } = useHighlightPreferences();
-
-  const [newKeyword, setNewKeyword] = useState('');
-  const [showKeywordInput, setShowKeywordInput] = useState(false);
-
-  const handleAddKeyword = () => {
-    if (newKeyword.trim()) {
-      addCustomKeyword(newKeyword);
-      setNewKeyword('');
-      setShowKeywordInput(false);
-    }
-  };
 
   const getCategoryColor = (categoryId: string) => {
     const category = preferences.categories.find(c => c.id === categoryId);
@@ -108,7 +95,7 @@ export const HighlightControls: React.FC = () => {
         {/* Threshold slider */}
         <div className="px-2 py-2">
           <label className="text-green-400 text-xs block mb-1">
-            [SENSITIVITY: {preferences.highlightThreshold.toFixed(1)}]
+            [MIN_SCORE: {preferences.highlightThreshold.toFixed(1)}]
           </label>
           <input
             type="range"
@@ -120,61 +107,6 @@ export const HighlightControls: React.FC = () => {
             className="w-full accent-green-400"
           />
         </div>
-        
-        <DropdownMenuSeparator className="bg-green-400/20" />
-        
-        {/* Custom keywords */}
-        <DropdownMenuLabel className="text-green-400 text-xs">
-          [CUSTOM_KEYWORDS]
-        </DropdownMenuLabel>
-        
-        {preferences.customKeywords.map(keyword => (
-          <DropdownMenuItem
-            key={keyword}
-            className="text-green-300 hover:bg-green-400/10 justify-between"
-          >
-            <span className="text-xs">{keyword}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => removeCustomKeyword(keyword)}
-              className="h-4 w-4 p-0 text-red-400 hover:text-red-300"
-            >
-              <X className="w-3 h-3" />
-            </Button>
-          </DropdownMenuItem>
-        ))}
-        
-        {/* Add keyword input */}
-        {showKeywordInput ? (
-          <div className="px-2 py-2 flex gap-1">
-            <input
-              type="text"
-              value={newKeyword}
-              onChange={(e) => setNewKeyword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddKeyword()}
-              placeholder="Enter keyword..."
-              className="flex-1 bg-gray-900 border border-green-400/30 rounded px-2 py-1 text-xs text-green-300 placeholder-gray-500"
-              autoFocus
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleAddKeyword}
-              className="h-6 w-6 p-0 text-green-400"
-            >
-              <Plus className="w-3 h-3" />
-            </Button>
-          </div>
-        ) : (
-          <DropdownMenuItem
-            onClick={() => setShowKeywordInput(true)}
-            className="text-green-300 hover:bg-green-400/10"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Custom Keyword
-          </DropdownMenuItem>
-        )}
         
         <DropdownMenuSeparator className="bg-green-400/20" />
         
