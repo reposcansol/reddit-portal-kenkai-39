@@ -63,10 +63,10 @@ export const CategoryManager: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="bg-black border-green-400/30 text-green-400 hover:bg-green-400/10 font-mono"
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-black text-green-400 border-green-500 hover:bg-green-900/30 hover:text-green-300 hover:border-green-300 font-mono rounded-none transition-all duration-200"
         >
           <Settings className="w-4 h-4 mr-2" />
           [CATEGORIES]
