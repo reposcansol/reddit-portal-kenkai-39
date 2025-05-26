@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 interface UseColumnOrderProps {
   storageKey: string;
@@ -7,7 +7,10 @@ interface UseColumnOrderProps {
 }
 
 export const useColumnOrder = ({ storageKey, defaultOrder }: UseColumnOrderProps) => {
-  const [columnOrder, setColumnOrder] = useState<string[]>(defaultOrder);
+  // Memoize the default order to prevent infinite re-renders
+  const memoizedDefaultOrder = useMemo(() => defaultOrder, [JSON.stringify(defaultOrder)]);
+  
+  const [columnOrder, setColumnOrder] = useState<string[]>(memoizedDefaultOrder);
 
   // Load order from localStorage on mount
   useEffect(() => {
@@ -16,8 +19,8 @@ export const useColumnOrder = ({ storageKey, defaultOrder }: UseColumnOrderProps
       if (savedOrder) {
         const parsedOrder = JSON.parse(savedOrder);
         // Validate that the saved order contains all expected items
-        if (Array.isArray(parsedOrder) && parsedOrder.length === defaultOrder.length) {
-          const hasAllItems = defaultOrder.every(item => parsedOrder.includes(item));
+        if (Array.isArray(parsedOrder) && parsedOrder.length === memoizedDefaultOrder.length) {
+          const hasAllItems = memoizedDefaultOrder.every(item => parsedOrder.includes(item));
           if (hasAllItems) {
             setColumnOrder(parsedOrder);
             return;
@@ -28,8 +31,8 @@ export const useColumnOrder = ({ storageKey, defaultOrder }: UseColumnOrderProps
       console.error('Error loading column order from localStorage:', error);
     }
     // Fallback to default order
-    setColumnOrder(defaultOrder);
-  }, [storageKey, defaultOrder]);
+    setColumnOrder(memoizedDefaultOrder);
+  }, [storageKey, memoizedDefaultOrder]);
 
   // Save order to localStorage whenever it changes
   useEffect(() => {
@@ -41,7 +44,7 @@ export const useColumnOrder = ({ storageKey, defaultOrder }: UseColumnOrderProps
   }, [storageKey, columnOrder]);
 
   const resetOrder = () => {
-    setColumnOrder(defaultOrder);
+    setColumnOrder(memoizedDefaultOrder);
   };
 
   return {
