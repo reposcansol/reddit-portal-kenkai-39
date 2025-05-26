@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
-import { CompactArticleCard } from '@/components/news/CompactArticleCard';
+import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
+import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
+import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 interface SubredditColumnProps {
@@ -17,11 +19,20 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
   isLoading,
   error
 }) => {
+  const { preferences } = useHighlightPreferences();
+  
+  const enhancedPosts = useEnhancedFilter(posts, {
+    categories: preferences.categories,
+    enabledCategories: preferences.enabledCategories,
+    highlightThreshold: preferences.highlightThreshold,
+    customKeywords: preferences.customKeywords
+  });
+
   const sortedPosts = React.useMemo(() => {
-    return posts
+    return enhancedPosts
       .sort((a, b) => b.score - a.score)
       .slice(0, 20);
-  }, [posts]);
+  }, [enhancedPosts]);
 
   return (
     <div 
@@ -62,10 +73,11 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
           </div>
         ) : (
           sortedPosts.map((post, index) => (
-            <CompactArticleCard 
+            <EnhancedCompactArticleCard 
               key={post.id} 
               post={post} 
               index={index}
+              showHighlighting={preferences.enableHighlighting}
             />
           ))
         )}

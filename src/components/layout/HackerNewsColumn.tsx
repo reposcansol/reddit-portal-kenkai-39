@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
-import { CompactHackerNewsCard } from '@/components/news/CompactHackerNewsCard';
+import { EnhancedCompactHackerNewsCard } from '@/components/news/EnhancedCompactHackerNewsCard';
+import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
+import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 interface HackerNewsColumnProps {
@@ -17,6 +19,15 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
   isLoading,
   error
 }) => {
+  const { preferences } = useHighlightPreferences();
+  
+  const enhancedPosts = useEnhancedFilter(posts, {
+    categories: preferences.categories,
+    enabledCategories: preferences.enabledCategories,
+    highlightThreshold: preferences.highlightThreshold,
+    customKeywords: preferences.customKeywords
+  });
+
   return (
     <div 
       className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
@@ -30,7 +41,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
             [HN_COL_{columnIndex + 1}]
           </h2>
           <span className="text-xs text-gray-500 font-mono">
-            {posts.length} posts
+            {enhancedPosts.length} posts
           </span>
         </div>
       </div>
@@ -55,16 +66,17 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
             ))}
           </div>
         ) : (
-          posts.map((post, index) => (
-            <CompactHackerNewsCard 
+          enhancedPosts.map((post, index) => (
+            <EnhancedCompactHackerNewsCard 
               key={post.id} 
               post={post} 
               index={index}
+              showHighlighting={preferences.enableHighlighting}
             />
           ))
         )}
 
-        {!isLoading && posts.length === 0 && !error && (
+        {!isLoading && enhancedPosts.length === 0 && !error && (
           <div className="text-center text-gray-500 text-xs py-4 font-mono">
             [NO DATA AVAILABLE]
           </div>
