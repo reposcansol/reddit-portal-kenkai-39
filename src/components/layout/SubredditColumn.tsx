@@ -25,7 +25,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
 
   return (
     <div 
-      className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono w-1/4"
+      className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
       role="region"
       aria-label={`Posts from r/${subreddit}`}
     >

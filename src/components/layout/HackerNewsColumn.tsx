@@ -19,7 +19,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
 }) => {
   return (
     <div 
-      className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono w-1/4 overflow-hidden"
+      className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
       role="region"
       aria-label={`Hacker News column ${columnIndex + 1}`}
     >
