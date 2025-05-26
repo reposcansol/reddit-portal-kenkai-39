@@ -2,11 +2,11 @@
 import React from 'react';
 import { ExternalLink, Zap } from 'lucide-react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
-import { EnhancedPost } from '@/hooks/useEnhancedFilter';
+import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Badge } from '@/components/ui/badge';
 
 interface EnhancedCompactHackerNewsCardProps {
-  post: HackerNewsPost & EnhancedPost;
+  post: HackerNewsPost & EnhancedPostExtensions;
   index: number;
   showHighlighting: boolean;
 }

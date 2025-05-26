@@ -66,7 +66,7 @@ interface PostLike {
   subreddit?: string;
 }
 
-export interface EnhancedPost extends PostLike {
+export interface EnhancedPostExtensions {
   relevanceScore: number;
   matchedCategories: string[];
   highlightLevel: 'none' | 'low' | 'medium' | 'high';
@@ -135,7 +135,7 @@ const getHighlightLevel = (score: number, threshold: number): 'none' | 'low' | '
 export const useEnhancedFilter = <T extends PostLike>(
   posts: T[], 
   options: UseEnhancedFilterOptions
-): EnhancedPost[] => {
+): (T & EnhancedPostExtensions)[] => {
   return useMemo(() => {
     if (!posts || posts.length === 0) return [];
     
@@ -155,7 +155,7 @@ export const useEnhancedFilter = <T extends PostLike>(
           relevanceScore: score,
           matchedCategories,
           highlightLevel: getHighlightLevel(score, highlightThreshold)
-        } as EnhancedPost;
+        } as T & EnhancedPostExtensions;
       })
       .sort((a, b) => (b.score || 0) - (a.score || 0)); // Sort by original score, not relevance
   }, [posts, options.categories, options.enabledCategories, options.highlightThreshold, options.customKeywords]);

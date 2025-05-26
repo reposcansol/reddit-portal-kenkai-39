@@ -2,11 +2,11 @@
 import React from 'react';
 import { ExternalLink, Zap } from 'lucide-react';
 import { RedditPost } from '@/hooks/useReddit';
-import { EnhancedPost } from '@/hooks/useEnhancedFilter';
+import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Badge } from '@/components/ui/badge';
 
 interface EnhancedCompactArticleCardProps {
-  post: RedditPost & EnhancedPost;
+  post: RedditPost & EnhancedPostExtensions;
   index: number;
   showHighlighting: boolean;
 }
