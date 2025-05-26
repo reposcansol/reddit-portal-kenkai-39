@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
@@ -25,7 +24,8 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
     categories: preferences.categories,
     enabledCategories: preferences.enabledCategories,
     highlightThreshold: preferences.highlightThreshold,
-    customKeywords: preferences.customKeywords
+    primaryKeywords: preferences.primaryKeywords,
+    secondaryKeywords: preferences.secondaryKeywords
   });
 
   const sortedPosts = React.useMemo(() => {

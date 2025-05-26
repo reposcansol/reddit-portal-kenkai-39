@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
 import { EnhancedCompactHackerNewsCard } from '@/components/news/EnhancedCompactHackerNewsCard';
@@ -25,7 +24,8 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
     categories: preferences.categories,
     enabledCategories: preferences.enabledCategories,
     highlightThreshold: preferences.highlightThreshold,
-    customKeywords: preferences.customKeywords
+    primaryKeywords: preferences.primaryKeywords,
+    secondaryKeywords: preferences.secondaryKeywords
   });
 
   return (

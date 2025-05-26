@@ -86,8 +86,8 @@ const calculateRelevanceScore = (
   post: PostLike, 
   categories: KeywordCategory[], 
   enabledCategories: string[],
-  primaryKeywords: string[],
-  secondaryKeywords: string[]
+  primaryKeywords: string[] = [],
+  secondaryKeywords: string[] = []
 ): { score: number; matchedCategories: string[]; matchedKeywords: string[] } => {
   const text = `${post.title} ${post.selftext || ''}`.toLowerCase();
   let score = 0;
@@ -175,7 +175,7 @@ export const useEnhancedFilter = <T extends PostLike>(
   return useMemo(() => {
     if (!posts || posts.length === 0) return [];
     
-    const { categories, enabledCategories, primaryKeywords, secondaryKeywords } = options;
+    const { categories, enabledCategories, primaryKeywords = [], secondaryKeywords = [] } = options;
     
     // First pass: calculate raw scores
     const postsWithScores = posts.map(post => {
