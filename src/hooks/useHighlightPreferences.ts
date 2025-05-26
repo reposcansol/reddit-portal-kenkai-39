@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { KeywordCategory, DEFAULT_CATEGORIES } from './useEnhancedFilter';
 
@@ -34,7 +33,8 @@ export const useHighlightPreferences = () => {
         setPreferences({
           ...DEFAULT_PREFERENCES,
           ...parsed,
-          categories: DEFAULT_CATEGORIES // Always use latest categories
+          // Merge saved categories with defaults, keeping custom keywords if they exist
+          categories: parsed.categories?.length > 0 ? parsed.categories : DEFAULT_CATEGORIES
         });
       }
     } catch (error) {

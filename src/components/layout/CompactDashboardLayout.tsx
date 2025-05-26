@@ -3,9 +3,14 @@ import React from 'react';
 import { SourceNavigator } from './SourceNavigator';
 import { RefreshButton } from '@/components/ui/RefreshButton';
 import { HighlightControls } from '@/components/ui/HighlightControls';
+import { CategoryManager } from '@/components/ui/CategoryManager';
+import { SortControls } from '@/components/ui/SortControls';
+import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { Zap } from 'lucide-react';
 
 export const CompactDashboardLayout = () => {
+  const { currentSort, setCurrentSort } = useSortPreferences();
+
   return (
     <div className="h-screen bg-black flex flex-col overflow-hidden">
       {/* Header */}
@@ -26,6 +31,11 @@ export const CompactDashboardLayout = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <SortControls 
+                currentSort={currentSort} 
+                onSortChange={setCurrentSort} 
+              />
+              <CategoryManager />
               <RefreshButton />
               <HighlightControls />
             </div>
