@@ -55,7 +55,7 @@ export const RedditSourcePanel = () => {
 
     // Apply sorting to each subreddit's posts
     Object.keys(grouped).forEach(subreddit => {
-      grouped[subreddit] = grouped[subreddit].sort((a, b) => {
+      grouped[subreddit] = [...grouped[subreddit]].sort((a, b) => {
         switch (currentSort) {
           case 'newest':
             return b.created_utc - a.created_utc;
@@ -74,21 +74,8 @@ export const RedditSourcePanel = () => {
     return grouped;
   }, [enhancedPosts, currentSort]);
 
-  // Force component re-render when sort changes by using a counter
-  const [sortChangeCounter, setSortChangeCounter] = React.useState(0);
-  const previousSort = React.useRef(currentSort);
-  
-  React.useEffect(() => {
-    if (previousSort.current !== currentSort) {
-      console.log('Reddit: Sort changed from', previousSort.current, 'to', currentSort);
-      setSortChangeCounter(prev => prev + 1);
-      previousSort.current = currentSort;
-    }
-  }, [currentSort]);
-
   console.log('Reddit: Current sort:', currentSort);
   console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
-  console.log('Reddit: Sort change counter:', sortChangeCounter);
 
   return (
     <main 
@@ -129,7 +116,7 @@ export const RedditSourcePanel = () => {
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
-            key={`${subreddit}-${sortChangeCounter}`}
+            key={`${subreddit}-${currentSort}`}
             id={subreddit}
             className="w-1/4"
           >

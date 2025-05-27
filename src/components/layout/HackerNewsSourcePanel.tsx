@@ -78,20 +78,7 @@ export const HackerNewsSourcePanel = () => {
     return columns;
   }, [enhancedPosts, currentSort]);
 
-  // Force component re-render when sort changes by using a counter
-  const [sortChangeCounter, setSortChangeCounter] = React.useState(0);
-  const previousSort = React.useRef(currentSort);
-  
-  React.useEffect(() => {
-    if (previousSort.current !== currentSort) {
-      console.log('HN: Sort changed from', previousSort.current, 'to', currentSort);
-      setSortChangeCounter(prev => prev + 1);
-      previousSort.current = currentSort;
-    }
-  }, [currentSort]);
-
   console.log('HN: Current sort:', currentSort);
-  console.log('HN: Sort change counter:', sortChangeCounter);
 
   return (
     <main 
@@ -132,7 +119,7 @@ export const HackerNewsSourcePanel = () => {
       >
         {columnOrder.map((columnId) => (
           <DraggableColumn
-            key={`${columnId}-${sortChangeCounter}`}
+            key={`${columnId}-${currentSort}`}
             id={columnId}
             className="w-1/4"
           >
