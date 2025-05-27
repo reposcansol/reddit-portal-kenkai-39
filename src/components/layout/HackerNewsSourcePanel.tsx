@@ -8,11 +8,15 @@ import { useColumnOrder } from '@/hooks/useColumnOrder';
 import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
+import { SortControls } from '@/components/ui/SortControls';
+import { HighlightControls } from '@/components/ui/HighlightControls';
+import { KeywordManager } from '@/components/ui/KeywordManager';
+import { CategoryManager } from '@/components/ui/CategoryManager';
 import { RotateCcw } from 'lucide-react';
 
 export const HackerNewsSourcePanel = () => {
   const { data: hackerNewsData, isLoading, error } = useHackerNews();
-  const { currentSort } = useSortPreferences();
+  const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
 
   // Define the default order of columns (using indices as identifiers)
@@ -82,8 +86,18 @@ export const HackerNewsSourcePanel = () => {
       id="hackernews-panel"
       aria-label="Hacker News feeds"
     >
-      {/* Reset button */}
-      <div className="flex justify-end mb-2">
+      {/* Controls Header */}
+      <div className="flex justify-between items-center mb-4 gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
+          <SortControls 
+            currentSort={currentSort}
+            onSortChange={setCurrentSort}
+          />
+          <HighlightControls />
+          <KeywordManager />
+          <CategoryManager />
+        </div>
+        
         <button
           onClick={resetOrder}
           className="text-xs text-gray-500 hover:text-green-400 transition-colors 
