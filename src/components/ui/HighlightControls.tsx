@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Settings, Eye, EyeOff, Plus, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -20,10 +21,17 @@ export const HighlightControls: React.FC = () => {
     resetPreferences
   } = useHighlightPreferences();
 
+  const handleToggleHighlighting = () => {
+    console.log('HighlightControls: Toggling highlighting from', preferences.enableHighlighting, 'to', !preferences.enableHighlighting);
+    updatePreferences({ enableHighlighting: !preferences.enableHighlighting });
+  };
+
   const getCategoryColor = (categoryId: string) => {
     const category = preferences.categories.find(c => c.id === categoryId);
     return category?.color || 'gray';
   };
+
+  console.log('HighlightControls: Current highlighting state:', preferences.enableHighlighting);
 
   return (
     <DropdownMenu>
@@ -49,7 +57,7 @@ export const HighlightControls: React.FC = () => {
         
         {/* Toggle highlighting */}
         <DropdownMenuItem
-          onClick={() => updatePreferences({ enableHighlighting: !preferences.enableHighlighting })}
+          onClick={handleToggleHighlighting}
           className="text-green-300 hover:bg-green-400/10"
         >
           {preferences.enableHighlighting ? (
@@ -74,7 +82,10 @@ export const HighlightControls: React.FC = () => {
         {preferences.categories.map(category => (
           <DropdownMenuItem
             key={category.id}
-            onClick={() => toggleCategory(category.id)}
+            onClick={() => {
+              console.log('HighlightControls: Toggling category:', category.id);
+              toggleCategory(category.id);
+            }}
             className="text-green-300 hover:bg-green-400/10 justify-between"
           >
             <span className="text-xs">{category.name}</span>
@@ -102,7 +113,11 @@ export const HighlightControls: React.FC = () => {
             max="3.0"
             step="0.1"
             value={preferences.highlightThreshold}
-            onChange={(e) => updatePreferences({ highlightThreshold: parseFloat(e.target.value) })}
+            onChange={(e) => {
+              const newThreshold = parseFloat(e.target.value);
+              console.log('HighlightControls: Updating threshold to:', newThreshold);
+              updatePreferences({ highlightThreshold: newThreshold });
+            }}
             className="w-full accent-green-400"
           />
         </div>
@@ -110,7 +125,10 @@ export const HighlightControls: React.FC = () => {
         <DropdownMenuSeparator className="bg-green-400/20" />
         
         <DropdownMenuItem
-          onClick={resetPreferences}
+          onClick={() => {
+            console.log('HighlightControls: Resetting preferences');
+            resetPreferences();
+          }}
           className="text-red-400 hover:bg-red-400/10"
         >
           Reset to Defaults

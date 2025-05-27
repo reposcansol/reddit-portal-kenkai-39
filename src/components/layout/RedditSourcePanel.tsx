@@ -37,9 +37,11 @@ export const RedditSourcePanel = () => {
     secondaryKeywords: preferences.secondaryKeywords
   });
 
-  // Group posts by subreddit and apply sorting
+  // Group posts by subreddit and apply sorting with force re-calculation
   const postsBySubreddit = React.useMemo(() => {
     console.log('Reddit: Recalculating postsBySubreddit with sort:', currentSort);
+    console.log('Reddit: Enhanced posts count:', enhancedPosts?.length || 0);
+    console.log('Reddit: Highlight preferences:', preferences.enableHighlighting);
     
     if (!enhancedPosts || enhancedPosts.length === 0) return {};
     
@@ -53,29 +55,52 @@ export const RedditSourcePanel = () => {
       return acc;
     }, {} as Record<string, typeof enhancedPosts>);
 
-    // Apply sorting to each subreddit's posts
+    // Apply sorting to each subreddit's posts - create completely new arrays
     Object.keys(grouped).forEach(subreddit => {
+      const originalLength = grouped[subreddit].length;
+      
       grouped[subreddit] = [...grouped[subreddit]].sort((a, b) => {
+        let result = 0;
         switch (currentSort) {
           case 'newest':
-            return b.created_utc - a.created_utc;
+            result = b.created_utc - a.created_utc;
+            break;
           case 'score':
-            return (b.score || 0) - (a.score || 0);
+            result = (b.score || 0) - (a.score || 0);
+            break;
           case 'comments':
-            return (b.num_comments || 0) - (a.num_comments || 0);
+            result = (b.num_comments || 0) - (a.num_comments || 0);
+            break;
           case 'relevance':
           default:
-            return b.relevanceScore - a.relevanceScore;
+            result = b.relevanceScore - a.relevanceScore;
+            break;
         }
+        return result;
       });
+      
+      console.log(`Reddit: Sorted ${subreddit} posts (${originalLength} items) by ${currentSort}`);
+      console.log(`Reddit: First 3 ${subreddit} post scores:`, 
+        grouped[subreddit].slice(0, 3).map(p => ({ 
+          title: p.title.slice(0, 30), 
+          score: currentSort === 'score' ? p.score : currentSort === 'comments' ? p.num_comments : currentSort === 'newest' ? p.created_utc : p.relevanceScore 
+        }))
+      );
     });
 
     console.log('Reddit: Posts grouped and sorted by', currentSort);
     return grouped;
-  }, [enhancedPosts, currentSort]);
+  }, [enhancedPosts, currentSort, preferences.enableHighlighting]); // Added preferences dependency for highlighting
+
+  // Force re-render key to ensure UI updates
+  const renderKey = React.useMemo(() => {
+    return `${currentSort}-${preferences.enableHighlighting}-${Date.now()}`;
+  }, [currentSort, preferences.enableHighlighting]);
 
   console.log('Reddit: Current sort:', currentSort);
   console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
+  console.log('Reddit: Highlighting enabled:', preferences.enableHighlighting);
+  console.log('Reddit: Render key:', renderKey);
 
   return (
     <main 
@@ -116,7 +141,7 @@ export const RedditSourcePanel = () => {
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
-            key={`${subreddit}-${currentSort}`}
+            key={`${subreddit}-${renderKey}`}
             id={subreddit}
             className="w-1/4"
           >

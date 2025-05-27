@@ -40,25 +40,41 @@ export const HackerNewsSourcePanel = () => {
   // Group HackerNews posts into 4 columns with sorting applied
   const groupedPosts = React.useMemo(() => {
     console.log('HN: Recalculating groupedPosts with sort:', currentSort);
+    console.log('HN: Enhanced posts count:', enhancedPosts?.length || 0);
+    console.log('HN: Highlight preferences:', preferences.enableHighlighting);
     
     if (!enhancedPosts || enhancedPosts.length === 0) {
       return { '0': [], '1': [], '2': [], '3': [] };
     }
     
-    // First apply sorting to all posts
+    // First apply sorting to all posts - create completely new array
     const sortedPosts = [...enhancedPosts].sort((a, b) => {
+      let result = 0;
       switch (currentSort) {
         case 'newest':
-          return b.time - a.time;
+          result = b.time - a.time;
+          break;
         case 'score':
-          return (b.score || 0) - (a.score || 0);
+          result = (b.score || 0) - (a.score || 0);
+          break;
         case 'comments':
-          return (b.descendants || 0) - (a.descendants || 0);
+          result = (b.descendants || 0) - (a.descendants || 0);
+          break;
         case 'relevance':
         default:
-          return b.relevanceScore - a.relevanceScore;
+          result = b.relevanceScore - a.relevanceScore;
+          break;
       }
+      return result;
     });
+    
+    console.log(`HN: Sorted ${sortedPosts.length} posts by ${currentSort}`);
+    console.log(`HN: Top 5 post scores:`, 
+      sortedPosts.slice(0, 5).map(p => ({ 
+        title: p.title.slice(0, 30), 
+        score: currentSort === 'score' ? p.score : currentSort === 'comments' ? p.descendants : currentSort === 'newest' ? p.time : p.relevanceScore 
+      }))
+    );
     
     // Take first 80 posts and distribute them into 4 columns of 20 each
     const limitedPosts = sortedPosts.slice(0, 80);
@@ -76,9 +92,16 @@ export const HackerNewsSourcePanel = () => {
     console.log('HN: Posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
     
     return columns;
-  }, [enhancedPosts, currentSort]);
+  }, [enhancedPosts, currentSort, preferences.enableHighlighting]); // Added preferences dependency for highlighting
+
+  // Force re-render key to ensure UI updates
+  const renderKey = React.useMemo(() => {
+    return `${currentSort}-${preferences.enableHighlighting}-${Date.now()}`;
+  }, [currentSort, preferences.enableHighlighting]);
 
   console.log('HN: Current sort:', currentSort);
+  console.log('HN: Highlighting enabled:', preferences.enableHighlighting);
+  console.log('HN: Render key:', renderKey);
 
   return (
     <main 
@@ -119,7 +142,7 @@ export const HackerNewsSourcePanel = () => {
       >
         {columnOrder.map((columnId) => (
           <DraggableColumn
-            key={`${columnId}-${currentSort}`}
+            key={`${columnId}-${renderKey}`}
             id={columnId}
             className="w-1/4"
           >
