@@ -74,8 +74,14 @@ export const RedditSourcePanel = () => {
     return grouped;
   }, [enhancedPosts, currentSort]);
 
+  // Force a re-render key when sort changes to ensure UI updates
+  const renderKey = React.useMemo(() => {
+    return `${currentSort}-${Date.now()}`;
+  }, [currentSort]);
+
   console.log('Reddit: Current sort:', currentSort);
   console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
+  console.log('Reddit: Render key:', renderKey);
 
   return (
     <main 
@@ -83,6 +89,7 @@ export const RedditSourcePanel = () => {
       role="tabpanel"
       id="reddit-panel"
       aria-label="Reddit feeds"
+      key={renderKey}
     >
       {/* Controls Header */}
       <div className="flex justify-between items-center mb-4 gap-2 flex-wrap">
@@ -116,7 +123,7 @@ export const RedditSourcePanel = () => {
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
-            key={subreddit}
+            key={`${subreddit}-${renderKey}`}
             id={subreddit}
             className="w-1/4"
           >
