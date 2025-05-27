@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
-import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -19,20 +19,6 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
   error
 }) => {
   const { preferences } = useHighlightPreferences();
-  
-  const enhancedPosts = useEnhancedFilter(posts, {
-    categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories,
-    highlightThreshold: preferences.highlightThreshold,
-    primaryKeywords: preferences.primaryKeywords,
-    secondaryKeywords: preferences.secondaryKeywords
-  });
-
-  const sortedPosts = React.useMemo(() => {
-    return enhancedPosts
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 20);
-  }, [enhancedPosts]);
 
   return (
     <div 
@@ -47,7 +33,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
             [r/{subreddit.toUpperCase()}]
           </h2>
           <span className="text-xs text-gray-500 font-mono">
-            {sortedPosts.length} posts
+            {posts.length} posts
           </span>
         </div>
       </div>
@@ -72,7 +58,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
             ))}
           </div>
         ) : (
-          sortedPosts.map((post, index) => (
+          posts.map((post, index) => (
             <EnhancedCompactArticleCard 
               key={post.id} 
               post={post} 
@@ -82,7 +68,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
           ))
         )}
 
-        {!isLoading && sortedPosts.length === 0 && !error && (
+        {!isLoading && posts.length === 0 && !error && (
           <div className="text-center text-gray-500 text-xs py-4 font-mono">
             [NO DATA AVAILABLE]
           </div>

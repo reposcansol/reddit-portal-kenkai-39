@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
 import { EnhancedCompactHackerNewsCard } from '@/components/news/EnhancedCompactHackerNewsCard';
-import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -19,14 +19,6 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
   error
 }) => {
   const { preferences } = useHighlightPreferences();
-  
-  const enhancedPosts = useEnhancedFilter(posts, {
-    categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories,
-    highlightThreshold: preferences.highlightThreshold,
-    primaryKeywords: preferences.primaryKeywords,
-    secondaryKeywords: preferences.secondaryKeywords
-  });
 
   return (
     <div 
@@ -41,7 +33,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
             [HN_COL_{columnIndex + 1}]
           </h2>
           <span className="text-xs text-gray-500 font-mono">
-            {enhancedPosts.length} posts
+            {posts.length} posts
           </span>
         </div>
       </div>
@@ -66,7 +58,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
             ))}
           </div>
         ) : (
-          enhancedPosts.map((post, index) => (
+          posts.map((post, index) => (
             <EnhancedCompactHackerNewsCard 
               key={post.id} 
               post={post} 
@@ -76,7 +68,7 @@ export const HackerNewsColumn: React.FC<HackerNewsColumnProps> = ({
           ))
         )}
 
-        {!isLoading && enhancedPosts.length === 0 && !error && (
+        {!isLoading && posts.length === 0 && !error && (
           <div className="text-center text-gray-500 text-xs py-4 font-mono">
             [NO DATA AVAILABLE]
           </div>
