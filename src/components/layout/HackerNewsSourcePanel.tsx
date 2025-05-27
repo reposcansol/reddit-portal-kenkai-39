@@ -39,13 +39,14 @@ export const HackerNewsSourcePanel = () => {
 
   // Group HackerNews posts into 4 columns with sorting applied
   const groupedPosts = React.useMemo(() => {
-    console.log('Recalculating groupedPosts with sort:', currentSort);
+    console.log('HN: Recalculating groupedPosts with sort:', currentSort);
     
-    if (!enhancedPosts) return { '0': [], '1': [], '2': [], '3': [] };
+    if (!enhancedPosts || enhancedPosts.length === 0) {
+      return { '0': [], '1': [], '2': [], '3': [] };
+    }
     
-    // Apply sorting to all posts first
+    // First apply sorting to all posts
     const sortedPosts = [...enhancedPosts].sort((a, b) => {
-      console.log(`Sorting HN posts by ${currentSort}`);
       switch (currentSort) {
         case 'newest':
           return b.time - a.time;
@@ -66,18 +67,18 @@ export const HackerNewsSourcePanel = () => {
     // Fill each column with 20 posts sequentially
     for (let i = 0; i < limitedPosts.length; i++) {
       const columnIndex = Math.floor(i / 20).toString();
-      if (columnIndex in columns) {
+      if (columnIndex in columns && columns[columnIndex].length < 20) {
         columns[columnIndex].push(limitedPosts[i]);
       }
     }
     
-    console.log('HackerNews posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
+    console.log('HN: Posts sorted by', currentSort, 'and distributed to columns');
+    console.log('HN: Posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
     
     return columns;
-  }, [enhancedPosts, currentSort]); // Make sure currentSort is in the dependency array
+  }, [enhancedPosts, currentSort]);
 
-  console.log('Current sort:', currentSort);
-  console.log('Highlight preferences:', preferences);
+  console.log('HN: Current sort:', currentSort);
 
   return (
     <main 

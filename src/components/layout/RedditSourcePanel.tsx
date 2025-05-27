@@ -37,14 +37,14 @@ export const RedditSourcePanel = () => {
     secondaryKeywords: preferences.secondaryKeywords
   });
 
-  // Group posts by subreddit with case-insensitive matching
+  // Group posts by subreddit and apply sorting
   const postsBySubreddit = React.useMemo(() => {
-    console.log('Recalculating postsBySubreddit with sort:', currentSort);
+    console.log('Reddit: Recalculating postsBySubreddit with sort:', currentSort);
     
-    if (!enhancedPosts) return {};
+    if (!enhancedPosts || enhancedPosts.length === 0) return {};
     
+    // Group posts by subreddit
     const grouped = enhancedPosts.reduce((acc, post) => {
-      // Normalize subreddit name to lowercase for consistent grouping
       const normalizedSubreddit = post.subreddit.toLowerCase();
       if (!acc[normalizedSubreddit]) {
         acc[normalizedSubreddit] = [];
@@ -55,8 +55,7 @@ export const RedditSourcePanel = () => {
 
     // Apply sorting to each subreddit's posts
     Object.keys(grouped).forEach(subreddit => {
-      grouped[subreddit].sort((a, b) => {
-        console.log(`Sorting ${subreddit} posts by ${currentSort}`);
+      grouped[subreddit] = grouped[subreddit].sort((a, b) => {
         switch (currentSort) {
           case 'newest':
             return b.created_utc - a.created_utc;
@@ -71,13 +70,12 @@ export const RedditSourcePanel = () => {
       });
     });
 
+    console.log('Reddit: Posts grouped and sorted by', currentSort);
     return grouped;
-  }, [enhancedPosts, currentSort]); // Make sure currentSort is in the dependency array
+  }, [enhancedPosts, currentSort]);
 
-  console.log('Posts by subreddit:', Object.keys(postsBySubreddit));
-  console.log('Current column order:', columnOrder);
-  console.log('Current sort:', currentSort);
-  console.log('Highlight preferences:', preferences);
+  console.log('Reddit: Current sort:', currentSort);
+  console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
 
   return (
     <main 
