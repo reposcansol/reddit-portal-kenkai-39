@@ -3,11 +3,12 @@ import React from 'react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
 import { EnhancedCompactHackerNewsCard } from '@/components/news/EnhancedCompactHackerNewsCard';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
+import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 interface HackerNewsColumnProps {
   columnIndex: number;
-  posts: HackerNewsPost[];
+  posts: (HackerNewsPost & EnhancedPostExtensions)[];
   isLoading: boolean;
   error?: string;
 }

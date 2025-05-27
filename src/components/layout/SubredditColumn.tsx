@@ -3,11 +3,12 @@ import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
+import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 interface SubredditColumnProps {
   subreddit: string;
-  posts: RedditPost[];
+  posts: (RedditPost & EnhancedPostExtensions)[];
   isLoading: boolean;
   error?: string;
 }
