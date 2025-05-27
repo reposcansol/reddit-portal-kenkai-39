@@ -78,13 +78,20 @@ export const HackerNewsSourcePanel = () => {
     return columns;
   }, [enhancedPosts, currentSort]);
 
-  // Force a re-render key when sort changes to ensure UI updates
-  const renderKey = React.useMemo(() => {
-    return `${currentSort}-${Date.now()}`;
+  // Force component re-render when sort changes by using a counter
+  const [sortChangeCounter, setSortChangeCounter] = React.useState(0);
+  const previousSort = React.useRef(currentSort);
+  
+  React.useEffect(() => {
+    if (previousSort.current !== currentSort) {
+      console.log('HN: Sort changed from', previousSort.current, 'to', currentSort);
+      setSortChangeCounter(prev => prev + 1);
+      previousSort.current = currentSort;
+    }
   }, [currentSort]);
 
   console.log('HN: Current sort:', currentSort);
-  console.log('HN: Render key:', renderKey);
+  console.log('HN: Sort change counter:', sortChangeCounter);
 
   return (
     <main 
@@ -92,7 +99,6 @@ export const HackerNewsSourcePanel = () => {
       role="tabpanel"
       id="hackernews-panel"
       aria-label="Hacker News feeds"
-      key={renderKey}
     >
       {/* Controls Header */}
       <div className="flex justify-between items-center mb-4 gap-2 flex-wrap">
@@ -126,7 +132,7 @@ export const HackerNewsSourcePanel = () => {
       >
         {columnOrder.map((columnId) => (
           <DraggableColumn
-            key={`${columnId}-${renderKey}`}
+            key={`${columnId}-${sortChangeCounter}`}
             id={columnId}
             className="w-1/4"
           >

@@ -74,14 +74,21 @@ export const RedditSourcePanel = () => {
     return grouped;
   }, [enhancedPosts, currentSort]);
 
-  // Force a re-render key when sort changes to ensure UI updates
-  const renderKey = React.useMemo(() => {
-    return `${currentSort}-${Date.now()}`;
+  // Force component re-render when sort changes by using a counter
+  const [sortChangeCounter, setSortChangeCounter] = React.useState(0);
+  const previousSort = React.useRef(currentSort);
+  
+  React.useEffect(() => {
+    if (previousSort.current !== currentSort) {
+      console.log('Reddit: Sort changed from', previousSort.current, 'to', currentSort);
+      setSortChangeCounter(prev => prev + 1);
+      previousSort.current = currentSort;
+    }
   }, [currentSort]);
 
   console.log('Reddit: Current sort:', currentSort);
   console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
-  console.log('Reddit: Render key:', renderKey);
+  console.log('Reddit: Sort change counter:', sortChangeCounter);
 
   return (
     <main 
@@ -89,7 +96,6 @@ export const RedditSourcePanel = () => {
       role="tabpanel"
       id="reddit-panel"
       aria-label="Reddit feeds"
-      key={renderKey}
     >
       {/* Controls Header */}
       <div className="flex justify-between items-center mb-4 gap-2 flex-wrap">
@@ -123,7 +129,7 @@ export const RedditSourcePanel = () => {
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
-            key={`${subreddit}-${renderKey}`}
+            key={`${subreddit}-${sortChangeCounter}`}
             id={subreddit}
             className="w-1/4"
           >
