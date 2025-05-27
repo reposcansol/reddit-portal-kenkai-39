@@ -35,10 +35,13 @@ export const HackerNewsSourcePanel = () => {
 
   // Group HackerNews posts into 4 columns with sorting applied
   const groupedPosts = React.useMemo(() => {
+    console.log('Recalculating groupedPosts with sort:', currentSort);
+    
     if (!enhancedPosts) return { '0': [], '1': [], '2': [], '3': [] };
     
     // Apply sorting to all posts first
     const sortedPosts = [...enhancedPosts].sort((a, b) => {
+      console.log(`Sorting HN posts by ${currentSort}`);
       switch (currentSort) {
         case 'newest':
           return b.time - a.time;
@@ -67,7 +70,10 @@ export const HackerNewsSourcePanel = () => {
     console.log('HackerNews posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
     
     return columns;
-  }, [enhancedPosts, currentSort]);
+  }, [enhancedPosts, currentSort]); // Make sure currentSort is in the dependency array
+
+  console.log('Current sort:', currentSort);
+  console.log('Highlight preferences:', preferences);
 
   return (
     <main 

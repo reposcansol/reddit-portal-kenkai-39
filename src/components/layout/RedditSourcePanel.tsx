@@ -35,6 +35,8 @@ export const RedditSourcePanel = () => {
 
   // Group posts by subreddit with case-insensitive matching
   const postsBySubreddit = React.useMemo(() => {
+    console.log('Recalculating postsBySubreddit with sort:', currentSort);
+    
     if (!enhancedPosts) return {};
     
     const grouped = enhancedPosts.reduce((acc, post) => {
@@ -50,6 +52,7 @@ export const RedditSourcePanel = () => {
     // Apply sorting to each subreddit's posts
     Object.keys(grouped).forEach(subreddit => {
       grouped[subreddit].sort((a, b) => {
+        console.log(`Sorting ${subreddit} posts by ${currentSort}`);
         switch (currentSort) {
           case 'newest':
             return b.created_utc - a.created_utc;
@@ -65,10 +68,12 @@ export const RedditSourcePanel = () => {
     });
 
     return grouped;
-  }, [enhancedPosts, currentSort]);
+  }, [enhancedPosts, currentSort]); // Make sure currentSort is in the dependency array
 
   console.log('Posts by subreddit:', Object.keys(postsBySubreddit));
   console.log('Current column order:', columnOrder);
+  console.log('Current sort:', currentSort);
+  console.log('Highlight preferences:', preferences);
 
   return (
     <main 
