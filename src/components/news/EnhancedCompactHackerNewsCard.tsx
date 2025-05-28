@@ -36,36 +36,33 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
   };
 
   const getHighlightStyles = () => {
-    if (!showHighlighting || post.highlightLevel === 'none') {
+    if (!showHighlighting || post.relevancePercentage < 20) {
       return "border-green-400/30 hover:border-green-400";
     }
 
-    switch (post.highlightLevel) {
-      case 'high':
-        return "border-amber-400 shadow-amber-400/20 bg-amber-900/10 hover:border-amber-300";
-      case 'medium':
-        return "border-blue-400 shadow-blue-400/20 bg-blue-900/10 hover:border-blue-300";
-      case 'low':
-        return "border-green-500 shadow-green-500/20 bg-green-900/10 hover:border-green-400";
-      default:
-        return "border-green-400/30 hover:border-green-400";
+    if (post.relevancePercentage >= 75) {
+      return "border-amber-400 shadow-amber-400/20 bg-amber-900/10 hover:border-amber-300";
+    } else if (post.relevancePercentage >= 50) {
+      return "border-blue-400 shadow-blue-400/20 bg-blue-900/10 hover:border-blue-300";
+    } else {
+      return "border-green-500 shadow-green-500/20 bg-green-900/10 hover:border-green-400";
     }
   };
 
   const getRelevanceBadge = () => {
-    if (!showHighlighting || post.highlightLevel === 'none') return null;
+    if (!showHighlighting || post.relevancePercentage < 20) return null;
 
-    const colors = {
-      high: 'bg-amber-500 text-amber-900',
-      medium: 'bg-blue-500 text-blue-900',
-      low: 'bg-green-500 text-green-900'
-    };
+    const colors = post.relevancePercentage >= 75
+      ? 'bg-amber-500 text-amber-900'
+      : post.relevancePercentage >= 50
+      ? 'bg-blue-500 text-blue-900'
+      : 'bg-green-500 text-green-900';
 
     return (
       <Badge 
-        className={`text-xs font-mono px-1 py-0 ${colors[post.highlightLevel]}`}
+        className={`text-xs font-mono px-1 py-0 ${colors}`}
       >
-        {post.highlightLevel.toUpperCase()}
+        {post.relevancePercentage}%
       </Badge>
     );
   };
@@ -92,7 +89,7 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
           </h3>
         </div>
         <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-          {showHighlighting && post.relevanceScore > 0 && (
+          {showHighlighting && post.relevancePercentage > 0 && (
             <Zap className="w-3 h-3 text-amber-400" />
           )}
           {getRelevanceBadge()}
@@ -127,12 +124,13 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
       </div>
 
       {/* Relevance info */}
-      {showHighlighting && post.relevanceScore > 0 && (
+      {showHighlighting && post.relevancePercentage > 0 && (
         <div className="mt-1 text-xs text-gray-400 font-mono">
-          Score: {post.relevanceScore.toFixed(1)}
-          {post.matchedCategories.length > 0 && (
+          Score: {post.relevancePercentage}%
+          {post.matchedKeywords && post.matchedKeywords.length > 0 && (
             <span className="ml-2">
-              Categories: {post.matchedCategories.join(', ')}
+              Keywords: {post.matchedKeywords.slice(0, 3).join(', ')}
+              {post.matchedKeywords.length > 3 && '...'}
             </span>
           )}
         </div>
