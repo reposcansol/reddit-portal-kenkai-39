@@ -74,7 +74,7 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
 
     return (
       <Badge 
-        className="text-xs font-mono px-2 py-0 border-0"
+        className="text-xs font-mono px-2 py-0.5 border-0 inline-flex items-center"
         style={flairStyle}
       >
         <Tag className="w-2 h-2 mr-1" />
@@ -137,12 +137,12 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
         </div>
       </div>
 
-      {/* Flair row - replaces score and keywords */}
-      <div className="mt-1 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      {/* Flair row at bottom left */}
+      <div className="mt-2 flex items-center justify-between">
+        <div className="flex items-center gap-2 flex-wrap">
           {getFlairBadge()}
           {post.author_flair_text && (
-            <Badge className="text-xs font-mono px-1 py-0 bg-purple-600 text-purple-100">
+            <Badge className="text-xs font-mono px-1.5 py-0.5 bg-purple-600 text-purple-100 inline-flex items-center">
               {post.author_flair_text}
             </Badge>
           )}
