@@ -177,6 +177,8 @@ export const useEnhancedFilter = <T extends PostLike>(
     
     const { categories, enabledCategories, primaryKeywords = [], secondaryKeywords = [] } = options;
     
+    console.log('Enhanced Filter: Processing', posts.length, 'posts without forced sorting');
+    
     // First pass: calculate raw scores
     const postsWithScores = posts.map(post => {
       const { score, matchedCategories, matchedKeywords } = calculateRelevanceScore(
@@ -210,12 +212,9 @@ export const useEnhancedFilter = <T extends PostLike>(
       } as T & EnhancedPostExtensions;
     });
     
-    // Sort by percentage (highest first), then by original score
-    return enhancedPosts.sort((a, b) => {
-      if (b.relevancePercentage !== a.relevancePercentage) {
-        return b.relevancePercentage - a.relevancePercentage;
-      }
-      return (b.score || 0) - (a.score || 0);
-    });
+    // REMOVED: The forced sorting that was overriding user choice
+    // Return posts in their original order, allowing panels to handle sorting
+    console.log('Enhanced Filter: Returning', enhancedPosts.length, 'enhanced posts without forced sort');
+    return enhancedPosts;
   }, [posts, options.categories, options.enabledCategories, options.primaryKeywords, options.secondaryKeywords]);
 };
