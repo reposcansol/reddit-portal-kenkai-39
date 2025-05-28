@@ -64,12 +64,45 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
     );
   };
 
+  // Function to determine if a color is light or dark
+  const isLightColor = (hexColor: string): boolean => {
+    if (!hexColor || hexColor === 'transparent') return false;
+    
+    // Remove # if present
+    const hex = hexColor.replace('#', '');
+    
+    // Convert to RGB
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate luminance using standard formula
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return true if light (luminance > 0.5)
+    return luminance > 0.5;
+  };
+
   const getFlairBadge = () => {
     if (!post.link_flair_text) return null;
 
+    const backgroundColor = post.link_flair_background_color || '#374151';
+    
+    // Determine appropriate text color based on background brightness
+    let textColor = post.link_flair_text_color || '#ffffff';
+    
+    // Override text color if the background is light but text is also light
+    if (isLightColor(backgroundColor) && (textColor === '#ffffff' || textColor === 'white' || isLightColor(textColor))) {
+      textColor = '#000000';
+    }
+    // Override text color if the background is dark but text is also dark
+    else if (!isLightColor(backgroundColor) && (textColor === '#000000' || textColor === 'black' || !isLightColor(textColor))) {
+      textColor = '#ffffff';
+    }
+
     const flairStyle = {
-      backgroundColor: post.link_flair_background_color || '#374151',
-      color: post.link_flair_text_color || '#ffffff'
+      backgroundColor,
+      color: textColor
     };
 
     return (
