@@ -13,6 +13,11 @@ export interface RedditPost {
   subreddit: string;
   permalink: string;
   selftext?: string;
+  link_flair_text?: string;
+  link_flair_css_class?: string;
+  link_flair_background_color?: string;
+  link_flair_text_color?: string;
+  author_flair_text?: string;
 }
 
 const fetchRedditPosts = async (): Promise<RedditPost[]> => {
@@ -49,7 +54,12 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
             num_comments: child.data.num_comments,
             subreddit: child.data.subreddit,
             permalink: `https://reddit.com${child.data.permalink}`,
-            selftext: child.data.selftext
+            selftext: child.data.selftext,
+            link_flair_text: child.data.link_flair_text,
+            link_flair_css_class: child.data.link_flair_css_class,
+            link_flair_background_color: child.data.link_flair_background_color,
+            link_flair_text_color: child.data.link_flair_text_color,
+            author_flair_text: child.data.author_flair_text
           }))
           .filter((post: RedditPost) => {
             const isRecent = post.created_utc >= twentyFourHoursAgo;

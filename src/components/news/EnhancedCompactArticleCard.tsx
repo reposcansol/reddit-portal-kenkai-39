@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Zap } from 'lucide-react';
+import { ExternalLink, Zap, Tag } from 'lucide-react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Badge } from '@/components/ui/badge';
@@ -46,19 +46,39 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
   };
 
   const getRelevanceBadge = () => {
-    if (!showHighlighting || post.relevancePercentage < 20) return null;
-
+    // Always show percentage badge, even for scores below 20%
     const colors = post.relevancePercentage >= 75
       ? 'bg-amber-500 text-amber-900'
       : post.relevancePercentage >= 50
       ? 'bg-blue-500 text-blue-900'
-      : 'bg-green-500 text-green-900';
+      : post.relevancePercentage >= 20
+      ? 'bg-green-500 text-green-900'
+      : 'bg-gray-500 text-gray-900';
 
     return (
       <Badge 
         className={`text-xs font-mono px-1 py-0 ${colors}`}
       >
         {post.relevancePercentage}%
+      </Badge>
+    );
+  };
+
+  const getFlairBadge = () => {
+    if (!post.link_flair_text) return null;
+
+    const flairStyle = {
+      backgroundColor: post.link_flair_background_color || '#374151',
+      color: post.link_flair_text_color || '#ffffff'
+    };
+
+    return (
+      <Badge 
+        className="text-xs font-mono px-2 py-0 border-0"
+        style={flairStyle}
+      >
+        <Tag className="w-2 h-2 mr-1" />
+        {post.link_flair_text}
       </Badge>
     );
   };
@@ -117,18 +137,17 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
         </div>
       </div>
 
-      {/* Relevance info */}
-      {showHighlighting && post.relevancePercentage > 0 && (
-        <div className="mt-1 text-xs text-gray-400 font-mono">
-          Score: {post.relevancePercentage}%
-          {post.matchedKeywords && post.matchedKeywords.length > 0 && (
-            <span className="ml-2">
-              Keywords: {post.matchedKeywords.slice(0, 3).join(', ')}
-              {post.matchedKeywords.length > 3 && '...'}
-            </span>
+      {/* Flair row - replaces score and keywords */}
+      <div className="mt-1 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {getFlairBadge()}
+          {post.author_flair_text && (
+            <Badge className="text-xs font-mono px-1 py-0 bg-purple-600 text-purple-100">
+              {post.author_flair_text}
+            </Badge>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
