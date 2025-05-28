@@ -66,15 +66,31 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
 
   // Function to determine if a color is light or dark
   const isLightColor = (hexColor: string): boolean => {
-    if (!hexColor || hexColor === 'transparent') return false;
+    if (!hexColor || hexColor === 'transparent' || hexColor === '') return false;
+    
+    // Handle different color formats
+    let hex = hexColor;
     
     // Remove # if present
-    const hex = hexColor.replace('#', '');
+    if (hex.startsWith('#')) {
+      hex = hex.substring(1);
+    }
+    
+    // Handle 3-digit hex codes
+    if (hex.length === 3) {
+      hex = hex.split('').map(char => char + char).join('');
+    }
+    
+    // Must be 6 digits for valid hex
+    if (hex.length !== 6) return false;
     
     // Convert to RGB
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    // Check if values are valid
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
     
     // Calculate luminance using standard formula
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
@@ -88,17 +104,9 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
 
     const backgroundColor = post.link_flair_background_color || '#374151';
     
-    // Determine appropriate text color based on background brightness
-    let textColor = post.link_flair_text_color || '#ffffff';
-    
-    // Override text color if the background is light but text is also light
-    if (isLightColor(backgroundColor) && (textColor === '#ffffff' || textColor === 'white' || isLightColor(textColor))) {
-      textColor = '#000000';
-    }
-    // Override text color if the background is dark but text is also dark
-    else if (!isLightColor(backgroundColor) && (textColor === '#000000' || textColor === 'black' || !isLightColor(textColor))) {
-      textColor = '#ffffff';
-    }
+    // Simple rule: if background is light, use black text. If dark, use white text.
+    const isBackgroundLight = isLightColor(backgroundColor);
+    const textColor = isBackgroundLight ? '#000000' : '#ffffff';
 
     const flairStyle = {
       backgroundColor,
