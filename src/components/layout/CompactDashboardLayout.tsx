@@ -2,8 +2,6 @@
 import React from 'react';
 import { SourceNavigator } from './SourceNavigator';
 import { RefreshButton } from '@/components/ui/RefreshButton';
-import { HighlightControls } from '@/components/ui/HighlightControls';
-import { CategoryManager } from '@/components/ui/CategoryManager';
 import { Zap } from 'lucide-react';
 
 export const CompactDashboardLayout = () => {
@@ -27,9 +25,7 @@ export const CompactDashboardLayout = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <CategoryManager />
               <RefreshButton />
-              <HighlightControls />
             </div>
           </div>
         </div>
