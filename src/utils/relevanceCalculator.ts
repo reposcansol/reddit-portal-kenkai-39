@@ -1,0 +1,81 @@
+
+import { KeywordCategory, PostLike } from '@/types/enhancedFilter';
+
+export const calculateRelevanceScore = (
+  post: PostLike, 
+  categories: KeywordCategory[], 
+  enabledCategories: string[],
+  primaryKeywords: string[] = [],
+  secondaryKeywords: string[] = []
+): { score: number; matchedCategories: string[]; matchedKeywords: string[] } => {
+  const text = `${post.title} ${post.selftext || ''}`.toLowerCase();
+  let score = 0;
+  const matchedCategories: string[] = [];
+  const matchedKeywords: string[] = [];
+  
+  // Check enabled categories
+  const activeCategories = categories.filter(cat => enabledCategories.includes(cat.id));
+  
+  activeCategories.forEach(category => {
+    let categoryMatches = 0;
+    category.keywords.forEach(keyword => {
+      const keywordLower = keyword.toLowerCase();
+      const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
+      if (occurrences > 0) {
+        const titleWeight = post.title.toLowerCase().includes(keywordLower) ? 3 : 1;
+        categoryMatches += occurrences * titleWeight * category.weight;
+        matchedKeywords.push(keyword);
+      }
+    });
+    
+    if (categoryMatches > 0) {
+      matchedCategories.push(category.id);
+      score += categoryMatches;
+    }
+  });
+  
+  // Check primary keywords (3x weight)
+  primaryKeywords.forEach(keyword => {
+    const keywordLower = keyword.toLowerCase();
+    const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
+    if (occurrences > 0) {
+      const titleWeight = post.title.toLowerCase().includes(keywordLower) ? 3 : 1;
+      score += occurrences * titleWeight * 3.0; // Primary keywords get 3x weight
+      matchedKeywords.push(keyword);
+    }
+  });
+  
+  // Check secondary keywords (2x weight)
+  secondaryKeywords.forEach(keyword => {
+    const keywordLower = keyword.toLowerCase();
+    const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
+    if (occurrences > 0) {
+      const titleWeight = post.title.toLowerCase().includes(keywordLower) ? 3 : 1;
+      score += occurrences * titleWeight * 2.0; // Secondary keywords get 2x weight
+      matchedKeywords.push(keyword);
+    }
+  });
+  
+  // Boost score based on post engagement (25% of total score potential)
+  if (post.score) {
+    score += Math.log(post.score + 1) * 0.5;
+  }
+  
+  return { score, matchedCategories, matchedKeywords: [...new Set(matchedKeywords)] };
+};
+
+export const calculatePercentage = (score: number, allScores: number[]): number => {
+  if (allScores.length === 0 || score === 0) return 0;
+  
+  // Find max score in current batch for normalization
+  const maxScore = Math.max(...allScores);
+  if (maxScore === 0) return 0;
+  
+  // Calculate percentage (0-100)
+  let percentage = (score / maxScore) * 100;
+  
+  // Apply some smoothing to avoid too many 100% scores
+  percentage = Math.min(percentage, 95);
+  
+  return Math.round(percentage);
+};
