@@ -8,7 +8,6 @@ import { useColumnOrder } from '@/hooks/useColumnOrder';
 import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
-import { useSubredditManager } from '@/hooks/useSubredditManager';
 import { SortControls } from '@/components/ui/SortControls';
 import { HighlightControls } from '@/components/ui/HighlightControls';
 import { KeywordManager } from '@/components/ui/KeywordManager';
@@ -16,8 +15,15 @@ import { CategoryManager } from '@/components/ui/CategoryManager';
 import { SubredditManager } from '@/components/ui/SubredditManager';
 import { RotateCcw } from 'lucide-react';
 
-export const RedditSourcePanel = () => {
-  const { subreddits, updateSubreddits } = useSubredditManager();
+interface RedditSourcePanelProps {
+  subreddits: string[];
+  onSubredditsChange: (subreddits: string[]) => void;
+}
+
+export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
+  subreddits,
+  onSubredditsChange
+}) => {
   const { data: redditData, isLoading, error } = useReddit(subreddits);
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
@@ -127,7 +133,7 @@ export const RedditSourcePanel = () => {
           <CategoryManager />
           <SubredditManager 
             subreddits={subreddits}
-            onSubredditsChange={updateSubreddits}
+            onSubredditsChange={onSubredditsChange}
           />
         </div>
         
