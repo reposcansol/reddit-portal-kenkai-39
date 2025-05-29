@@ -2,16 +2,19 @@
 import React from 'react';
 import { useHackerNews } from '@/hooks/useHackerNews';
 import { useReddit } from '@/hooks/useReddit';
+import { useSubredditManager } from '@/hooks/useSubredditManager';
 import { useAIFilter } from '@/hooks/useAIFilter';
 import { ContentColumn } from './ContentColumn';
 import { HackerNewsCard } from '@/components/news/HackerNewsCard';
 import { RedditCard } from '@/components/news/RedditCard';
 import { RefreshButton } from '@/components/ui/RefreshButton';
+import { SubredditManager } from '@/components/ui/SubredditManager';
 import { Loader2, Zap, MessageSquare } from 'lucide-react';
 
 export const DashboardLayout = () => {
+  const { subreddits, updateSubreddits } = useSubredditManager();
   const { data: hackerNewsData, isLoading: hnLoading, error: hnError } = useHackerNews();
-  const { data: redditData, isLoading: redditLoading, error: redditError } = useReddit();
+  const { data: redditData, isLoading: redditLoading, error: redditError } = useReddit(subreddits);
   
   const filteredHN = useAIFilter(hackerNewsData || []);
   const filteredReddit = useAIFilter(redditData || []);
@@ -43,7 +46,13 @@ export const DashboardLayout = () => {
                 </p>
               </div>
             </div>
-            <RefreshButton />
+            <div className="flex items-center gap-3">
+              <SubredditManager 
+                subreddits={subreddits} 
+                onSubredditsChange={updateSubreddits} 
+              />
+              <RefreshButton />
+            </div>
           </div>
         </div>
       </header>
