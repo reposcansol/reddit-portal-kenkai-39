@@ -8,25 +8,30 @@ import { useColumnOrder } from '@/hooks/useColumnOrder';
 import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
+import { useSubredditManager } from '@/hooks/useSubredditManager';
 import { SortControls } from '@/components/ui/SortControls';
 import { HighlightControls } from '@/components/ui/HighlightControls';
 import { KeywordManager } from '@/components/ui/KeywordManager';
 import { CategoryManager } from '@/components/ui/CategoryManager';
+import { SubredditManager } from '@/components/ui/SubredditManager';
 import { RotateCcw } from 'lucide-react';
 
 export const RedditSourcePanel = () => {
-  const { data: redditData, isLoading, error } = useReddit();
+  const { subreddits, updateSubreddits } = useSubredditManager();
+  const { data: redditData, isLoading, error } = useReddit(subreddits);
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
 
-  // Define the default order of subreddits
-  const defaultSubredditOrder = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
-  
-  // Use the custom hook for managing column order
+  // Use the custom hook for managing column order with dynamic subreddits
   const { columnOrder, setColumnOrder, resetOrder } = useColumnOrder({
     storageKey: 'reddit-column-order',
-    defaultOrder: defaultSubredditOrder
+    defaultOrder: subreddits
   });
+
+  // Update column order when subreddits change
+  React.useEffect(() => {
+    setColumnOrder(subreddits);
+  }, [subreddits, setColumnOrder]);
 
   // Apply enhanced filtering to all posts
   const enhancedPosts = useEnhancedFilter(redditData || [], {
@@ -94,12 +99,13 @@ export const RedditSourcePanel = () => {
 
   // Force re-render key to ensure UI updates
   const renderKey = React.useMemo(() => {
-    return `${currentSort}-${preferences.enableHighlighting}-${Date.now()}`;
-  }, [currentSort, preferences.enableHighlighting]);
+    return `${currentSort}-${preferences.enableHighlighting}-${subreddits.join(',')}-${Date.now()}`;
+  }, [currentSort, preferences.enableHighlighting, subreddits]);
 
   console.log('Reddit: Current sort:', currentSort);
   console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
   console.log('Reddit: Highlighting enabled:', preferences.enableHighlighting);
+  console.log('Reddit: Active subreddits:', subreddits);
   console.log('Reddit: Render key:', renderKey);
 
   return (
@@ -119,6 +125,10 @@ export const RedditSourcePanel = () => {
           <HighlightControls />
           <KeywordManager />
           <CategoryManager />
+          <SubredditManager 
+            subreddits={subreddits}
+            onSubredditsChange={updateSubreddits}
+          />
         </div>
         
         <button

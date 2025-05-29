@@ -20,15 +20,15 @@ export interface RedditPost {
   author_flair_text?: string;
 }
 
-const fetchRedditPosts = async (): Promise<RedditPost[]> => {
+const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => {
   try {
-    const subreddits = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
     const allPosts: RedditPost[] = [];
     
     // Calculate 24 hours ago timestamp
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
     console.log('24 hours ago timestamp:', twentyFourHoursAgo);
     console.log('Current timestamp:', Math.floor(Date.now() / 1000));
+    console.log('Fetching from subreddits:', subreddits);
     
     const postsBySubreddit: Record<string, RedditPost[]> = {};
     
@@ -104,10 +104,10 @@ const fetchRedditPosts = async (): Promise<RedditPost[]> => {
   }
 };
 
-export const useReddit = () => {
+export const useReddit = (subreddits: string[]) => {
   return useQuery({
-    queryKey: ['reddit'],
-    queryFn: fetchRedditPosts,
+    queryKey: ['reddit', subreddits],
+    queryFn: () => fetchRedditPosts(subreddits),
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
   });
