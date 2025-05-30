@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { GitHubRepo } from '@/hooks/useGitHub';
-import { Star, GitFork, Code, ExternalLink } from 'lucide-react';
+import { GitFork, Code, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 
 interface EnhancedCompactGitHubCardProps {
@@ -32,28 +33,37 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
       role="article"
       aria-label={`GitHub repository: ${repo.full_name}`}
     >
-      {/* Subtle hover glow effect */}
+      {/* Hover glow effect */}
       <div className="absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
       
-      {/* Header with repository name and external link */}
+      {/* Header with title and badges */}
       <div className="flex items-start justify-between mb-2 relative z-10">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-green-300 font-mono text-sm font-semibold mb-1 truncate">
+        <div className="flex-1 min-w-0 mr-2">
+          <h3 className="text-green-300 font-mono text-sm font-semibold mb-1 line-clamp-2 leading-tight">
             {repo.name}
           </h3>
           <button
             onClick={handleOwnerClick}
-            className="text-gray-400 text-xs hover:text-green-400 transition-colors font-mono"
+            className="text-gray-400 text-xs hover:text-green-400 transition-colors font-mono block"
           >
             @{repo.owner.login}
           </button>
         </div>
-        <ExternalLink className="w-3 h-3 text-gray-500 group-hover:text-green-400 transition-colors flex-shrink-0 ml-2" />
+        
+        {/* Stars badge in top right */}
+        <div className="flex-shrink-0">
+          <Badge 
+            variant="outline" 
+            className="text-xs border-green-400/30 text-green-400 bg-green-400/10 font-mono"
+          >
+            ★ {repo.stargazers_count.toLocaleString()}
+          </Badge>
+        </div>
       </div>
 
       {/* Description */}
       {repo.description && (
-        <p className="text-gray-300 text-xs mb-3 line-clamp-2 leading-relaxed relative z-10">
+        <p className="text-gray-300 text-xs mb-3 line-clamp-3 leading-relaxed relative z-10">
           {repo.description}
         </p>
       )}
@@ -61,7 +71,7 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
       {/* Language and Topics */}
       <div className="mb-3 relative z-10">
         {repo.language && (
-          <div className="flex items-center gap-1 mb-1">
+          <div className="flex items-center gap-1 mb-2">
             <Code className="w-3 h-3 text-gray-500" />
             <span className="text-gray-400 text-xs font-mono">{repo.language}</span>
           </div>
@@ -86,30 +96,20 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
         )}
       </div>
 
-      {/* Stats and metadata */}
+      {/* Footer with metadata */}
       <div className="flex items-center justify-between text-xs text-gray-500 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <Star className="w-3 h-3" />
-            <span className="font-mono">{repo.stargazers_count.toLocaleString()}</span>
-          </div>
           <div className="flex items-center gap-1">
             <GitFork className="w-3 h-3" />
             <span className="font-mono">{repo.forks_count.toLocaleString()}</span>
           </div>
         </div>
         
-        <div className="text-xs text-gray-500 font-mono">
-          {timeAgo}
+        <div className="flex items-center gap-1 text-xs text-gray-500 font-mono">
+          <Clock className="w-3 h-3" />
+          <span>{timeAgo}</span>
         </div>
       </div>
-
-      {/* License */}
-      {repo.license && (
-        <div className="mt-2 text-xs text-gray-500 font-mono relative z-10">
-          License: {repo.license.name}
-        </div>
-      )}
     </article>
   );
 };
