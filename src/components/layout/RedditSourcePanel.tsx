@@ -14,6 +14,8 @@ import { KeywordManager } from '@/components/ui/KeywordManager';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { SubredditManager } from '@/components/ui/SubredditManager';
 import { RotateCcw } from 'lucide-react';
+import { RedditPost } from '@/hooks/useReddit';
+import { EnhancedPostExtensions } from '@/types/enhancedFilter';
 
 interface RedditSourcePanelProps {
   subreddits: string[];
@@ -58,13 +60,13 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
     
     // Group posts by subreddit
     const grouped = enhancedPosts.reduce((acc, post) => {
-      const normalizedSubreddit = post.subreddit.toLowerCase();
+      const normalizedSubreddit = post.subreddit!.toLowerCase();
       if (!acc[normalizedSubreddit]) {
         acc[normalizedSubreddit] = [];
       }
-      acc[normalizedSubreddit].push(post);
+      acc[normalizedSubreddit].push(post as RedditPost & EnhancedPostExtensions);
       return acc;
-    }, {} as Record<string, typeof enhancedPosts>);
+    }, {} as Record<string, (RedditPost & EnhancedPostExtensions)[]>);
 
     // Apply sorting to each subreddit's posts - create completely new arrays
     Object.keys(grouped).forEach(subreddit => {
@@ -74,7 +76,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
         let result = 0;
         switch (currentSort) {
           case 'newest':
-            result = b.created_utc - a.created_utc;
+            result = (b.created_utc || 0) - (a.created_utc || 0);
             break;
           case 'score':
             result = (b.score || 0) - (a.score || 0);

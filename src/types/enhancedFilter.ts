@@ -8,10 +8,24 @@ export interface KeywordCategory {
 }
 
 export interface PostLike {
-  title: string;
+  title?: string;
   score?: number;
   selftext?: string;
   subreddit?: string;
+  
+  // Reddit-specific properties
+  id?: string | number; // Allow both string (Reddit) and number (GitHub)
+  url?: string;
+  author?: string;
+  created_utc?: number;
+  num_comments?: number;
+  permalink?: string;
+  link_flair_text?: string;
+  link_flair_css_class?: string;
+  link_flair_background_color?: string;
+  link_flair_text_color?: string;
+  author_flair_text?: string;
+  
   // GitHub-specific properties
   name?: string;
   description?: string | null;
@@ -23,7 +37,6 @@ export interface PostLike {
   html_url?: string;
   full_name?: string;
   language?: string | null;
-  id?: number;
   owner?: {
     login: string;
     avatar_url: string;
