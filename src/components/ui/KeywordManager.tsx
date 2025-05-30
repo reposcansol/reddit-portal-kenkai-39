@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Settings, Plus, X, Zap, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -46,13 +47,14 @@ export const KeywordManager: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="text-xs text-green-400 hover:text-green-300 transition-colors 
-                         flex items-center gap-1 font-mono
-                         bg-black border border-green-400/30 rounded-none px-2 py-1
-                         hover:border-green-400/50">
-          <Target className="w-3 h-3" />
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="bg-black border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 font-mono rounded-none"
+        >
+          <Target className="w-4 h-4 mr-2" />
           [KEYWORDS]
-        </button>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-96 bg-black border-green-400/30 font-mono max-h-96 overflow-y-auto">
         <DropdownMenuLabel className="text-green-400">
