@@ -50,7 +50,7 @@ export const KeywordManager: React.FC = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          className="bg-black border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 font-mono rounded-none"
+          className="bg-black border border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 hover:border-green-400/50 font-mono rounded-none transition-colors"
         >
           <Target className="w-4 h-4 mr-2" />
           [KEYWORDS]
