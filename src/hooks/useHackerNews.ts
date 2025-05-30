@@ -42,16 +42,17 @@ const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
       console.log(`HN: Fetched batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(storyIds.length / batchSize)}`);
     }
     
-    // Filter for valid stories and posts from last 24 hours
+    // Filter for valid stories, posts from last 24 hours, and minimum 1 upvote
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
     
     const filteredStories = allStories.filter(story => 
       story && 
       story.title && 
-      story.time >= twentyFourHoursAgo
+      story.time >= twentyFourHoursAgo &&
+      (story.score || 0) >= 1 // Minimum 1 upvote required
     );
     
-    console.log(`HN: Filtered ${filteredStories.length} stories from last 24 hours out of ${allStories.length} total stories`);
+    console.log(`HN: Filtered ${filteredStories.length} stories from last 24 hours with ≥1 upvotes out of ${allStories.length} total stories`);
     
     // Sort by score (upvotes) in descending order
     return filteredStories.sort((a, b) => (b.score || 0) - (a.score || 0));
