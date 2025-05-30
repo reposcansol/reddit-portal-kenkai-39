@@ -8,7 +8,11 @@ export const calculateRelevanceScore = (
   primaryKeywords: string[] = [],
   secondaryKeywords: string[] = []
 ): { score: number; matchedCategories: string[]; matchedKeywords: string[] } => {
-  const text = `${post.title} ${post.selftext || ''}`.toLowerCase();
+  // Handle both Reddit posts and GitHub repos
+  const title = post.title || post.name || '';
+  const content = post.selftext || post.description || '';
+  const text = `${title} ${content}`.toLowerCase();
+  
   let score = 0;
   const matchedCategories: string[] = [];
   const matchedKeywords: string[] = [];
@@ -22,7 +26,7 @@ export const calculateRelevanceScore = (
       const keywordLower = keyword.toLowerCase();
       const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
       if (occurrences > 0) {
-        const titleWeight = post.title.toLowerCase().includes(keywordLower) ? 3 : 1;
+        const titleWeight = title.toLowerCase().includes(keywordLower) ? 3 : 1;
         categoryMatches += occurrences * titleWeight * category.weight;
         matchedKeywords.push(keyword);
       }
@@ -39,7 +43,7 @@ export const calculateRelevanceScore = (
     const keywordLower = keyword.toLowerCase();
     const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
     if (occurrences > 0) {
-      const titleWeight = post.title.toLowerCase().includes(keywordLower) ? 3 : 1;
+      const titleWeight = title.toLowerCase().includes(keywordLower) ? 3 : 1;
       score += occurrences * titleWeight * 3.0; // Primary keywords get 3x weight
       matchedKeywords.push(keyword);
     }
@@ -50,15 +54,17 @@ export const calculateRelevanceScore = (
     const keywordLower = keyword.toLowerCase();
     const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
     if (occurrences > 0) {
-      const titleWeight = post.title.toLowerCase().includes(keywordLower) ? 3 : 1;
+      const titleWeight = title.toLowerCase().includes(keywordLower) ? 3 : 1;
       score += occurrences * titleWeight * 2.0; // Secondary keywords get 2x weight
       matchedKeywords.push(keyword);
     }
   });
   
   // Boost score based on post engagement (25% of total score potential)
-  if (post.score) {
-    score += Math.log(post.score + 1) * 0.5;
+  // Handle both Reddit score and GitHub stars
+  const engagementScore = post.score || post.stargazers_count || 0;
+  if (engagementScore) {
+    score += Math.log(engagementScore + 1) * 0.5;
   }
   
   return { score, matchedCategories, matchedKeywords: [...new Set(matchedKeywords)] };

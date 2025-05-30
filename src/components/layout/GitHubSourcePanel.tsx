@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useGitHub } from '@/hooks/useGitHub';
+import { useGitHub, GitHubRepo } from '@/hooks/useGitHub';
 import { GitHubColumn } from './GitHubColumn';
 import { DraggableContainer } from './DraggableContainer';
 import { DraggableColumn } from './DraggableColumn';
@@ -13,6 +13,10 @@ import { HighlightControls } from '@/components/ui/HighlightControls';
 import { KeywordManager } from '@/components/ui/KeywordManager';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { RotateCcw } from 'lucide-react';
+import { PostLike, EnhancedPostExtensions } from '@/types/enhancedFilter';
+
+// Type for enhanced GitHub repos
+type EnhancedGitHubRepo = GitHubRepo & EnhancedPostExtensions;
 
 export const GitHubSourcePanel = () => {
   const { data: githubData, isLoading, error } = useGitHub();
@@ -28,14 +32,26 @@ export const GitHubSourcePanel = () => {
     defaultOrder: defaultColumnOrder
   });
 
+  // Convert GitHub repos to PostLike format for enhanced filtering
+  const reposAsPostLike = React.useMemo(() => {
+    if (!githubData) return [];
+    
+    return githubData.map(repo => ({
+      ...repo,
+      title: repo.name, // Map name to title for PostLike interface
+      selftext: repo.description || '', // Map description to selftext
+      score: repo.stargazers_count // Map stars to score
+    })) as (PostLike & GitHubRepo)[];
+  }, [githubData]);
+
   // Apply enhanced filtering to GitHub repos
-  const enhancedRepos = useEnhancedFilter(githubData || [], {
+  const enhancedRepos = useEnhancedFilter(reposAsPostLike, {
     categories: preferences.categories,
     enabledCategories: preferences.enabledCategories,
     highlightThreshold: preferences.highlightThreshold,
     primaryKeywords: preferences.primaryKeywords,
     secondaryKeywords: preferences.secondaryKeywords
-  });
+  }) as EnhancedGitHubRepo[];
 
   // Group GitHub repos into 4 columns with sorting applied
   const groupedRepos = React.useMemo(() => {
@@ -70,7 +86,7 @@ export const GitHubSourcePanel = () => {
     console.log(`GitHub: Sorted ${sortedRepos.length} repos by ${currentSort}`);
     
     // Distribute repos into 4 columns
-    const columns: Record<string, typeof enhancedRepos> = { '0': [], '1': [], '2': [], '3': [] };
+    const columns: Record<string, EnhancedGitHubRepo[]> = { '0': [], '1': [], '2': [], '3': [] };
     
     sortedRepos.forEach((repo, index) => {
       const columnIndex = (index % 4).toString();
