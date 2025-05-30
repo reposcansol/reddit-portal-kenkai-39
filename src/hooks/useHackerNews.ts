@@ -15,31 +15,43 @@ export interface HackerNewsPost {
 
 const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
   try {
-    // Fetch top stories IDs
+    // Fetch top stories IDs (HackerNews provides up to 500 top stories)
     const topStoriesResponse = await axios.get(
       'https://hacker-news.firebaseio.com/v0/topstories.json'
     );
     
-    const storyIds = topStoriesResponse.data.slice(0, 50); // Get first 50 stories
+    const storyIds = topStoriesResponse.data; // Get all available stories (up to 500)
+    console.log(`HN: Fetching ${storyIds.length} top stories from HackerNews`);
     
-    // Fetch individual stories
-    const storyPromises = storyIds.map(async (id: number) => {
-      const storyResponse = await axios.get(
-        `https://hacker-news.firebaseio.com/v0/item/${id}.json`
-      );
-      return storyResponse.data;
-    });
+    // Fetch individual stories in batches to avoid overwhelming the API
+    const batchSize = 50;
+    const allStories = [];
     
-    const stories = await Promise.all(storyPromises);
+    for (let i = 0; i < storyIds.length; i += batchSize) {
+      const batch = storyIds.slice(i, i + batchSize);
+      const storyPromises = batch.map(async (id: number) => {
+        const storyResponse = await axios.get(
+          `https://hacker-news.firebaseio.com/v0/item/${id}.json`
+        );
+        return storyResponse.data;
+      });
+      
+      const batchStories = await Promise.all(storyPromises);
+      allStories.push(...batchStories);
+      
+      console.log(`HN: Fetched batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(storyIds.length / batchSize)}`);
+    }
     
     // Filter for valid stories and posts from last 24 hours
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
     
-    const filteredStories = stories.filter(story => 
+    const filteredStories = allStories.filter(story => 
       story && 
       story.title && 
       story.time >= twentyFourHoursAgo
     );
+    
+    console.log(`HN: Filtered ${filteredStories.length} stories from last 24 hours out of ${allStories.length} total stories`);
     
     // Sort by score (upvotes) in descending order
     return filteredStories.sort((a, b) => (b.score || 0) - (a.score || 0));

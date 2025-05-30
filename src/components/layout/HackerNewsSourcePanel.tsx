@@ -76,17 +76,14 @@ export const HackerNewsSourcePanel = () => {
       }))
     );
     
-    // Take first 80 posts and distribute them into 4 columns of 20 each
-    const limitedPosts = sortedPosts.slice(0, 80);
+    // Distribute all available posts into 4 columns (no limit of 80 anymore)
     const columns: Record<string, typeof enhancedPosts> = { '0': [], '1': [], '2': [], '3': [] };
     
-    // Fill each column with 20 posts sequentially
-    for (let i = 0; i < limitedPosts.length; i++) {
-      const columnIndex = Math.floor(i / 20).toString();
-      if (columnIndex in columns && columns[columnIndex].length < 20) {
-        columns[columnIndex].push(limitedPosts[i]);
-      }
-    }
+    // Distribute posts evenly across columns
+    sortedPosts.forEach((post, index) => {
+      const columnIndex = (index % 4).toString();
+      columns[columnIndex].push(post);
+    });
     
     console.log('HN: Posts sorted by', currentSort, 'and distributed to columns');
     console.log('HN: Posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
