@@ -20,6 +20,29 @@ export interface RedditPost {
   author_flair_text?: string;
 }
 
+// Negative keywords to filter out
+const NEGATIVE_KEYWORDS = [
+  'help',
+  'how do you',
+  'how to',
+  'can someone',
+  'need help',
+  'please help',
+  'question',
+  'eli5',
+  'explain like',
+  'what is',
+  'why is',
+  'where is',
+  'when is',
+  'which is'
+];
+
+const containsNegativeKeywords = (text: string): boolean => {
+  const lowerText = text.toLowerCase();
+  return NEGATIVE_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
+};
+
 const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => {
   try {
     const allPosts: RedditPost[] = [];
@@ -64,17 +87,18 @@ const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => 
           .filter((post: RedditPost) => {
             const isRecent = post.created_utc >= twentyFourHoursAgo;
             const hasMinUpvotes = (post.score || 0) >= 1; // Minimum 1 upvote required
+            const hasNegativeKeywords = containsNegativeKeywords(post.title);
             const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
             
-            const included = isRecent && hasMinUpvotes;
-            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago, ${post.score} upvotes - ${included ? 'INCLUDED' : 'FILTERED OUT'} (${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : 'passed'})`);
+            const included = isRecent && hasMinUpvotes && !hasNegativeKeywords;
+            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago, ${post.score} upvotes - ${included ? 'INCLUDED' : 'FILTERED OUT'} (${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : hasNegativeKeywords ? 'contains negative keywords' : 'passed'})`);
             
             return included;
           })
           .sort((a: RedditPost, b: RedditPost) => b.score - a.score);
         
         postsBySubreddit[subreddit] = posts;
-        console.log(`r/${subreddit}: ${posts.length} posts after filtering (24h + ≥1 upvotes)`);
+        console.log(`r/${subreddit}: ${posts.length} posts after filtering (24h + ≥1 upvotes + no negative keywords)`);
         
         // Take top posts from each subreddit to ensure representation
         allPosts.push(...posts.slice(0, 15));
