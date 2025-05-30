@@ -63,14 +63,18 @@ const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => 
           }))
           .filter((post: RedditPost) => {
             const isRecent = post.created_utc >= twentyFourHoursAgo;
+            const hasMinUpvotes = (post.score || 0) >= 1; // Minimum 1 upvote required
             const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
-            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago - ${isRecent ? 'INCLUDED' : 'FILTERED OUT'}`);
-            return isRecent;
+            
+            const included = isRecent && hasMinUpvotes;
+            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago, ${post.score} upvotes - ${included ? 'INCLUDED' : 'FILTERED OUT'} (${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : 'passed'})`);
+            
+            return included;
           })
           .sort((a: RedditPost, b: RedditPost) => b.score - a.score);
         
         postsBySubreddit[subreddit] = posts;
-        console.log(`r/${subreddit}: ${posts.length} posts after filtering`);
+        console.log(`r/${subreddit}: ${posts.length} posts after filtering (24h + ≥1 upvotes)`);
         
         // Take top posts from each subreddit to ensure representation
         allPosts.push(...posts.slice(0, 15));
