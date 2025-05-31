@@ -86,6 +86,13 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
           </Badge>
         </div>
       </div>
+
+      {/* Description snippet */}
+      {repo.description && (
+        <p className="text-xs text-gray-400 mb-2 truncate font-mono">
+          {repo.description}
+        </p>
+      )}
       
       {/* Metadata */}
       <div className="flex items-center justify-between text-xs text-gray-500 font-mono">
