@@ -2,7 +2,6 @@
 import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
-import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -19,8 +18,6 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
   isLoading,
   error
 }) => {
-  const { preferences } = useHighlightPreferences();
-
   return (
     <div 
       className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
@@ -64,7 +61,6 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
               key={post.id} 
               post={post} 
               index={index}
-              showHighlighting={preferences.enableHighlighting}
             />
           ))
         )}
