@@ -18,17 +18,25 @@ import { PostLike, EnhancedPostExtensions } from '@/types/enhancedFilter';
 // Type for enhanced GitHub repos
 type EnhancedGitHubRepo = GitHubRepo & EnhancedPostExtensions;
 
+// Language mapping for columns
+const LANGUAGE_COLUMNS = {
+  'python': { id: 'python', name: 'Python', index: 0 },
+  'javascript': { id: 'javascript', name: 'JavaScript', index: 1 },
+  'typescript': { id: 'typescript', name: 'TypeScript', index: 2 },
+  'rust': { id: 'rust', name: 'Rust', index: 3 }
+};
+
 export const GitHubSourcePanel = () => {
   const { data: githubData, isLoading, error } = useGitHub();
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
 
-  // Define the default order of columns (using indices as identifiers)
-  const defaultColumnOrder = ['0', '1', '2', '3'];
+  // Define the default order of columns (using language IDs as identifiers)
+  const defaultColumnOrder = ['python', 'javascript', 'typescript', 'rust'];
   
   // Use the custom hook for managing column order
   const { columnOrder, setColumnOrder, resetOrder } = useColumnOrder({
-    storageKey: 'github-column-order',
+    storageKey: 'github-language-column-order',
     defaultOrder: defaultColumnOrder
   });
 
@@ -53,49 +61,62 @@ export const GitHubSourcePanel = () => {
     secondaryKeywords: preferences.secondaryKeywords
   }) as EnhancedGitHubRepo[];
 
-  // Group GitHub repos into 4 columns with sorting applied
+  // Group GitHub repos by language with sorting applied
   const groupedRepos = React.useMemo(() => {
-    console.log('GitHub: Recalculating groupedRepos with sort:', currentSort);
+    console.log('GitHub: Recalculating groupedRepos by language with sort:', currentSort);
     console.log('GitHub: Enhanced repos count:', enhancedRepos?.length || 0);
     
     if (!enhancedRepos || enhancedRepos.length === 0) {
-      return { '0': [], '1': [], '2': [], '3': [] };
+      return { python: [], javascript: [], typescript: [], rust: [] };
     }
     
-    // First apply sorting to all repos
-    const sortedRepos = [...enhancedRepos].sort((a, b) => {
-      let result = 0;
-      switch (currentSort) {
-        case 'newest':
-          result = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-          break;
-        case 'score':
-          result = b.stargazers_count - a.stargazers_count;
-          break;
-        case 'comments':
-          result = b.forks_count - a.forks_count;
-          break;
-        case 'relevance':
-        default:
-          result = b.relevanceScore - a.relevanceScore;
-          break;
+    // First filter and group repos by language
+    const reposByLanguage: Record<string, EnhancedGitHubRepo[]> = {
+      python: [],
+      javascript: [],
+      typescript: [],
+      rust: []
+    };
+    
+    enhancedRepos.forEach(repo => {
+      const language = repo.language?.toLowerCase();
+      if (language === 'python') {
+        reposByLanguage.python.push(repo);
+      } else if (language === 'javascript') {
+        reposByLanguage.javascript.push(repo);
+      } else if (language === 'typescript') {
+        reposByLanguage.typescript.push(repo);
+      } else if (language === 'rust') {
+        reposByLanguage.rust.push(repo);
       }
-      return result;
     });
     
-    console.log(`GitHub: Sorted ${sortedRepos.length} repos by ${currentSort}`);
-    
-    // Distribute repos into 4 columns
-    const columns: Record<string, EnhancedGitHubRepo[]> = { '0': [], '1': [], '2': [], '3': [] };
-    
-    sortedRepos.forEach((repo, index) => {
-      const columnIndex = (index % 4).toString();
-      columns[columnIndex].push(repo);
+    // Apply sorting to each language group
+    Object.keys(reposByLanguage).forEach(language => {
+      reposByLanguage[language].sort((a, b) => {
+        let result = 0;
+        switch (currentSort) {
+          case 'newest':
+            result = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            break;
+          case 'score':
+            result = b.stargazers_count - a.stargazers_count;
+            break;
+          case 'comments':
+            result = b.forks_count - a.forks_count;
+            break;
+          case 'relevance':
+          default:
+            result = b.relevanceScore - a.relevanceScore;
+            break;
+        }
+        return result;
+      });
     });
     
-    console.log('GitHub: Repos distributed to columns:', Object.entries(columns).map(([key, repos]) => `${key}: ${repos.length}`));
+    console.log(`GitHub: Repos grouped by language:`, Object.entries(reposByLanguage).map(([lang, repos]) => `${lang}: ${repos.length}`));
     
-    return columns;
+    return reposByLanguage;
   }, [enhancedRepos, currentSort]);
 
   // Force re-render key to ensure UI updates
@@ -108,7 +129,7 @@ export const GitHubSourcePanel = () => {
       className="p-4 h-full flex flex-col overflow-hidden"
       role="tabpanel"
       id="github-panel"
-      aria-label="GitHub trending repositories"
+      aria-label="GitHub trending repositories by language"
     >
       {/* Controls Header */}
       <div className="flex justify-between items-center mb-4 gap-2 flex-wrap">
@@ -140,20 +161,24 @@ export const GitHubSourcePanel = () => {
         onReorder={setColumnOrder}
         className="flex gap-4 h-full overflow-hidden"
       >
-        {columnOrder.map((columnId) => (
-          <DraggableColumn
-            key={`${columnId}-${renderKey}`}
-            id={columnId}
-            className="flex-1 min-w-0"
-          >
-            <GitHubColumn
-              columnIndex={parseInt(columnId)}
-              repos={groupedRepos[columnId] || []}
-              isLoading={isLoading}
-              error={error?.message}
-            />
-          </DraggableColumn>
-        ))}
+        {columnOrder.map((languageId) => {
+          const languageInfo = LANGUAGE_COLUMNS[languageId as keyof typeof LANGUAGE_COLUMNS];
+          return (
+            <DraggableColumn
+              key={`${languageId}-${renderKey}`}
+              id={languageId}
+              className="flex-1 min-w-0"
+            >
+              <GitHubColumn
+                columnIndex={languageInfo.index}
+                repos={groupedRepos[languageId] || []}
+                isLoading={isLoading}
+                error={error?.message}
+                languageName={languageInfo.name}
+              />
+            </DraggableColumn>
+          );
+        })}
       </DraggableContainer>
     </main>
   );

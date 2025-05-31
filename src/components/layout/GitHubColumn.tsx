@@ -9,20 +9,24 @@ interface GitHubColumnProps {
   repos: GitHubRepo[];
   isLoading: boolean;
   error?: string;
+  languageName?: string;
 }
 
 export const GitHubColumn: React.FC<GitHubColumnProps> = ({
   columnIndex,
   repos,
   isLoading,
-  error
+  error,
+  languageName
 }) => {
+  const displayTitle = languageName || `COLUMN_${columnIndex + 1}`;
+
   if (isLoading) {
     return (
       <div 
         className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
         role="region"
-        aria-label={`GitHub column ${columnIndex + 1}`}
+        aria-label={`${displayTitle} repositories`}
       >
         <div className="h-full flex items-center justify-center">
           <div className="text-center">
@@ -39,13 +43,13 @@ export const GitHubColumn: React.FC<GitHubColumnProps> = ({
       <div 
         className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
         role="region"
-        aria-label={`GitHub column ${columnIndex + 1}`}
+        aria-label={`${displayTitle} repositories`}
       >
         {/* Column Header */}
         <div className="sticky top-0 bg-black mb-2 pb-2 border-b border-green-400/20 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-green-400 font-mono">
-              [COLUMN_{columnIndex + 1}]
+              [{displayTitle.toUpperCase()}]
             </h2>
             <span className="text-xs text-gray-500 font-mono">
               0 repos
@@ -67,13 +71,13 @@ export const GitHubColumn: React.FC<GitHubColumnProps> = ({
       <div 
         className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
         role="region"
-        aria-label={`GitHub column ${columnIndex + 1}`}
+        aria-label={`${displayTitle} repositories`}
       >
         {/* Column Header */}
         <div className="sticky top-0 bg-black mb-2 pb-2 border-b border-green-400/20 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-green-400 font-mono">
-              [COLUMN_{columnIndex + 1}]
+              [{displayTitle.toUpperCase()}]
             </h2>
             <span className="text-xs text-gray-500 font-mono">
               0 repos
@@ -82,7 +86,7 @@ export const GitHubColumn: React.FC<GitHubColumnProps> = ({
         </div>
 
         <div className="h-full flex items-center justify-center">
-          <p className="text-gray-500 text-xs font-mono text-center">[NO DATA AVAILABLE]</p>
+          <p className="text-gray-500 text-xs font-mono text-center">[NO {displayTitle.toUpperCase()} REPOS]</p>
         </div>
       </div>
     );
@@ -92,13 +96,13 @@ export const GitHubColumn: React.FC<GitHubColumnProps> = ({
     <div 
       className="bg-black border border-green-400/30 rounded-none p-3 flex flex-col h-full shadow-lg shadow-green-400/10 font-mono flex-1 min-w-0 overflow-hidden"
       role="region"
-      aria-label={`GitHub column ${columnIndex + 1}`}
+      aria-label={`${displayTitle} repositories`}
     >
       {/* Column Header */}
       <div className="sticky top-0 bg-black mb-2 pb-2 border-b border-green-400/20 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-green-400 font-mono">
-            [COLUMN_{columnIndex + 1}]
+            [{displayTitle.toUpperCase()}]
           </h2>
           <span className="text-xs text-gray-500 font-mono">
             {repos.length} repos
