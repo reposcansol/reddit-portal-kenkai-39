@@ -60,7 +60,7 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
       {/* Score Badge */}
       <div className="absolute top-1 right-1">
         <Badge 
-          className={`text-xs px-1 py-0 font-mono rounded-none ${getBadgeColor(post.score)}`}
+          className={`text-xs px-1 py-0 font-mono rounded-full ${getBadgeColor(post.score)}`}
         >
           {post.score >= 1000 ? `${Math.round(post.score / 1000)}k` : post.score}
         </Badge>
