@@ -3,6 +3,7 @@ import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
 import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
+import { Badge } from '@/components/ui/badge';
 
 interface EnhancedCompactHackerNewsCardProps {
   post: HackerNewsPost & EnhancedPostExtensions;
@@ -11,7 +12,7 @@ interface EnhancedCompactHackerNewsCardProps {
 
 export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCardProps> = ({ 
   post, 
-  index
+  index 
 }) => {
   const formatTimeAgo = (timestamp: number) => {
     const now = Math.floor(Date.now() / 1000);
@@ -32,9 +33,19 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
     }
   };
 
+  // Calculate badge color based on score
+  const getBadgeColor = (score: number) => {
+    if (score >= 500) return 'bg-green-500 text-white border-green-500';
+    if (score >= 200) return 'bg-green-400 text-white border-green-400';
+    if (score >= 100) return 'bg-green-300 text-black border-green-300';
+    if (score >= 50) return 'bg-green-200 text-black border-green-200';
+    if (score >= 20) return 'bg-green-100 text-black border-green-100';
+    return 'bg-gray-200 text-black border-gray-200';
+  };
+
   return (
     <div 
-      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono hover:border-green-400"
+      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:border-green-400 hover:shadow-green-400/20 shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono relative"
       onClick={handleClick}
       tabIndex={0}
       role="article"
@@ -46,14 +57,19 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
         }
       }}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex-1">
-          <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight group-hover:text-green-200 transition-colors">
-            {post.title}
-          </h3>
-        </div>
+      {/* Score Badge */}
+      <div className="absolute top-1 right-1">
+        <Badge 
+          className={`text-xs px-1 py-0 font-mono rounded-none ${getBadgeColor(post.score)}`}
+        >
+          {post.score >= 1000 ? `${Math.round(post.score / 1000)}k` : post.score}
+        </Badge>
       </div>
+
+      {/* Title */}
+      <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight mb-2 group-hover:text-green-200 transition-colors pr-12">
+        {post.title}
+      </h3>
       
       {/* Metadata */}
       <div className="flex items-center justify-between text-xs text-gray-500 font-mono">

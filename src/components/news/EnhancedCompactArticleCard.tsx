@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Tag } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,7 @@ interface EnhancedCompactArticleCardProps {
 
 export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProps> = ({ 
   post, 
-  index
+  index 
 }) => {
   const formatTimeAgo = (timestamp: number) => {
     const now = Math.floor(Date.now() / 1000);
@@ -29,69 +29,19 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
     window.open(post.permalink, '_blank', 'noopener,noreferrer');
   };
 
-  // Function to determine if a color is light or dark
-  const isLightColor = (hexColor: string): boolean => {
-    if (!hexColor || hexColor === 'transparent' || hexColor === '') return false;
-    
-    // Handle different color formats
-    let hex = hexColor;
-    
-    // Remove # if present
-    if (hex.startsWith('#')) {
-      hex = hex.substring(1);
-    }
-    
-    // Handle 3-digit hex codes
-    if (hex.length === 3) {
-      hex = hex.split('').map(char => char + char).join('');
-    }
-    
-    // Must be 6 digits for valid hex
-    if (hex.length !== 6) return false;
-    
-    // Convert to RGB
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    
-    // Check if values are valid
-    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
-    
-    // Calculate luminance using standard formula
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
-    // Return true if light (luminance > 0.5)
-    return luminance > 0.5;
-  };
-
-  const getFlairBadge = () => {
-    if (!post.link_flair_text) return null;
-
-    const backgroundColor = post.link_flair_background_color || '#374151';
-    
-    // Simple rule: if background is light, use black text. If dark, use white text.
-    const isBackgroundLight = isLightColor(backgroundColor);
-    const textColor = isBackgroundLight ? '#000000' : '#ffffff';
-
-    const flairStyle = {
-      backgroundColor,
-      color: textColor
-    };
-
-    return (
-      <Badge 
-        className="text-xs font-mono px-2 py-0.5 border-0 inline-flex items-center"
-        style={flairStyle}
-      >
-        <Tag className="w-2 h-2 mr-1" />
-        {post.link_flair_text}
-      </Badge>
-    );
+  // Calculate badge color based on score
+  const getBadgeColor = (score: number) => {
+    if (score >= 1000) return 'bg-green-500 text-white border-green-500';
+    if (score >= 500) return 'bg-green-400 text-white border-green-400';
+    if (score >= 200) return 'bg-green-300 text-black border-green-300';
+    if (score >= 100) return 'bg-green-200 text-black border-green-200';
+    if (score >= 50) return 'bg-green-100 text-black border-green-100';
+    return 'bg-gray-200 text-black border-gray-200';
   };
 
   return (
     <div 
-      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono hover:border-green-400"
+      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:border-green-400 hover:shadow-green-400/20 shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono relative"
       onClick={handleClick}
       tabIndex={0}
       role="article"
@@ -103,14 +53,19 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
         }
       }}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex-1">
-          <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight group-hover:text-green-200 transition-colors">
-            {post.title}
-          </h3>
-        </div>
+      {/* Score Badge */}
+      <div className="absolute top-1 right-1">
+        <Badge 
+          className={`text-xs px-1 py-0 font-mono rounded-none ${getBadgeColor(post.score)}`}
+        >
+          {post.score >= 1000 ? `${Math.round(post.score / 1000)}k` : post.score}
+        </Badge>
       </div>
+
+      {/* Title */}
+      <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight mb-2 group-hover:text-green-200 transition-colors pr-12">
+        {post.title}
+      </h3>
       
       {/* Metadata */}
       <div className="flex items-center justify-between text-xs text-gray-500 font-mono">
@@ -134,18 +89,6 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
         <div className="flex items-center gap-1 truncate">
           <span className="text-amber-400 truncate">@{post.author}</span>
           <ExternalLink className="w-3 h-3 group-hover:text-green-400 transition-colors flex-shrink-0" />
-        </div>
-      </div>
-
-      {/* Flair row at bottom left */}
-      <div className="mt-2 flex items-center justify-between">
-        <div className="flex items-center gap-2 flex-wrap">
-          {getFlairBadge()}
-          {post.author_flair_text && (
-            <Badge className="text-xs font-mono px-1.5 py-0.5 bg-purple-600 text-purple-100 inline-flex items-center">
-              {post.author_flair_text}
-            </Badge>
-          )}
         </div>
       </div>
     </div>
