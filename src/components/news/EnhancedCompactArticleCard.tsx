@@ -62,21 +62,6 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
         </Badge>
       </div>
 
-      {/* Flair */}
-      {post.link_flair_text && (
-        <div className="mb-1">
-          <span 
-            className="text-xs px-1 py-0.5 rounded text-gray-300 bg-gray-700 border border-gray-600 font-mono"
-            style={{
-              backgroundColor: post.link_flair_background_color || undefined,
-              color: post.link_flair_text_color || undefined
-            }}
-          >
-            {post.link_flair_text}
-          </span>
-        </div>
-      )}
-
       {/* Title */}
       <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight mb-2 group-hover:text-green-200 transition-colors pr-12">
         {post.title}
@@ -106,6 +91,21 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
           <ExternalLink className="w-3 h-3 group-hover:text-green-400 transition-colors flex-shrink-0" />
         </div>
       </div>
+
+      {/* Flair badge at bottom left */}
+      {post.link_flair_text && (
+        <div className="mt-2 flex items-center justify-start">
+          <Badge 
+            className="text-xs font-mono px-2 py-0.5 rounded-full border-0"
+            style={{
+              backgroundColor: post.link_flair_background_color || '#374151',
+              color: post.link_flair_text_color || '#d1d5db'
+            }}
+          >
+            {post.link_flair_text}
+          </Badge>
+        </div>
+      )}
     </div>
   );
 };
