@@ -31,6 +31,21 @@ interface GitHubRepoWithTrending extends GitHubRepo {
   daysSinceCreation: number;
 }
 
+// AI-related programming languages
+const AI_LANGUAGES = [
+  'Python',
+  'JavaScript',
+  'TypeScript',
+  'Go',
+  'Rust',
+  'Julia',
+  'R',
+  'Scala',
+  'C++', // Used for ML frameworks like PyTorch C++ backend
+  'Swift', // Swift for TensorFlow
+  'Jupyter Notebook' // Often shows up as a language for AI notebooks
+];
+
 // Negative keywords to filter out
 const NEGATIVE_KEYWORDS = [
   'help',
@@ -59,6 +74,11 @@ const NEGATIVE_KEYWORDS = [
 const containsNegativeKeywords = (text: string): boolean => {
   const lowerText = text.toLowerCase();
   return NEGATIVE_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
+};
+
+const isAIRelatedLanguage = (language: string | null): boolean => {
+  if (!language) return false;
+  return AI_LANGUAGES.includes(language);
 };
 
 const calculateTrendingScore = (repo: GitHubRepo): { trendingScore: number; starVelocity: number; daysSinceCreation: number } => {
@@ -107,16 +127,23 @@ const fetchTrendingRepos = async (): Promise<GitHubRepo[]> => {
     yesterday.setDate(yesterday.getDate() - 1);
     const dateQuery = yesterday.toISOString().split('T')[0];
     
-    console.log('GitHub: Fetching trending repos with recent activity in last 24 hours');
+    console.log('GitHub: Fetching trending AI-related repos with recent activity in last 24 hours');
     
-    // Multiple search strategies to get comprehensive trending results
+    // Multiple search strategies to get comprehensive trending results for AI languages
     const searchQueries = [
-      // Recently pushed repos with decent stars (catching momentum)
-      `pushed:>${dateQuery} stars:10..1000 sort:stars`,
+      // Recently pushed repos with decent stars (catching momentum) - AI languages
+      `pushed:>${dateQuery} stars:10..1000 language:Python sort:stars`,
+      `pushed:>${dateQuery} stars:10..1000 language:JavaScript sort:stars`,
+      `pushed:>${dateQuery} stars:10..1000 language:TypeScript sort:stars`,
+      `pushed:>${dateQuery} stars:10..1000 language:Go sort:stars`,
+      `pushed:>${dateQuery} stars:10..1000 language:Rust sort:stars`,
       // Popular repos with recent activity (established repos trending again)
-      `pushed:>${dateQuery} stars:>100 sort:updated`,
-      // Newer repos (last 7 days) with good traction
-      `created:>${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]} stars:>5 pushed:>${dateQuery} sort:stars`
+      `pushed:>${dateQuery} stars:>100 language:Python sort:updated`,
+      `pushed:>${dateQuery} stars:>100 language:JavaScript sort:updated`,
+      `pushed:>${dateQuery} stars:>100 language:TypeScript sort:updated`,
+      // Newer repos (last 7 days) with good traction in AI languages
+      `created:>${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]} stars:>5 pushed:>${dateQuery} language:Python sort:stars`,
+      `created:>${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]} stars:>5 pushed:>${dateQuery} language:JavaScript sort:stars`
     ];
     
     const allRepos: GitHubRepo[] = [];
@@ -153,28 +180,30 @@ const fetchTrendingRepos = async (): Promise<GitHubRepo[]> => {
     
     console.log(`GitHub: Collected ${allRepos.length} unique repositories`);
     
-    // Filter repositories with quality requirements
+    // Filter repositories with quality requirements and AI language focus
     const filteredRepos = allRepos.filter((repo: GitHubRepo) => {
       const hasMinStars = repo.stargazers_count >= 5; // Minimum 5 stars
       const hasDescription = repo.description && repo.description.length > 10;
       const hasNegativeKeywords = containsNegativeKeywords(repo.description || '') || 
                                   containsNegativeKeywords(repo.name);
       const hasRecentActivity = new Date(repo.pushed_at) > yesterday;
+      const isAILanguage = isAIRelatedLanguage(repo.language);
       
-      const included = hasMinStars && hasDescription && !hasNegativeKeywords && hasRecentActivity;
+      const included = hasMinStars && hasDescription && !hasNegativeKeywords && hasRecentActivity && isAILanguage;
       
       if (!included) {
         const reason = !hasMinStars ? 'insufficient stars' : 
                       !hasDescription ? 'no/short description' : 
                       hasNegativeKeywords ? 'contains negative keywords' :
-                      !hasRecentActivity ? 'no recent activity' : 'unknown';
+                      !hasRecentActivity ? 'no recent activity' :
+                      !isAILanguage ? `not AI language (${repo.language})` : 'unknown';
         console.log(`GitHub: Filtered out "${repo.name}" - ${reason}`);
       }
       
       return included;
     });
     
-    console.log(`GitHub: Filtered to ${filteredRepos.length} quality repos`);
+    console.log(`GitHub: Filtered to ${filteredRepos.length} AI-related repos`);
     
     // Calculate trending scores for all repos
     const reposWithTrending: GitHubRepoWithTrending[] = filteredRepos.map(repo => {
@@ -190,9 +219,9 @@ const fetchTrendingRepos = async (): Promise<GitHubRepo[]> => {
       .sort((a, b) => b.trendingScore - a.trendingScore)
       .slice(0, 100); // Limit to top 100 trending repos
     
-    console.log(`GitHub: Top trending repos by score:`);
+    console.log(`GitHub: Top trending AI repos by score:`);
     sortedRepos.slice(0, 10).forEach((repo, i) => {
-      console.log(`${i + 1}. ${repo.name} - Score: ${repo.trendingScore.toFixed(2)}, Velocity: ${repo.starVelocity.toFixed(2)} stars/day, Age: ${repo.daysSinceCreation.toFixed(1)} days`);
+      console.log(`${i + 1}. ${repo.name} (${repo.language}) - Score: ${repo.trendingScore.toFixed(2)}, Velocity: ${repo.starVelocity.toFixed(2)} stars/day, Age: ${repo.daysSinceCreation.toFixed(1)} days`);
     });
     
     // Return repos without the trending metadata (keep original interface)
