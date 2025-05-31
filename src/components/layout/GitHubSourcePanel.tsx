@@ -144,7 +144,7 @@ export const GitHubSourcePanel = () => {
           <DraggableColumn
             key={`${columnId}-${renderKey}`}
             id={columnId}
-            className="w-1/4"
+            className="flex-1 min-w-0"
           >
             <GitHubColumn
               columnIndex={parseInt(columnId)}
