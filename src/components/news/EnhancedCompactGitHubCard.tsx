@@ -123,7 +123,7 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
       {repo.language && (
         <div className="mt-2 flex items-center justify-start">
           <Badge 
-            className={`text-xs font-mono px-2 py-0.5 ${getLanguageColor(repo.language)}`}
+            className={`text-xs font-mono px-2 py-0.5 rounded-full border-0 ${getLanguageColor(repo.language)}`}
           >
             {repo.language}
           </Badge>
