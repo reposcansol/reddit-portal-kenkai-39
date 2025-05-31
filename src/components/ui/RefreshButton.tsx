@@ -41,6 +41,12 @@ export const RefreshButton = () => {
 
   return (
     <div className="flex items-center gap-3">
+      {lastRefreshed && (
+        <span className="text-xs text-gray-500 font-mono">
+          [LAST_REFRESHED: {formatTime(lastRefreshed)}]
+        </span>
+      )}
+      
       <Button
         variant="outline"
         size="sm"
@@ -53,12 +59,6 @@ export const RefreshButton = () => {
         />
         {isRefreshing ? '[REFRESHING...]' : '[REFRESH]'}
       </Button>
-      
-      {lastRefreshed && (
-        <span className="text-xs text-gray-500 font-mono">
-          [LAST_REFRESHED: {formatTime(lastRefreshed)}]
-        </span>
-      )}
     </div>
   );
 };
