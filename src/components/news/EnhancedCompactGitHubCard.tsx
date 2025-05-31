@@ -2,7 +2,6 @@
 import React from 'react';
 import { GitHubRepo } from '@/hooks/useGitHub';
 import { GitFork, Code, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 
 interface EnhancedCompactGitHubCardProps {
@@ -25,91 +24,60 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
     window.open(repo.owner.html_url, '_blank', 'noopener,noreferrer');
   };
 
+  const formatTimeAgo = (timestamp: string) => {
+    const now = Date.now();
+    const createdTime = new Date(timestamp).getTime();
+    const diff = Math.floor((now - createdTime) / 1000);
+    const hours = Math.floor(diff / 3600);
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) return `${days}d`;
+    if (hours > 0) return `${hours}h`;
+    return 'now';
+  };
+
   return (
-    <article 
-      className="bg-black border border-green-500/30 p-3 hover:border-green-400/50 
-                 transition-all duration-200 cursor-pointer group relative overflow-hidden"
+    <div 
+      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:border-green-400 hover:shadow-green-400/20 shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono"
       onClick={handleCardClick}
+      tabIndex={0}
       role="article"
-      aria-label={`GitHub repository: ${repo.full_name}`}
+      aria-label={`${repo.name} by ${repo.owner.login}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
     >
-      {/* Hover glow effect */}
-      <div className="absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+      {/* Title */}
+      <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight mb-2 group-hover:text-green-200 transition-colors">
+        {repo.name}
+      </h3>
       
-      {/* Header with title and badges */}
-      <div className="flex items-start justify-between mb-2 relative z-10">
-        <div className="flex-1 min-w-0 mr-2">
-          <h3 className="text-green-300 font-mono text-sm font-semibold mb-1 line-clamp-2 leading-tight">
-            {repo.name}
-          </h3>
-          <button
-            onClick={handleOwnerClick}
-            className="text-gray-400 text-xs hover:text-green-400 transition-colors font-mono block"
-          >
-            @{repo.owner.login}
-          </button>
-        </div>
-        
-        {/* Stars badge in top right */}
-        <div className="flex-shrink-0">
-          <Badge 
-            variant="outline" 
-            className="text-xs border-green-400/30 text-green-400 bg-green-400/10 font-mono"
-          >
-            ★ {repo.stargazers_count.toLocaleString()}
-          </Badge>
-        </div>
-      </div>
-
-      {/* Description */}
-      {repo.description && (
-        <p className="text-gray-300 text-xs mb-3 line-clamp-3 leading-relaxed relative z-10">
-          {repo.description}
-        </p>
-      )}
-
-      {/* Language and Topics */}
-      <div className="mb-3 relative z-10">
-        {repo.language && (
-          <div className="flex items-center gap-1 mb-2">
-            <Code className="w-3 h-3 text-gray-500" />
-            <span className="text-gray-400 text-xs font-mono">{repo.language}</span>
-          </div>
-        )}
-        
-        {repo.topics && repo.topics.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {repo.topics.slice(0, 3).map((topic) => (
-              <span
-                key={topic}
-                className="text-xs bg-green-900/20 text-green-400 px-1.5 py-0.5 font-mono border border-green-400/20"
-              >
-                {topic}
-              </span>
-            ))}
-            {repo.topics.length > 3 && (
-              <span className="text-xs text-gray-500 font-mono">
-                +{repo.topics.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Footer with metadata */}
-      <div className="flex items-center justify-between text-xs text-gray-500 relative z-10">
+      {/* Metadata */}
+      <div className="flex items-center justify-between text-xs text-gray-500 font-mono">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <GitFork className="w-3 h-3" />
-            <span className="font-mono">{repo.forks_count.toLocaleString()}</span>
+          <div 
+            className="flex items-center gap-1 text-green-400"
+            aria-label={`${repo.stargazers_count} stars`}
+          >
+            <span>[+{repo.stargazers_count.toLocaleString()}]</span>
+          </div>
+          
+          <div className="flex items-center gap-1 text-amber-400">
+            <span>({repo.forks_count.toLocaleString()})</span>
+          </div>
+          
+          <div className="flex items-center gap-1 text-gray-400">
+            <span>{formatTimeAgo(repo.created_at)}</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-1 text-xs text-gray-500 font-mono">
-          <Clock className="w-3 h-3" />
-          <span>{timeAgo}</span>
+        <div className="flex items-center gap-1 truncate">
+          <span className="text-amber-400 truncate">@{repo.owner.login}</span>
         </div>
       </div>
-    </article>
+    </div>
   );
 };
