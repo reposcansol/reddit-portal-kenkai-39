@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { GitHubRepo } from '@/hooks/useGitHub';
-import { GitFork, Code, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { ExternalLink } from 'lucide-react';
 
 interface EnhancedCompactGitHubCardProps {
   repo: GitHubRepo;
@@ -13,21 +12,10 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
   repo,
   index
 }) => {
-  const timeAgo = formatDistanceToNow(new Date(repo.created_at), { addSuffix: true });
-
-  const handleCardClick = () => {
-    window.open(repo.html_url, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleOwnerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    window.open(repo.owner.html_url, '_blank', 'noopener,noreferrer');
-  };
-
   const formatTimeAgo = (timestamp: string) => {
-    const now = Date.now();
-    const createdTime = new Date(timestamp).getTime();
-    const diff = Math.floor((now - createdTime) / 1000);
+    const now = Math.floor(Date.now() / 1000);
+    const createdTime = Math.floor(new Date(timestamp).getTime() / 1000);
+    const diff = now - createdTime;
     const hours = Math.floor(diff / 3600);
     const days = Math.floor(hours / 24);
     
@@ -36,17 +24,21 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
     return 'now';
   };
 
+  const handleClick = () => {
+    window.open(repo.html_url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div 
       className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:border-green-400 hover:shadow-green-400/20 shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono"
-      onClick={handleCardClick}
+      onClick={handleClick}
       tabIndex={0}
       role="article"
       aria-label={`${repo.name} by ${repo.owner.login}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleCardClick();
+          handleClick();
         }
       }}
     >
@@ -76,6 +68,7 @@ export const EnhancedCompactGitHubCard: React.FC<EnhancedCompactGitHubCardProps>
         
         <div className="flex items-center gap-1 truncate">
           <span className="text-amber-400 truncate">@{repo.owner.login}</span>
+          <ExternalLink className="w-3 h-3 group-hover:text-green-400 transition-colors flex-shrink-0" />
         </div>
       </div>
     </div>
