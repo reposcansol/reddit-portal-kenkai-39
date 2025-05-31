@@ -4,9 +4,7 @@ import { KeywordCategory, PostLike } from '@/types/enhancedFilter';
 export const calculateRelevanceScore = (
   post: PostLike, 
   categories: KeywordCategory[], 
-  enabledCategories: string[],
-  primaryKeywords: string[] = [],
-  secondaryKeywords: string[] = []
+  enabledCategories: string[]
 ): { score: number; matchedCategories: string[]; matchedKeywords: string[] } => {
   // Handle both Reddit posts and GitHub repos
   const title = post.title || post.name || '';
@@ -35,28 +33,6 @@ export const calculateRelevanceScore = (
     if (categoryMatches > 0) {
       matchedCategories.push(category.id);
       score += categoryMatches;
-    }
-  });
-  
-  // Check primary keywords (3x weight)
-  primaryKeywords.forEach(keyword => {
-    const keywordLower = keyword.toLowerCase();
-    const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
-    if (occurrences > 0) {
-      const titleWeight = title.toLowerCase().includes(keywordLower) ? 3 : 1;
-      score += occurrences * titleWeight * 3.0; // Primary keywords get 3x weight
-      matchedKeywords.push(keyword);
-    }
-  });
-  
-  // Check secondary keywords (2x weight)
-  secondaryKeywords.forEach(keyword => {
-    const keywordLower = keyword.toLowerCase();
-    const occurrences = (text.match(new RegExp(keywordLower, 'g')) || []).length;
-    if (occurrences > 0) {
-      const titleWeight = title.toLowerCase().includes(keywordLower) ? 3 : 1;
-      score += occurrences * titleWeight * 2.0; // Secondary keywords get 2x weight
-      matchedKeywords.push(keyword);
     }
   });
   

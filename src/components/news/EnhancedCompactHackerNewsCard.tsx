@@ -1,20 +1,17 @@
 
 import React from 'react';
-import { ExternalLink, Zap } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { HackerNewsPost } from '@/hooks/useHackerNews';
 import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
-import { Badge } from '@/components/ui/badge';
 
 interface EnhancedCompactHackerNewsCardProps {
   post: HackerNewsPost & EnhancedPostExtensions;
   index: number;
-  showHighlighting: boolean;
 }
 
 export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCardProps> = ({ 
   post, 
-  index,
-  showHighlighting 
+  index
 }) => {
   const formatTimeAgo = (timestamp: number) => {
     const now = Math.floor(Date.now() / 1000);
@@ -35,41 +32,9 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
     }
   };
 
-  const getHighlightStyles = () => {
-    if (!showHighlighting || post.relevancePercentage < 20) {
-      return "border-green-400/30 hover:border-green-400";
-    }
-
-    if (post.relevancePercentage >= 75) {
-      return "border-amber-400 shadow-amber-400/20 bg-amber-900/10 hover:border-amber-300";
-    } else if (post.relevancePercentage >= 50) {
-      return "border-blue-400 shadow-blue-400/20 bg-blue-900/10 hover:border-blue-300";
-    } else {
-      return "border-green-500 shadow-green-500/20 bg-green-900/10 hover:border-green-400";
-    }
-  };
-
-  const getRelevanceBadge = () => {
-    if (!showHighlighting || post.relevancePercentage < 20) return null;
-
-    const colors = post.relevancePercentage >= 75
-      ? 'bg-amber-500 text-amber-900'
-      : post.relevancePercentage >= 50
-      ? 'bg-blue-500 text-blue-900'
-      : 'bg-green-500 text-green-900';
-
-    return (
-      <Badge 
-        className={`text-xs font-mono px-1 py-0 ${colors}`}
-      >
-        {post.relevancePercentage}%
-      </Badge>
-    );
-  };
-
   return (
     <div 
-      className={`p-2 bg-gray-900 border rounded-none hover:shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono ${getHighlightStyles()}`}
+      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono hover:border-green-400"
       onClick={handleClick}
       tabIndex={0}
       role="article"
@@ -81,18 +46,12 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
         }
       }}
     >
-      {/* Header with relevance indicator */}
+      {/* Header */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight group-hover:text-green-200 transition-colors">
             {post.title}
           </h3>
-        </div>
-        <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-          {showHighlighting && post.relevancePercentage > 0 && (
-            <Zap className="w-3 h-3 text-amber-400" />
-          )}
-          {getRelevanceBadge()}
         </div>
       </div>
       
@@ -122,19 +81,6 @@ export const EnhancedCompactHackerNewsCard: React.FC<EnhancedCompactHackerNewsCa
           <ExternalLink className="w-3 h-3 group-hover:text-green-400 transition-colors flex-shrink-0" />
         </div>
       </div>
-
-      {/* Relevance info */}
-      {showHighlighting && post.relevancePercentage > 0 && (
-        <div className="mt-1 text-xs text-gray-400 font-mono">
-          Score: {post.relevancePercentage}%
-          {post.matchedKeywords && post.matchedKeywords.length > 0 && (
-            <span className="ml-2">
-              Keywords: {post.matchedKeywords.slice(0, 3).join(', ')}
-              {post.matchedKeywords.length > 3 && '...'}
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 };

@@ -9,8 +9,6 @@ import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { SortControls } from '@/components/ui/SortControls';
-import { HighlightControls } from '@/components/ui/HighlightControls';
-import { KeywordManager } from '@/components/ui/KeywordManager';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { RotateCcw } from 'lucide-react';
 
@@ -31,17 +29,13 @@ export const HackerNewsSourcePanel = () => {
   // Apply enhanced filtering to HackerNews posts
   const enhancedPosts = useEnhancedFilter(hackerNewsData || [], {
     categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories,
-    highlightThreshold: preferences.highlightThreshold,
-    primaryKeywords: preferences.primaryKeywords,
-    secondaryKeywords: preferences.secondaryKeywords
+    enabledCategories: preferences.enabledCategories
   });
 
   // Group HackerNews posts into 4 columns with sorting applied
   const groupedPosts = React.useMemo(() => {
     console.log('HN: Recalculating groupedPosts with sort:', currentSort);
     console.log('HN: Enhanced posts count:', enhancedPosts?.length || 0);
-    console.log('HN: Highlight preferences:', preferences.enableHighlighting);
     
     if (!enhancedPosts || enhancedPosts.length === 0) {
       return { '0': [], '1': [], '2': [], '3': [] };
@@ -69,14 +63,8 @@ export const HackerNewsSourcePanel = () => {
     });
     
     console.log(`HN: Sorted ${sortedPosts.length} posts by ${currentSort}`);
-    console.log(`HN: Top 5 post scores:`, 
-      sortedPosts.slice(0, 5).map(p => ({ 
-        title: p.title.slice(0, 30), 
-        score: currentSort === 'score' ? p.score : currentSort === 'comments' ? p.descendants : currentSort === 'newest' ? p.time : p.relevanceScore 
-      }))
-    );
     
-    // Distribute all available posts into 4 columns (no limit of 80 anymore)
+    // Distribute all available posts into 4 columns
     const columns: Record<string, typeof enhancedPosts> = { '0': [], '1': [], '2': [], '3': [] };
     
     // Distribute posts evenly across columns
@@ -89,16 +77,7 @@ export const HackerNewsSourcePanel = () => {
     console.log('HN: Posts per column:', Object.entries(columns).map(([key, posts]) => `${key}: ${posts.length}`));
     
     return columns;
-  }, [enhancedPosts, currentSort, preferences.enableHighlighting]); // Added preferences dependency for highlighting
-
-  // Force re-render key to ensure UI updates
-  const renderKey = React.useMemo(() => {
-    return `${currentSort}-${preferences.enableHighlighting}-${Date.now()}`;
-  }, [currentSort, preferences.enableHighlighting]);
-
-  console.log('HN: Current sort:', currentSort);
-  console.log('HN: Highlighting enabled:', preferences.enableHighlighting);
-  console.log('HN: Render key:', renderKey);
+  }, [enhancedPosts, currentSort]);
 
   return (
     <main 
@@ -114,8 +93,6 @@ export const HackerNewsSourcePanel = () => {
             currentSort={currentSort}
             onSortChange={setCurrentSort}
           />
-          <HighlightControls />
-          <KeywordManager />
           <CategoryManager />
         </div>
         
@@ -139,7 +116,7 @@ export const HackerNewsSourcePanel = () => {
       >
         {columnOrder.map((columnId) => (
           <DraggableColumn
-            key={`${columnId}-${renderKey}`}
+            key={columnId}
             id={columnId}
             className="w-1/4"
           >

@@ -9,8 +9,6 @@ import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { SortControls } from '@/components/ui/SortControls';
-import { HighlightControls } from '@/components/ui/HighlightControls';
-import { KeywordManager } from '@/components/ui/KeywordManager';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { SubredditManager } from '@/components/ui/SubredditManager';
 import { RotateCcw } from 'lucide-react';
@@ -44,17 +42,13 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
   // Apply enhanced filtering to all posts
   const enhancedPosts = useEnhancedFilter(redditData || [], {
     categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories,
-    highlightThreshold: preferences.highlightThreshold,
-    primaryKeywords: preferences.primaryKeywords,
-    secondaryKeywords: preferences.secondaryKeywords
+    enabledCategories: preferences.enabledCategories
   });
 
   // Group posts by subreddit and apply sorting with force re-calculation
   const postsBySubreddit = React.useMemo(() => {
     console.log('Reddit: Recalculating postsBySubreddit with sort:', currentSort);
     console.log('Reddit: Enhanced posts count:', enhancedPosts?.length || 0);
-    console.log('Reddit: Highlight preferences:', preferences.enableHighlighting);
     
     if (!enhancedPosts || enhancedPosts.length === 0) return {};
     
@@ -93,28 +87,11 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
       });
       
       console.log(`Reddit: Sorted ${subreddit} posts (${originalLength} items) by ${currentSort}`);
-      console.log(`Reddit: First 3 ${subreddit} post scores:`, 
-        grouped[subreddit].slice(0, 3).map(p => ({ 
-          title: p.title.slice(0, 30), 
-          score: currentSort === 'score' ? p.score : currentSort === 'comments' ? p.num_comments : currentSort === 'newest' ? p.created_utc : p.relevanceScore 
-        }))
-      );
     });
 
     console.log('Reddit: Posts grouped and sorted by', currentSort);
     return grouped;
-  }, [enhancedPosts, currentSort, preferences.enableHighlighting]); // Added preferences dependency for highlighting
-
-  // Force re-render key to ensure UI updates
-  const renderKey = React.useMemo(() => {
-    return `${currentSort}-${preferences.enableHighlighting}-${subreddits.join(',')}-${Date.now()}`;
-  }, [currentSort, preferences.enableHighlighting, subreddits]);
-
-  console.log('Reddit: Current sort:', currentSort);
-  console.log('Reddit: Posts by subreddit keys:', Object.keys(postsBySubreddit));
-  console.log('Reddit: Highlighting enabled:', preferences.enableHighlighting);
-  console.log('Reddit: Active subreddits:', subreddits);
-  console.log('Reddit: Render key:', renderKey);
+  }, [enhancedPosts, currentSort]);
 
   return (
     <main 
@@ -130,8 +107,6 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
             currentSort={currentSort}
             onSortChange={setCurrentSort}
           />
-          <HighlightControls />
-          <KeywordManager />
           <CategoryManager />
           <SubredditManager 
             subreddits={subreddits}
@@ -159,7 +134,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
-            key={`${subreddit}-${renderKey}`}
+            key={subreddit}
             id={subreddit}
             className="w-1/4"
           >

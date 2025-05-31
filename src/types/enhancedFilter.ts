@@ -59,7 +59,4 @@ export interface EnhancedPostExtensions {
 export interface UseEnhancedFilterOptions {
   categories: KeywordCategory[];
   enabledCategories: string[];
-  highlightThreshold: number;
-  primaryKeywords: string[];
-  secondaryKeywords: string[];
 }

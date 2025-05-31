@@ -9,8 +9,6 @@ import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { SortControls } from '@/components/ui/SortControls';
-import { HighlightControls } from '@/components/ui/HighlightControls';
-import { KeywordManager } from '@/components/ui/KeywordManager';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { RotateCcw } from 'lucide-react';
 import { PostLike, EnhancedPostExtensions } from '@/types/enhancedFilter';
@@ -55,10 +53,7 @@ export const GitHubSourcePanel = () => {
   // Apply enhanced filtering to GitHub repos
   const enhancedRepos = useEnhancedFilter(reposAsPostLike, {
     categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories,
-    highlightThreshold: preferences.highlightThreshold,
-    primaryKeywords: preferences.primaryKeywords,
-    secondaryKeywords: preferences.secondaryKeywords
+    enabledCategories: preferences.enabledCategories
   }) as EnhancedGitHubRepo[];
 
   // Group GitHub repos by language with sorting applied
@@ -119,11 +114,6 @@ export const GitHubSourcePanel = () => {
     return reposByLanguage;
   }, [enhancedRepos, currentSort]);
 
-  // Force re-render key to ensure UI updates
-  const renderKey = React.useMemo(() => {
-    return `${currentSort}-${preferences.enableHighlighting}-${Date.now()}`;
-  }, [currentSort, preferences.enableHighlighting]);
-
   return (
     <main 
       className="p-4 h-full flex flex-col overflow-hidden"
@@ -138,8 +128,6 @@ export const GitHubSourcePanel = () => {
             currentSort={currentSort}
             onSortChange={setCurrentSort}
           />
-          <HighlightControls />
-          <KeywordManager />
           <CategoryManager />
         </div>
         
@@ -165,7 +153,7 @@ export const GitHubSourcePanel = () => {
           const languageInfo = LANGUAGE_COLUMNS[languageId as keyof typeof LANGUAGE_COLUMNS];
           return (
             <DraggableColumn
-              key={`${languageId}-${renderKey}`}
+              key={languageId}
               id={languageId}
               className="flex-1 min-w-0"
             >

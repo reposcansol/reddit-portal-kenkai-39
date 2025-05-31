@@ -15,7 +15,7 @@ export const useEnhancedFilter = <T extends PostLike>(
   return useMemo(() => {
     if (!posts || posts.length === 0) return [];
     
-    const { categories, enabledCategories, primaryKeywords = [], secondaryKeywords = [] } = options;
+    const { categories, enabledCategories } = options;
     
     console.log('Enhanced Filter: Processing', posts.length, 'posts without forced sorting');
     
@@ -24,9 +24,7 @@ export const useEnhancedFilter = <T extends PostLike>(
       const { score, matchedCategories, matchedKeywords } = calculateRelevanceScore(
         post, 
         categories, 
-        enabledCategories, 
-        primaryKeywords,
-        secondaryKeywords
+        enabledCategories
       );
       
       return {
@@ -52,9 +50,8 @@ export const useEnhancedFilter = <T extends PostLike>(
       } as T & EnhancedPostExtensions;
     });
     
-    // REMOVED: The forced sorting that was overriding user choice
     // Return posts in their original order, allowing panels to handle sorting
     console.log('Enhanced Filter: Returning', enhancedPosts.length, 'enhanced posts without forced sort');
     return enhancedPosts;
-  }, [posts, options.categories, options.enabledCategories, options.primaryKeywords, options.secondaryKeywords]);
+  }, [posts, options.categories, options.enabledCategories]);
 };

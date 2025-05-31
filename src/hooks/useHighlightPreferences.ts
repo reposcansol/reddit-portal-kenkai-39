@@ -2,20 +2,12 @@ import { useState, useEffect } from 'react';
 import { KeywordCategory, DEFAULT_CATEGORIES } from './useEnhancedFilter';
 
 interface HighlightPreferences {
-  enableHighlighting: boolean;
   enabledCategories: string[];
-  highlightThreshold: number;
-  primaryKeywords: string[];
-  secondaryKeywords: string[];
   categories: KeywordCategory[];
 }
 
 const DEFAULT_PREFERENCES: HighlightPreferences = {
-  enableHighlighting: true,
   enabledCategories: ['ai', 'development'],
-  highlightThreshold: 1.0,
-  primaryKeywords: [],
-  secondaryKeywords: [],
   categories: DEFAULT_CATEGORIES
 };
 
@@ -82,42 +74,6 @@ export const useHighlightPreferences = () => {
     });
   };
 
-  const addPrimaryKeyword = (keyword: string) => {
-    if (keyword.trim() && !preferences.primaryKeywords.includes(keyword.trim())) {
-      console.log('Highlight: Adding primary keyword:', keyword.trim());
-      setPreferences(prev => ({
-        ...prev,
-        primaryKeywords: [...prev.primaryKeywords, keyword.trim()]
-      }));
-    }
-  };
-
-  const addSecondaryKeyword = (keyword: string) => {
-    if (keyword.trim() && !preferences.secondaryKeywords.includes(keyword.trim())) {
-      console.log('Highlight: Adding secondary keyword:', keyword.trim());
-      setPreferences(prev => ({
-        ...prev,
-        secondaryKeywords: [...prev.secondaryKeywords, keyword.trim()]
-      }));
-    }
-  };
-
-  const removePrimaryKeyword = (keyword: string) => {
-    console.log('Highlight: Removing primary keyword:', keyword);
-    setPreferences(prev => ({
-      ...prev,
-      primaryKeywords: prev.primaryKeywords.filter(k => k !== keyword)
-    }));
-  };
-
-  const removeSecondaryKeyword = (keyword: string) => {
-    console.log('Highlight: Removing secondary keyword:', keyword);
-    setPreferences(prev => ({
-      ...prev,
-      secondaryKeywords: prev.secondaryKeywords.filter(k => k !== keyword)
-    }));
-  };
-
   const resetPreferences = () => {
     console.log('Highlight: Resetting preferences to defaults');
     setPreferences(DEFAULT_PREFERENCES);
@@ -130,10 +86,6 @@ export const useHighlightPreferences = () => {
     preferences,
     updatePreferences,
     toggleCategory,
-    addPrimaryKeyword,
-    addSecondaryKeyword,
-    removePrimaryKeyword,
-    removeSecondaryKeyword,
     resetPreferences
   };
 };
