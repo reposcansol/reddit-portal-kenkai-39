@@ -47,6 +47,11 @@ const containsQuestionMark = (text: string): boolean => {
   return text.includes('?');
 };
 
+const hasHelpFlair = (flairText?: string): boolean => {
+  if (!flairText) return false;
+  return flairText.toLowerCase().includes('help');
+};
+
 const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => {
   try {
     const allPosts: RedditPost[] = [];
@@ -93,17 +98,18 @@ const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => 
             const hasMinUpvotes = (post.score || 0) >= 1; // Minimum 1 upvote required
             const hasNegativeKeywords = containsNegativeKeywords(post.title);
             const hasQuestionMark = containsQuestionMark(post.title);
+            const hasHelpInFlair = hasHelpFlair(post.link_flair_text);
             const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
             
-            const included = isRecent && hasMinUpvotes && !hasNegativeKeywords && !hasQuestionMark;
-            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago, ${post.score} upvotes - ${included ? 'INCLUDED' : 'FILTERED OUT'} (${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : hasNegativeKeywords ? 'contains negative keywords' : hasQuestionMark ? 'contains question mark' : 'passed'})`);
+            const included = isRecent && hasMinUpvotes && !hasNegativeKeywords && !hasQuestionMark && !hasHelpInFlair;
+            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago, ${post.score} upvotes - ${included ? 'INCLUDED' : 'FILTERED OUT'} (${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : hasNegativeKeywords ? 'contains negative keywords' : hasQuestionMark ? 'contains question mark' : hasHelpInFlair ? 'help flair' : 'passed'})`);
             
             return included;
           })
           .sort((a: RedditPost, b: RedditPost) => b.score - a.score);
         
         postsBySubreddit[subreddit] = posts;
-        console.log(`r/${subreddit}: ${posts.length} posts after filtering (24h + ≥1 upvotes + no negative keywords + no question marks)`);
+        console.log(`r/${subreddit}: ${posts.length} posts after filtering (24h + ≥1 upvotes + no negative keywords + no question marks + no help flairs)`);
         
         // Take top posts from each subreddit to ensure representation
         allPosts.push(...posts.slice(0, 15));
