@@ -13,7 +13,7 @@ export interface HackerNewsPost {
   type: string;
 }
 
-// Negative keywords to filter out
+// Enhanced negative keywords to filter out questions and non-tech content
 const NEGATIVE_KEYWORDS = [
   'help',
   'how do you',
@@ -30,12 +30,92 @@ const NEGATIVE_KEYWORDS = [
   'when is',
   'which is',
   'ask hn',
-  'show hn: help'
+  'show hn: help',
+  'looking for',
+  'recommendations',
+  'advice',
+  'should i',
+  'anyone know',
+  'does anyone',
+  'has anyone',
+  'thoughts on',
+  'opinions on',
+  'what do you think',
+  'am i the only one',
+  'is it just me'
+];
+
+// Tech-focused positive keywords to boost relevance
+const TECH_KEYWORDS = [
+  'ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning',
+  'programming', 'software', 'developer', 'coding', 'code',
+  'startup', 'tech', 'technology', 'algorithm', 'data',
+  'web', 'app', 'application', 'platform', 'framework',
+  'open source', 'github', 'api', 'database', 'cloud',
+  'security', 'blockchain', 'cryptocurrency', 'crypto',
+  'mobile', 'ios', 'android', 'react', 'javascript',
+  'python', 'rust', 'go', 'java', 'typescript',
+  'devops', 'infrastructure', 'server', 'backend',
+  'frontend', 'ui', 'ux', 'design', 'product',
+  'saas', 'b2b', 'venture capital', 'funding', 'ipo',
+  'innovation', 'disruption', 'digital', 'internet'
+];
+
+// Known tech domains to prioritize
+const TECH_DOMAINS = [
+  'github.com', 'stackoverflow.com', 'techcrunch.com', 'wired.com',
+  'arstechnica.com', 'theverge.com', 'engadget.com', 'venturebeat.com',
+  'recode.net', 'medium.com', 'dev.to', 'hackernoon.com',
+  'blogs.microsoft.com', 'blog.google', 'engineering.fb.com',
+  'blog.twitter.com', 'aws.amazon.com', 'blog.cloudflare.com',
+  'research.google.com', 'openai.com', 'anthropic.com'
 ];
 
 const containsNegativeKeywords = (text: string): boolean => {
   const lowerText = text.toLowerCase();
   return NEGATIVE_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
+};
+
+const containsQuestionMark = (text: string): boolean => {
+  return text.includes('?');
+};
+
+const isAskOrHelpPost = (title: string): boolean => {
+  const lowerTitle = title.toLowerCase();
+  return lowerTitle.startsWith('ask hn') || 
+         (lowerTitle.startsWith('show hn') && lowerTitle.includes('help'));
+};
+
+const calculateTechRelevance = (post: HackerNewsPost): number => {
+  let score = 0;
+  const titleLower = post.title.toLowerCase();
+  
+  // Boost for tech keywords in title
+  TECH_KEYWORDS.forEach(keyword => {
+    if (titleLower.includes(keyword)) {
+      score += 1;
+    }
+  });
+  
+  // Boost for having external URL (actual articles vs discussions)
+  if (post.url && !post.url.includes('news.ycombinator.com')) {
+    score += 2;
+  }
+  
+  // Boost for known tech domains
+  if (post.url) {
+    const domain = new URL(post.url).hostname.toLowerCase();
+    if (TECH_DOMAINS.some(techDomain => domain.includes(techDomain))) {
+      score += 3;
+    }
+  }
+  
+  // Penalty for discussion-heavy posts without URLs
+  if (!post.url) {
+    score -= 1;
+  }
+  
+  return score;
 };
 
 const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
@@ -45,7 +125,7 @@ const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
       'https://hacker-news.firebaseio.com/v0/topstories.json'
     );
     
-    const storyIds = topStoriesResponse.data; // Get all available stories (up to 500)
+    const storyIds = topStoriesResponse.data;
     console.log(`HN: Fetching ${storyIds.length} top stories from HackerNews`);
     
     // Fetch individual stories in batches to avoid overwhelming the API
@@ -67,7 +147,7 @@ const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
       console.log(`HN: Fetched batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(storyIds.length / batchSize)}`);
     }
     
-    // Filter for valid stories, posts from last 24 hours, minimum 1 upvote, and no negative keywords
+    // Enhanced filtering for tech content only
     const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
     
     const filteredStories = allStories.filter(story => {
@@ -76,20 +156,44 @@ const fetchHackerNewsStories = async (): Promise<HackerNewsPost[]> => {
       const isRecent = story.time >= twentyFourHoursAgo;
       const hasMinUpvotes = (story.score || 0) >= 1;
       const hasNegativeKeywords = containsNegativeKeywords(story.title);
+      const hasQuestionMark = containsQuestionMark(story.title);
+      const isAskOrHelp = isAskOrHelpPost(story.title);
+      const techRelevance = calculateTechRelevance(story);
       
-      const included = isRecent && hasMinUpvotes && !hasNegativeKeywords;
+      // Require minimum tech relevance score
+      const hasTechRelevance = techRelevance >= 1;
+      
+      const included = isRecent && hasMinUpvotes && !hasNegativeKeywords && 
+                      !hasQuestionMark && !isAskOrHelp && hasTechRelevance;
       
       if (!included) {
-        console.log(`HN: Filtered out "${story.title.substring(0, 50)}..." - ${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : 'contains negative keywords'}`);
+        const reason = !isRecent ? 'too old' : 
+                      !hasMinUpvotes ? 'insufficient upvotes' : 
+                      hasNegativeKeywords ? 'contains negative keywords' : 
+                      hasQuestionMark ? 'contains question mark' :
+                      isAskOrHelp ? 'ask/help post' :
+                      !hasTechRelevance ? 'low tech relevance' : 'unknown';
+        console.log(`HN: Filtered out "${story.title.substring(0, 50)}..." - ${reason} (tech score: ${techRelevance})`);
       }
       
       return included;
     });
     
-    console.log(`HN: Filtered ${filteredStories.length} stories from last 24 hours with ≥1 upvotes and no negative keywords out of ${allStories.length} total stories`);
+    console.log(`HN: Filtered ${filteredStories.length} tech-focused stories from last 24 hours out of ${allStories.length} total stories`);
     
-    // Sort by score (upvotes) in descending order
-    return filteredStories.sort((a, b) => (b.score || 0) - (a.score || 0));
+    // Sort by a combination of score and tech relevance
+    return filteredStories.sort((a, b) => {
+      const aRelevance = calculateTechRelevance(a);
+      const bRelevance = calculateTechRelevance(b);
+      
+      // If relevance scores are different, prioritize higher relevance
+      if (aRelevance !== bRelevance) {
+        return bRelevance - aRelevance;
+      }
+      
+      // If relevance is the same, sort by score
+      return (b.score || 0) - (a.score || 0);
+    });
   } catch (error) {
     console.error('Error fetching Hacker News stories:', error);
     throw new Error('Failed to fetch Hacker News stories');
