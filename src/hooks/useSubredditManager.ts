@@ -20,6 +20,8 @@ const isLocalStorageAvailable = (): boolean => {
 
 // Enhanced localStorage getter with debugging
 const getStoredSubreddits = (): string[] => {
+  console.log('🔍 getStoredSubreddits called');
+  
   if (!isLocalStorageAvailable()) {
     console.warn('localStorage not available, using defaults');
     return DEFAULT_SUBREDDITS;
@@ -29,10 +31,10 @@ const getStoredSubreddits = (): string[] => {
     const stored = localStorage.getItem(STORAGE_KEY);
     console.log('🔍 Raw localStorage value:', stored);
     console.log('🔍 Storage key used:', STORAGE_KEY);
-    console.log('🔍 Current localStorage keys:', Object.keys(localStorage));
+    console.log('🔍 All localStorage keys:', Object.keys(localStorage));
     
     if (stored === null) {
-      console.log('📭 No stored subreddits found, using defaults');
+      console.log('📭 No stored subreddits found, using defaults:', DEFAULT_SUBREDDITS);
       return DEFAULT_SUBREDDITS;
     }
 
@@ -83,6 +85,8 @@ const getStoredSubreddits = (): string[] => {
 
 // Enhanced localStorage setter with debugging
 const setStoredSubreddits = (subreddits: string[]): boolean => {
+  console.log('💾 setStoredSubreddits called with:', subreddits);
+  
   if (!isLocalStorageAvailable()) {
     console.warn('localStorage not available, cannot save subreddits');
     return false;
@@ -123,19 +127,21 @@ const setStoredSubreddits = (subreddits: string[]): boolean => {
 };
 
 export const useSubredditManager = () => {
-  console.log('🚀 useSubredditManager hook initializing...');
+  console.log('🚀 useSubredditManager hook initializing at', new Date().toISOString());
   
   const [subreddits, setSubreddits] = useState<string[]>(() => {
     console.log('🏁 Initializing subreddits state...');
     const initial = getStoredSubreddits();
-    console.log('🏁 Initial subreddits:', initial);
+    console.log('🏁 Initial subreddits loaded:', initial);
     return initial;
   });
 
   // Save to localStorage whenever subreddits change
   useEffect(() => {
-    console.log('🔄 useEffect triggered - subreddits changed:', subreddits);
+    console.log('🔄 useEffect triggered - subreddits changed to:', subreddits);
     console.log('🔄 Current timestamp:', new Date().toISOString());
+    console.log('🔄 Subreddits array length:', subreddits.length);
+    console.log('🔄 Subreddits stringified:', JSON.stringify(subreddits));
     
     const saveResult = setStoredSubreddits(subreddits);
     
@@ -143,11 +149,12 @@ export const useSubredditManager = () => {
       console.warn('⚠️ Failed to save subreddits to localStorage');
     }
     
-    // Log current localStorage state
-    console.log('🔍 Current localStorage state after save attempt:');
+    // Log current localStorage state after save attempt
+    console.log('🔍 Post-save localStorage check:');
     try {
       const currentStored = localStorage.getItem(STORAGE_KEY);
-      console.log('🔍 Stored value:', currentStored);
+      console.log('🔍 Currently stored value:', currentStored);
+      console.log('🔍 Currently stored parsed:', currentStored ? JSON.parse(currentStored) : null);
     } catch (e) {
       console.error('🔍 Could not read current stored value:', e);
     }
@@ -155,6 +162,7 @@ export const useSubredditManager = () => {
 
   const updateSubreddits = (newSubreddits: string[]) => {
     console.log('🔄 updateSubreddits called with:', newSubreddits);
+    console.log('🔄 Current subreddits before update:', subreddits);
     
     // Ensure we have at least 1 subreddit and max 4
     const filtered = newSubreddits
@@ -172,11 +180,13 @@ export const useSubredditManager = () => {
     }
   };
 
-  // Debug current state
-  console.log('📊 Current hook state:', {
+  // Debug current state every render
+  console.log('📊 useSubredditManager render - current state:', {
     subreddits,
     subredditsLength: subreddits.length,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    storageKey: STORAGE_KEY,
+    defaults: DEFAULT_SUBREDDITS
   });
 
   return {
