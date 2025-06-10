@@ -24,6 +24,8 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
   subreddits,
   onSubredditsChange
 }) => {
+  console.log('📺 RedditSourcePanel rendering with subreddits:', subreddits);
+  
   const { data: redditData, isLoading, error } = useReddit(subreddits);
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
@@ -36,6 +38,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
 
   // Update column order when subreddits change
   React.useEffect(() => {
+    console.log('📺 RedditSourcePanel: Updating column order to:', subreddits);
     setColumnOrder(subreddits);
   }, [subreddits, setColumnOrder]);
 

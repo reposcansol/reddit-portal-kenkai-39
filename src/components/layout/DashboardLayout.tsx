@@ -2,7 +2,7 @@
 import React from 'react';
 import { useHackerNews } from '@/hooks/useHackerNews';
 import { useReddit } from '@/hooks/useReddit';
-import { useSubredditManager } from '@/hooks/useSubredditManager';
+import { useSubreddits } from '@/contexts/SubredditContext';
 import { useAIFilter } from '@/hooks/useAIFilter';
 import { ContentColumn } from './ContentColumn';
 import { HackerNewsCard } from '@/components/news/HackerNewsCard';
@@ -12,9 +12,11 @@ import { SubredditManager } from '@/components/ui/SubredditManager';
 import { Loader2, Zap, MessageSquare } from 'lucide-react';
 
 export const DashboardLayout = () => {
-  const { subreddits, updateSubreddits } = useSubredditManager();
+  const { subreddits, updateSubreddits } = useSubreddits();
   const { data: hackerNewsData, isLoading: hnLoading, error: hnError } = useHackerNews();
   const { data: redditData, isLoading: redditLoading, error: redditError } = useReddit(subreddits);
+  
+  console.log('📊 DashboardLayout rendering with subreddits:', subreddits);
   
   const filteredHN = useAIFilter(hackerNewsData || []);
   const filteredReddit = useAIFilter(redditData || []);

@@ -5,14 +5,16 @@ import { SourceTabs } from './SourceTabs';
 import { RedditSourcePanel } from './RedditSourcePanel';
 import { HackerNewsSourcePanel } from './HackerNewsSourcePanel';
 import { GitHubSourcePanel } from './GitHubSourcePanel';
-import { useSubredditManager } from '@/hooks/useSubredditManager';
+import { useSubreddits } from '@/contexts/SubredditContext';
 
 type NewsSource = 'reddit' | 'hackernews' | 'github';
 
 export const SourceNavigator = () => {
   const [activeSource, setActiveSource] = useState<NewsSource>('reddit');
-  const { subreddits, updateSubreddits } = useSubredditManager();
+  const { subreddits, updateSubreddits } = useSubreddits();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  console.log('🧭 SourceNavigator rendering with subreddits:', subreddits);
 
   const handleSourceChange = (source: NewsSource) => {
     setActiveSource(source);
