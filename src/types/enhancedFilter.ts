@@ -1,12 +1,4 @@
 
-export interface KeywordCategory {
-  id: string;
-  name: string;
-  keywords: string[];
-  color: string;
-  weight: number;
-}
-
 export interface PostLike {
   title?: string;
   score?: number;
@@ -30,12 +22,9 @@ export interface PostLike {
 export interface EnhancedPostExtensions {
   relevanceScore: number;
   relevancePercentage: number;
-  matchedCategories: string[];
   highlightLevel: 'none' | 'low' | 'medium' | 'high';
-  matchedKeywords: string[];
 }
 
 export interface UseEnhancedFilterOptions {
-  categories: KeywordCategory[];
-  enabledCategories: string[];
+  // Empty for now - can be extended in the future
 }

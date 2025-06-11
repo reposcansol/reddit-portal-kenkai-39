@@ -1,14 +1,12 @@
+
 import { useState, useEffect } from 'react';
-import { KeywordCategory, DEFAULT_CATEGORIES } from './useEnhancedFilter';
 
 interface HighlightPreferences {
-  enabledCategories: string[];
-  categories: KeywordCategory[];
+  // Empty for now - simplified without categories
 }
 
 const DEFAULT_PREFERENCES: HighlightPreferences = {
-  enabledCategories: ['ai', 'development'],
-  categories: DEFAULT_CATEGORIES
+  // Empty object
 };
 
 const STORAGE_KEY = 'highlight-preferences';
@@ -22,9 +20,7 @@ const loadPreferencesFromStorage = (): HighlightPreferences => {
       console.log('Highlight: Loading saved preferences from localStorage:', parsed);
       return {
         ...DEFAULT_PREFERENCES,
-        ...parsed,
-        // Merge saved categories with defaults, keeping custom keywords if they exist
-        categories: parsed.categories?.length > 0 ? parsed.categories : DEFAULT_CATEGORIES
+        ...parsed
       };
     }
   } catch (error) {
@@ -59,33 +55,14 @@ export const useHighlightPreferences = () => {
     });
   };
 
-  const toggleCategory = (categoryId: string) => {
-    console.log('Highlight: Toggling category:', categoryId);
-    setPreferences(prev => {
-      const newEnabledCategories = prev.enabledCategories.includes(categoryId)
-        ? prev.enabledCategories.filter(id => id !== categoryId)
-        : [...prev.enabledCategories, categoryId];
-      
-      console.log('Highlight: New enabled categories:', newEnabledCategories);
-      return {
-        ...prev,
-        enabledCategories: newEnabledCategories
-      };
-    });
-  };
-
   const resetPreferences = () => {
     console.log('Highlight: Resetting preferences to defaults');
     setPreferences(DEFAULT_PREFERENCES);
   };
 
-  // Log current state for debugging
-  console.log('Highlight: Current preferences state:', preferences);
-
   return {
     preferences,
     updatePreferences,
-    toggleCategory,
     resetPreferences
   };
 };

@@ -1,12 +1,11 @@
 
 import { useMemo } from 'react';
-import { KeywordCategory, PostLike, EnhancedPostExtensions, UseEnhancedFilterOptions } from '@/types/enhancedFilter';
+import { PostLike, EnhancedPostExtensions, UseEnhancedFilterOptions } from '@/types/enhancedFilter';
 import { calculateRelevanceScore, calculatePercentage } from '@/utils/relevanceCalculator';
 import { getHighlightLevel } from '@/utils/highlightUtils';
 
-// Re-export types and constants for backward compatibility
-export type { KeywordCategory, EnhancedPostExtensions };
-export { DEFAULT_CATEGORIES } from '@/config/defaultCategories';
+// Re-export types for backward compatibility
+export type { EnhancedPostExtensions };
 
 export const useEnhancedFilter = <T extends PostLike>(
   posts: T[], 
@@ -15,23 +14,15 @@ export const useEnhancedFilter = <T extends PostLike>(
   return useMemo(() => {
     if (!posts || posts.length === 0) return [];
     
-    const { categories, enabledCategories } = options;
+    console.log('Enhanced Filter: Processing', posts.length, 'posts without category filtering');
     
-    console.log('Enhanced Filter: Processing', posts.length, 'posts without forced sorting');
-    
-    // First pass: calculate raw scores
+    // First pass: calculate raw scores (simplified without categories)
     const postsWithScores = posts.map(post => {
-      const { score, matchedCategories, matchedKeywords } = calculateRelevanceScore(
-        post, 
-        categories, 
-        enabledCategories
-      );
+      const score = calculateRelevanceScore(post);
       
       return {
         ...post,
-        rawScore: score,
-        matchedCategories,
-        matchedKeywords
+        rawScore: score
       };
     });
     
@@ -50,8 +41,8 @@ export const useEnhancedFilter = <T extends PostLike>(
       } as T & EnhancedPostExtensions;
     });
     
-    // Return posts in their original order, allowing panels to handle sorting
-    console.log('Enhanced Filter: Returning', enhancedPosts.length, 'enhanced posts without forced sort');
+    // Return posts in their original order
+    console.log('Enhanced Filter: Returning', enhancedPosts.length, 'enhanced posts without category filtering');
     return enhancedPosts;
-  }, [posts, options.categories, options.enabledCategories]);
+  }, [posts]);
 };

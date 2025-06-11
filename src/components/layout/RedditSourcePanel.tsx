@@ -11,7 +11,6 @@ import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { useFilterPreferences } from '@/hooks/useFilterPreferences';
 import { usePostFilter } from '@/hooks/usePostFilter';
 import { SortControls } from '@/components/ui/SortControls';
-import { CategoryManager } from '@/components/ui/CategoryManager';
 import { SubredditManager } from '@/components/ui/SubredditManager';
 import { FilterControls } from '@/components/ui/FilterControls';
 import { RotateCcw, Loader2 } from 'lucide-react';
@@ -48,10 +47,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
 
   // Apply filtering first, then enhanced filtering
   const filteredPosts = usePostFilter(redditData || [], filterPreferences);
-  const enhancedPosts = useEnhancedFilter(filteredPosts, {
-    categories: preferences.categories,
-    enabledCategories: preferences.enabledCategories
-  });
+  const enhancedPosts = useEnhancedFilter(filteredPosts, {});
 
   // Group posts by subreddit and apply sorting with force re-calculation
   const postsBySubreddit = React.useMemo(() => {
@@ -118,7 +114,6 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
             currentSort={currentSort}
             onSortChange={setCurrentSort}
           />
-          <CategoryManager />
           <FilterControls />
           <SubredditManager 
             subreddits={subreddits}
