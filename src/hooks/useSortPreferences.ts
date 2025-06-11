@@ -1,17 +1,17 @@
 
 import { useState, useEffect } from 'react';
 
-export type SortOption = 'relevance' | 'newest' | 'score' | 'comments';
+export type SortOption = 'newest' | 'score' | 'comments';
 
 const STORAGE_KEY = 'sort-preferences';
-const DEFAULT_SORT: SortOption = 'relevance';
+const DEFAULT_SORT: SortOption = 'newest';
 
 export const useSortPreferences = () => {
   const [currentSort, setCurrentSort] = useState<SortOption>(() => {
     // Initialize from localStorage immediately
     try {
       const savedSort = localStorage.getItem(STORAGE_KEY);
-      if (savedSort && ['relevance', 'newest', 'score', 'comments'].includes(savedSort)) {
+      if (savedSort && ['newest', 'score', 'comments'].includes(savedSort)) {
         console.log('Loading saved sort preference:', savedSort);
         return savedSort as SortOption;
       }

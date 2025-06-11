@@ -20,8 +20,6 @@ export interface PostLike {
 }
 
 export interface EnhancedPostExtensions {
-  relevanceScore: number;
-  relevancePercentage: number;
   highlightLevel: 'none' | 'low' | 'medium' | 'high';
 }
 

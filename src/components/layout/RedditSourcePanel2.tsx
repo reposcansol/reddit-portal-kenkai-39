@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useReddit } from '@/hooks/useReddit';
 import { SubredditColumn } from './SubredditColumn';
@@ -82,9 +81,8 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
           case 'comments':
             result = (b.num_comments || 0) - (a.num_comments || 0);
             break;
-          case 'relevance':
           default:
-            result = b.relevanceScore - a.relevanceScore;
+            result = (b.score || 0) - (a.score || 0);
             break;
         }
         return result;

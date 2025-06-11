@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowUpDown, TrendingUp, Clock, Zap } from 'lucide-react';
+import { ArrowUpDown, TrendingUp, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 
-export type SortOption = 'relevance' | 'newest' | 'score' | 'comments';
+export type SortOption = 'newest' | 'score' | 'comments';
 
 interface SortControlsProps {
   currentSort: SortOption;
@@ -24,7 +24,6 @@ export const SortControls: React.FC<SortControlsProps> = ({
 }) => {
   const getSortIcon = (option: SortOption) => {
     switch (option) {
-      case 'relevance': return <Zap className="w-3 h-3" />;
       case 'newest': return <Clock className="w-3 h-3" />;
       case 'score': return <TrendingUp className="w-3 h-3" />;
       case 'comments': return <ArrowUpDown className="w-3 h-3" />;
@@ -33,7 +32,6 @@ export const SortControls: React.FC<SortControlsProps> = ({
 
   const getSortLabel = (option: SortOption) => {
     switch (option) {
-      case 'relevance': return 'Relevance';
       case 'newest': return 'Newest';
       case 'score': return 'Highest Score';
       case 'comments': return 'Most Comments';
@@ -62,16 +60,6 @@ export const SortControls: React.FC<SortControlsProps> = ({
         </DropdownMenuLabel>
         
         <DropdownMenuSeparator className="bg-green-400/20" />
-        
-        <DropdownMenuItem
-          onClick={() => onSortChange('relevance')}
-          className={`text-green-300 hover:bg-green-400/10 ${
-            currentSort === 'relevance' ? 'bg-green-400/20' : ''
-          }`}
-        >
-          <Zap className="w-4 h-4 mr-2" />
-          Relevance Score
-        </DropdownMenuItem>
         
         <DropdownMenuItem
           onClick={() => onSortChange('newest')}
