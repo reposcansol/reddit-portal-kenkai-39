@@ -26,16 +26,13 @@ const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Prom
   try {
     const allPosts: RedditPost[] = [];
     
-    console.log('📡 [REDDIT] Fetching from subreddits:', subreddits);
-    console.log('📡 [REDDIT] API limit per subreddit:', redditLimit);
-    
     for (const subreddit of subreddits) {
       try {
         const response = await axios.get(
           `https://www.reddit.com/r/${subreddit}/hot.json?limit=${redditLimit}`,
           {
             headers: {
-              'User-Agent': 'AI-News-Aggregator/1.0'
+              'User-Agent': 'Reddit-Portal/1.0'
             }
           }
         );
@@ -59,17 +56,14 @@ const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Prom
             author_flair_text: child.data.author_flair_text
           }));
         
-        console.log(`📡 [REDDIT] r/${subreddit}: ${posts.length} raw posts fetched`);
         allPosts.push(...posts);
       } catch (error) {
-        console.error(`❌ [REDDIT] Error fetching posts from r/${subreddit}:`, error);
+        // Silent fallback - continue with other subreddits
       }
     }
     
-    console.log(`📡 [REDDIT] Total raw posts fetched: ${allPosts.length}`);
     return allPosts;
   } catch (error) {
-    console.error('❌ [REDDIT] Error fetching Reddit posts:', error);
     throw new Error('Failed to fetch Reddit posts');
   }
 };
@@ -78,15 +72,9 @@ export const useReddit = (subreddits: string[]) => {
   const queryClient = useQueryClient();
   const { preferences } = useFilterPreferences();
   
-  // Create a stable cache key using sorted subreddits
   const stableKey = [...subreddits].sort().join(',');
   
-  console.log('🔄 useReddit called with subreddits:', subreddits);
-  console.log('🔄 Cache key:', stableKey);
-  
-  // Invalidate old queries when subreddits change
   useEffect(() => {
-    console.log('🔄 Invalidating old reddit queries due to subreddit change');
     queryClient.invalidateQueries({ 
       queryKey: ['reddit'],
       exact: false 
@@ -96,7 +84,7 @@ export const useReddit = (subreddits: string[]) => {
   return useQuery({
     queryKey: ['reddit', stableKey],
     queryFn: () => fetchRedditPosts(subreddits, preferences.redditLimit),
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
+    refetchInterval: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
   });
 };

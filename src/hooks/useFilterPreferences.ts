@@ -22,29 +22,12 @@ const DEFAULT_PREFERENCES: FilterPreferences = {
   minUpvotes: 1,
   maxUpvotes: null,
   minComments: 0,
-  characterBlacklist: ['?'],
-  keywordBlacklist: [
-    'removed', 
-    'deleted', 
-    'help',
-    'how do you',
-    'how to',
-    'can someone',
-    'need help',
-    'please help',
-    'question',
-    'eli5',
-    'explain like',
-    'what is',
-    'why is',
-    'where is',
-    'when is',
-    'which is'
-  ],
+  characterBlacklist: [],
+  keywordBlacklist: ['removed', 'deleted'],
   timeRange: 24, // 24 hours
   minPostLength: 0,
   maxPostLength: null,
-  excludedFlairs: ['help'],
+  excludedFlairs: [],
   excludedAuthors: [],
   postsPerSubreddit: 15,
   maxTotalPosts: 80,
@@ -63,7 +46,7 @@ export const useFilterPreferences = () => {
         return { ...DEFAULT_PREFERENCES, ...parsed };
       }
     } catch (error) {
-      console.error('Error loading filter preferences:', error);
+      // Silent fallback to defaults
     }
     return DEFAULT_PREFERENCES;
   });
@@ -72,7 +55,7 @@ export const useFilterPreferences = () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
     } catch (error) {
-      console.error('Error saving filter preferences:', error);
+      // Silent fallback
     }
   }, [preferences]);
 
