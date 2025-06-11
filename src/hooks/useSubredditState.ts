@@ -12,18 +12,26 @@ export const useSubredditState = () => {
   const [subreddits, setSubreddits] = useState<string[]>(() => {
     console.log('🏁 Initializing subreddits state...');
     const stored = getStorageItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          console.log('🏁 Initial subreddits loaded:', parsed);
-          return parsed;
-        }
-      } catch (error) {
-        console.error('Error parsing stored subreddits:', error);
-      }
+    
+    // If nothing is stored at all, use defaults
+    if (stored === null) {
+      console.log('🏁 No stored data found, using default subreddits:', DEFAULT_SUBREDDITS);
+      return DEFAULT_SUBREDDITS;
     }
-    console.log('🏁 Using default subreddits:', DEFAULT_SUBREDDITS);
+    
+    // If something is stored, parse it (even if it's an empty array)
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        console.log('🏁 Initial subreddits loaded (including empty arrays):', parsed);
+        return parsed;
+      }
+    } catch (error) {
+      console.error('Error parsing stored subreddits:', error);
+    }
+    
+    // Only fall back to defaults if parsing failed
+    console.log('🏁 Parsing failed, using default subreddits:', DEFAULT_SUBREDDITS);
     return DEFAULT_SUBREDDITS;
   });
 
@@ -31,21 +39,20 @@ export const useSubredditState = () => {
     console.log('🔄 updateSubreddits called with:', newSubreddits);
     console.log('🔄 Current subreddits before update:', subreddits);
     
-    // Ensure we have valid subreddits
+    // Clean the input but don't enforce minimums
     const filtered = newSubreddits
       .filter(sub => typeof sub === 'string' && sub.trim() !== '')
       .slice(0, 4);
     
-    console.log('🔄 Filtered subreddits:', filtered);
+    console.log('🔄 Filtered subreddits (allowing empty):', filtered);
     
-    const finalSubreddits = filtered.length === 0 ? DEFAULT_SUBREDDITS : filtered;
+    // Use the filtered array as-is, even if empty
+    console.log('🔄 Setting new subreddits:', filtered);
+    setSubreddits(filtered);
     
-    console.log('🔄 Setting new subreddits:', finalSubreddits);
-    setSubreddits(finalSubreddits);
-    
-    // Save immediately
-    console.log('💾 Saving subreddits immediately:', finalSubreddits);
-    setStorageItem(STORAGE_KEY, JSON.stringify(finalSubreddits));
+    // Save immediately, even if empty
+    console.log('💾 Saving subreddits immediately (even if empty):', filtered);
+    setStorageItem(STORAGE_KEY, JSON.stringify(filtered));
   }, [subreddits]);
 
   // Debug current state every render
