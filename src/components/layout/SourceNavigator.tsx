@@ -3,16 +3,20 @@ import React, { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SourceTabs } from './SourceTabs';
 import { RedditSourcePanel } from './RedditSourcePanel';
+import { RedditSourcePanel2 } from './RedditSourcePanel2';
 import { useSubreddits } from '@/contexts/SubredditContext';
+import { useSubreddits2 } from '@/contexts/SubredditContext2';
 
-type NewsSource = 'reddit';
+type NewsSource = 'reddit' | 'reddit2';
 
 export const SourceNavigator = () => {
   const [activeSource, setActiveSource] = useState<NewsSource>('reddit');
   const { subreddits, updateSubreddits } = useSubreddits();
+  const { subreddits: subreddits2, updateSubreddits: updateSubreddits2 } = useSubreddits2();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   console.log('🧭 SourceNavigator rendering with subreddits:', subreddits);
+  console.log('🧭 SourceNavigator rendering with subreddits2:', subreddits2);
 
   const handleSourceChange = (source: NewsSource) => {
     setActiveSource(source);
@@ -75,7 +79,7 @@ export const SourceNavigator = () => {
           className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {/* Reddit Source Panel */}
+          {/* Reddit Source Panel 1 */}
           <div 
             data-source="reddit"
             className="min-w-full snap-start h-full"
@@ -83,6 +87,17 @@ export const SourceNavigator = () => {
             <RedditSourcePanel 
               subreddits={subreddits}
               onSubredditsChange={updateSubreddits}
+            />
+          </div>
+
+          {/* Reddit Source Panel 2 */}
+          <div 
+            data-source="reddit2"
+            className="min-w-full snap-start h-full"
+          >
+            <RedditSourcePanel2 
+              subreddits={subreddits2}
+              onSubredditsChange={updateSubreddits2}
             />
           </div>
         </div>

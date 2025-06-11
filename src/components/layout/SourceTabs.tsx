@@ -2,7 +2,7 @@
 import React from 'react';
 import { Hash } from 'lucide-react';
 
-type NewsSource = 'reddit';
+type NewsSource = 'reddit' | 'reddit2';
 
 interface SourceTabsProps {
   activeSource: NewsSource;
@@ -16,9 +16,15 @@ export const SourceTabs: React.FC<SourceTabsProps> = ({
   const tabs = [
     {
       id: 'reddit' as NewsSource,
-      label: '[REDDIT_FEEDS]',
+      label: '[REDDIT_FEEDS_1]',
       icon: Hash,
       description: 'AI coding communities'
+    },
+    {
+      id: 'reddit2' as NewsSource,
+      label: '[REDDIT_FEEDS_2]',
+      icon: Hash,
+      description: 'More AI communities'
     }
   ];
 
