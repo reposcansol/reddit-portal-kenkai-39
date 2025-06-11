@@ -18,9 +18,6 @@ export const usePostFilter = (posts: RedditPost[], filterPreferences: FilterPref
       return posts;
     }
 
-    const now = Math.floor(Date.now() / 1000);
-    const timeThreshold = now - (filterPreferences.timeRange * 3600);
-
     // Group posts by subreddit for per-subreddit limiting
     const postsBySubreddit: Record<string, RedditPost[]> = {};
     
@@ -35,11 +32,6 @@ export const usePostFilter = (posts: RedditPost[], filterPreferences: FilterPref
 
       // Comment filters
       if (post.num_comments < filterPreferences.minComments) {
-        return false;
-      }
-
-      // Time filter
-      if (post.created_utc < timeThreshold) {
         return false;
       }
 

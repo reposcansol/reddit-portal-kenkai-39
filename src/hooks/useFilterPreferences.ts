@@ -7,7 +7,6 @@ export interface FilterPreferences {
   minComments: number;
   characterBlacklist: string[];
   keywordBlacklist: string[];
-  timeRange: number; // hours
   minPostLength: number;
   maxPostLength: number | null;
   excludedFlairs: string[];
@@ -24,7 +23,6 @@ const DEFAULT_PREFERENCES: FilterPreferences = {
   minComments: 0,
   characterBlacklist: [],
   keywordBlacklist: ['removed', 'deleted'],
-  timeRange: 24, // 24 hours
   minPostLength: 0,
   maxPostLength: null,
   excludedFlairs: [],

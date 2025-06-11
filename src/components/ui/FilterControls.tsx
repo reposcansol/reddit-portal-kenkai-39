@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter } from 'lucide-react';
 import {
@@ -12,7 +13,6 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useFilterPreferences } from '@/hooks/useFilterPreferences';
 import { ScoreFilters } from './filters/ScoreFilters';
-import { TimeFilter } from './filters/TimeFilter';
 import { PostLimits } from './filters/PostLimits';
 import { PostLengthFilters } from './filters/PostLengthFilters';
 import { BlacklistInput } from './filters/BlacklistInput';
@@ -42,7 +42,6 @@ export const FilterControls: React.FC = () => {
     if (preferences.minComments > 0) count++;
     if (preferences.characterBlacklist.length > 1) count++; // Default has "?"
     if (preferences.keywordBlacklist.length > 15) count++; // Default has many keywords now
-    if (preferences.timeRange < 24) count++;
     if (preferences.minPostLength > 0) count++;
     if (preferences.maxPostLength) count++;
     if (preferences.excludedFlairs.length > 1) count++; // Default has "help"
@@ -88,11 +87,6 @@ export const FilterControls: React.FC = () => {
         
         <div className="space-y-6">
           <ScoreFilters 
-            preferences={preferences}
-            updatePreferences={updatePreferences}
-          />
-
-          <TimeFilter 
             preferences={preferences}
             updatePreferences={updatePreferences}
           />

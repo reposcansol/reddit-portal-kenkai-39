@@ -1,7 +1,6 @@
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useEffect } from 'react';
 import { useFilterPreferences } from './useFilterPreferences';
 
 export interface RedditPost {
@@ -74,7 +73,6 @@ const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Prom
 };
 
 export const useReddit = (subreddits: string[], panelId?: string) => {
-  const queryClient = useQueryClient();
   const { preferences } = useFilterPreferences();
   
   const stableKey = [...subreddits].sort().join(',');
@@ -86,7 +84,6 @@ export const useReddit = (subreddits: string[], panelId?: string) => {
     minUpvotes: preferences.minUpvotes,
     maxUpvotes: preferences.maxUpvotes,
     minComments: preferences.minComments,
-    timeRange: preferences.timeRange,
     minPostLength: preferences.minPostLength,
     maxPostLength: preferences.maxPostLength,
     characterBlacklist: preferences.characterBlacklist,
