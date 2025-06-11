@@ -29,6 +29,8 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences: filterPreferences } = useFilterPreferences();
 
+  console.log('📊 [REDDIT_PANEL] Rendering with filter preferences:', filterPreferences);
+
   const { columnOrder, setColumnOrder, resetOrder } = useColumnOrder({
     storageKey: 'reddit-column-order',
     defaultOrder: subreddits
@@ -40,6 +42,10 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
 
   const filteredPosts = usePostFilter(redditData || [], filterPreferences);
   const enhancedPosts = useEnhancedFilter(filteredPosts, {});
+
+  console.log('📊 [REDDIT_PANEL] Raw posts:', redditData?.length || 0);
+  console.log('📊 [REDDIT_PANEL] Filtered posts:', filteredPosts?.length || 0);
+  console.log('📊 [REDDIT_PANEL] Enhanced posts:', enhancedPosts?.length || 0);
 
   const postsBySubreddit = React.useMemo(() => {
     if (!enhancedPosts || enhancedPosts.length === 0) return {};
@@ -73,6 +79,11 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
         return result;
       });
     });
+
+    console.log('📊 [REDDIT_PANEL] Posts by subreddit:', Object.keys(grouped).reduce((acc, key) => ({
+      ...acc,
+      [key]: grouped[key].length
+    }), {}));
 
     return grouped;
   }, [enhancedPosts, currentSort]);

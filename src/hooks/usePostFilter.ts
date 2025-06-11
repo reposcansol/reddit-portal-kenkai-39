@@ -5,7 +5,16 @@ import { FilterPreferences } from './useFilterPreferences';
 
 export const usePostFilter = (posts: RedditPost[], filterPreferences: FilterPreferences): RedditPost[] => {
   return useMemo(() => {
-    if (!posts || posts.length === 0 || !filterPreferences.enabled) {
+    console.log('🔍 [POST_FILTER] Running filter with preferences:', filterPreferences);
+    console.log('🔍 [POST_FILTER] Input posts count:', posts?.length || 0);
+    
+    if (!posts || posts.length === 0) {
+      console.log('🔍 [POST_FILTER] No posts to filter');
+      return posts;
+    }
+    
+    if (!filterPreferences.enabled) {
+      console.log('🔍 [POST_FILTER] Filters disabled, returning all posts');
       return posts;
     }
 
@@ -79,6 +88,8 @@ export const usePostFilter = (posts: RedditPost[], filterPreferences: FilterPref
       return true;
     });
 
+    console.log('🔍 [POST_FILTER] Posts after basic filtering:', filteredPosts.length);
+
     // Group by subreddit and apply per-subreddit limits
     filteredPosts.forEach(post => {
       const subreddit = post.subreddit.toLowerCase();
@@ -96,6 +107,7 @@ export const usePostFilter = (posts: RedditPost[], filterPreferences: FilterPref
       .sort((a, b) => b.score - a.score)
       .slice(0, filterPreferences.maxTotalPosts);
 
+    console.log('🔍 [POST_FILTER] Final filtered posts count:', finalPosts.length);
     return finalPosts;
   }, [posts, filterPreferences]);
 };
