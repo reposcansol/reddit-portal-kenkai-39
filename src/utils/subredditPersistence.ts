@@ -52,20 +52,18 @@ export const saveSubredditsToStorage = (subreddits: string[]): boolean => {
   console.log('💾 saveSubredditsToStorage called with:', subreddits);
   
   try {
-    // Ensure we don't save more than 8 subreddits
-    const limitedSubreddits = subreddits.slice(0, 8);
-    const dataToStore = JSON.stringify(limitedSubreddits);
-    console.log('💾 Attempting to save subreddits:', limitedSubreddits);
+    const dataToStore = JSON.stringify(subreddits);
+    console.log('💾 Attempting to save subreddits:', subreddits);
     console.log('💾 Serialized data:', dataToStore);
     
     const success = setStorageItem(STORAGE_KEY, dataToStore);
     
     if (success) {
       console.log('✅ Successfully saved subreddits to localStorage');
-      setGlobalSubreddits(limitedSubreddits);
+      setGlobalSubreddits(subreddits);
       
       // Notify all listeners
-      notifyGlobalListeners(limitedSubreddits);
+      notifyGlobalListeners(subreddits);
     } else {
       console.error('❌ Save verification failed');
     }

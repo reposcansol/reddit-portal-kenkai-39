@@ -37,10 +37,10 @@ export const useSubredditState = () => {
     console.log('🔄 updateSubreddits called with:', newSubreddits);
     console.log('🔄 Current subreddits before update:', subreddits);
     
-    // Ensure we have valid subreddits and limit to 8
+    // Ensure we have valid subreddits
     const filtered = newSubreddits
       .filter(sub => typeof sub === 'string' && sub.trim() !== '')
-      .slice(0, 8);
+      .slice(0, 4);
     
     console.log('🔄 Filtered subreddits:', filtered);
     
