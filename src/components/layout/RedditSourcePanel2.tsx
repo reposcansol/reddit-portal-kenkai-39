@@ -25,7 +25,7 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
   subreddits,
   onSubredditsChange
 }) => {
-  const { data: redditData, isLoading, error, isFetching } = useReddit(subreddits);
+  const { data: redditData, isLoading, error, isFetching } = useReddit(subreddits, 'panel2');
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences: filterPreferences } = useFilterPreferences();
 

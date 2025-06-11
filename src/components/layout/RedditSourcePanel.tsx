@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useReddit } from '@/hooks/useReddit';
 import { SubredditColumn } from './SubredditColumn';
@@ -25,7 +24,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
   subreddits,
   onSubredditsChange
 }) => {
-  const { data: redditData, isLoading, error, isFetching } = useReddit(subreddits);
+  const { data: redditData, isLoading, error, isFetching } = useReddit(subreddits, 'panel1');
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences: filterPreferences } = useFilterPreferences();
 

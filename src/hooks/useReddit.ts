@@ -73,33 +73,21 @@ const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Prom
   }
 };
 
-export const useReddit = (subreddits: string[]) => {
+export const useReddit = (subreddits: string[], panelId?: string) => {
   const queryClient = useQueryClient();
   const { preferences } = useFilterPreferences();
   
   const stableKey = [...subreddits].sort().join(',');
+  const queryKeyPrefix = panelId ? `reddit-${panelId}` : 'reddit';
   
-  // Invalidate when subreddits change
-  useEffect(() => {
-    console.log('🌐 [REDDIT_HOOK] Subreddits changed, invalidating queries');
-    queryClient.invalidateQueries({ 
-      queryKey: ['reddit'],
-      exact: false 
-    });
-  }, [stableKey, queryClient]);
-
-  // Invalidate when redditLimit changes (this was missing!)
-  useEffect(() => {
-    console.log('🌐 [REDDIT_HOOK] Reddit limit changed to:', preferences.redditLimit, 'invalidating queries');
-    queryClient.invalidateQueries({ 
-      queryKey: ['reddit'],
-      exact: false 
-    });
-  }, [preferences.redditLimit, queryClient]);
+  console.log('🌐 [REDDIT_HOOK] Hook called with panelId:', panelId, 'redditLimit:', preferences.redditLimit);
 
   return useQuery({
-    queryKey: ['reddit', stableKey, preferences.redditLimit],
-    queryFn: () => fetchRedditPosts(subreddits, preferences.redditLimit),
+    queryKey: [queryKeyPrefix, stableKey, preferences.redditLimit],
+    queryFn: () => {
+      console.log('🌐 [REDDIT_HOOK] Query function executing for', panelId, 'with limit:', preferences.redditLimit);
+      return fetchRedditPosts(subreddits, preferences.redditLimit);
+    },
     refetchInterval: 5 * 60 * 1000,
     staleTime: 2 * 60 * 1000,
   });
