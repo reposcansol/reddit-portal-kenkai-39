@@ -35,11 +35,17 @@ export const FilterControls: React.FC = () => {
 
   const handleSave = () => {
     console.log('🔧 [FILTER_CONTROLS] Save button clicked, invalidating all reddit queries');
-    // Force refresh all reddit data
+    // Force refresh all reddit data with more specific patterns
     queryClient.invalidateQueries({ 
-      queryKey: ['reddit'],
-      exact: false 
+      predicate: (query) => {
+        const queryKey = query.queryKey;
+        return Array.isArray(queryKey) && 
+               (queryKey[0] === 'reddit-panel1' || 
+                queryKey[0] === 'reddit-panel2' || 
+                queryKey[0] === 'reddit');
+      }
     });
+    console.log('🔧 [FILTER_CONTROLS] Queries invalidated, closing dialog');
     setIsOpen(false);
   };
 
