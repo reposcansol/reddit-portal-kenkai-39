@@ -8,9 +8,12 @@ import { useColumnOrder } from '@/hooks/useColumnOrder';
 import { useSortPreferences } from '@/hooks/useSortPreferences';
 import { useHighlightPreferences } from '@/hooks/useHighlightPreferences';
 import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
+import { useFilterPreferences } from '@/hooks/useFilterPreferences';
+import { usePostFilter } from '@/hooks/usePostFilter';
 import { SortControls } from '@/components/ui/SortControls';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { SubredditManager } from '@/components/ui/SubredditManager';
+import { FilterControls } from '@/components/ui/FilterControls';
 import { RotateCcw, Loader2 } from 'lucide-react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedPostExtensions } from '@/types/enhancedFilter';
@@ -29,6 +32,7 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
   const { data: redditData, isLoading, error, isFetching } = useReddit(subreddits);
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
+  const { preferences: filterPreferences } = useFilterPreferences();
 
   // Use the custom hook for managing column order with dynamic subreddits
   const { columnOrder, setColumnOrder, resetOrder } = useColumnOrder({
@@ -42,8 +46,9 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
     setColumnOrder(subreddits);
   }, [subreddits, setColumnOrder]);
 
-  // Apply enhanced filtering to all posts
-  const enhancedPosts = useEnhancedFilter(redditData || [], {
+  // Apply filtering first, then enhanced filtering
+  const filteredPosts = usePostFilter(redditData || [], filterPreferences);
+  const enhancedPosts = useEnhancedFilter(filteredPosts, {
     categories: preferences.categories,
     enabledCategories: preferences.enabledCategories
   });
@@ -114,6 +119,7 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
             onSortChange={setCurrentSort}
           />
           <CategoryManager />
+          <FilterControls />
           <SubredditManager 
             subreddits={subreddits}
             onSubredditsChange={onSubredditsChange}
