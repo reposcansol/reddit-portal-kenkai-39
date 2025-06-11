@@ -14,11 +14,23 @@ interface SubredditProviderProps {
 }
 
 export const SubredditProvider: React.FC<SubredditProviderProps> = ({ children }) => {
-  console.log('🏭 SubredditProvider rendering - this should only happen once');
+  console.log('🏭 [CONTEXT1] SubredditProvider rendering - this should only happen once');
+  console.log('🏭 [CONTEXT1] Render timestamp:', new Date().toISOString());
   
   const subredditState = useSubredditState();
   
-  console.log('🏭 SubredditProvider state:', { subreddits: subredditState.subreddits, timestamp: new Date().toISOString() });
+  console.log('🏭 [CONTEXT1] SubredditProvider state received from hook:', { 
+    subreddits: subredditState.subreddits, 
+    length: subredditState.subreddits.length,
+    timestamp: new Date().toISOString() 
+  });
+
+  // Log whenever the subreddits change
+  React.useEffect(() => {
+    console.log('🏭 [CONTEXT1] SubredditProvider - subreddits changed to:', subredditState.subreddits);
+    console.log('🏭 [CONTEXT1] SubredditProvider - change timestamp:', new Date().toISOString());
+    console.log('🏭 [CONTEXT1] SubredditProvider - is empty array?', subredditState.subreddits.length === 0);
+  }, [subredditState.subreddits]);
 
   return (
     <SubredditContext.Provider value={subredditState}>
@@ -33,6 +45,7 @@ export const useSubreddits = (): SubredditContextType => {
     throw new Error('useSubreddits must be used within a SubredditProvider');
   }
   
-  console.log('🎯 useSubreddits called - returning:', context.subreddits);
+  console.log('🎯 [CONTEXT1] useSubreddits called - returning:', context.subreddits);
+  console.log('🎯 [CONTEXT1] useSubreddits timestamp:', new Date().toISOString());
   return context;
 };

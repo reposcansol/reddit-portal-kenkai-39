@@ -15,10 +15,25 @@ export const SourceNavigator = () => {
   const { subreddits: subreddits2, updateSubreddits: updateSubreddits2 } = useSubreddits2();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  console.log('🧭 SourceNavigator rendering with subreddits:', subreddits);
-  console.log('🧭 SourceNavigator rendering with subreddits2:', subreddits2);
+  console.log('🧭 [NAVIGATOR] SourceNavigator rendering with subreddits1:', subreddits);
+  console.log('🧭 [NAVIGATOR] SourceNavigator rendering with subreddits2:', subreddits2);
+  console.log('🧭 [NAVIGATOR] Render timestamp:', new Date().toISOString());
+  console.log('🧭 [NAVIGATOR] Subreddits1 length:', subreddits.length);
+  console.log('🧭 [NAVIGATOR] Subreddits2 length:', subreddits2.length);
+
+  // Track whenever subreddits change in the navigator
+  React.useEffect(() => {
+    console.log('🧭 [NAVIGATOR] Subreddits1 changed in Navigator:', subreddits);
+    console.log('🧭 [NAVIGATOR] Change timestamp:', new Date().toISOString());
+  }, [subreddits]);
+
+  React.useEffect(() => {
+    console.log('🧭 [NAVIGATOR] Subreddits2 changed in Navigator:', subreddits2);
+    console.log('🧭 [NAVIGATOR] Change timestamp:', new Date().toISOString());
+  }, [subreddits2]);
 
   const handleSourceChange = (source: NewsSource) => {
+    console.log('🧭 [NAVIGATOR] Source changing to:', source);
     setActiveSource(source);
     
     if (scrollContainerRef.current) {
