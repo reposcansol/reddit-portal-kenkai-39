@@ -24,6 +24,7 @@ export interface RedditPost {
 
 const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Promise<RedditPost[]> => {
   try {
+    console.log('🌐 [REDDIT_API] Fetching posts with limit:', redditLimit, 'for subreddits:', subreddits);
     const allPosts: RedditPost[] = [];
     
     for (const subreddit of subreddits) {
@@ -56,14 +57,18 @@ const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Prom
             author_flair_text: child.data.author_flair_text
           }));
         
+        console.log(`🌐 [REDDIT_API] Fetched ${posts.length} posts from r/${subreddit}`);
         allPosts.push(...posts);
       } catch (error) {
+        console.log(`🌐 [REDDIT_API] Failed to fetch from r/${subreddit}:`, error);
         // Silent fallback - continue with other subreddits
       }
     }
     
+    console.log('🌐 [REDDIT_API] Total posts fetched:', allPosts.length);
     return allPosts;
   } catch (error) {
+    console.error('🌐 [REDDIT_API] Critical fetch error:', error);
     throw new Error('Failed to fetch Reddit posts');
   }
 };
@@ -74,15 +79,26 @@ export const useReddit = (subreddits: string[]) => {
   
   const stableKey = [...subreddits].sort().join(',');
   
+  // Invalidate when subreddits change
   useEffect(() => {
+    console.log('🌐 [REDDIT_HOOK] Subreddits changed, invalidating queries');
     queryClient.invalidateQueries({ 
       queryKey: ['reddit'],
       exact: false 
     });
   }, [stableKey, queryClient]);
 
+  // Invalidate when redditLimit changes (this was missing!)
+  useEffect(() => {
+    console.log('🌐 [REDDIT_HOOK] Reddit limit changed to:', preferences.redditLimit, 'invalidating queries');
+    queryClient.invalidateQueries({ 
+      queryKey: ['reddit'],
+      exact: false 
+    });
+  }, [preferences.redditLimit, queryClient]);
+
   return useQuery({
-    queryKey: ['reddit', stableKey],
+    queryKey: ['reddit', stableKey, preferences.redditLimit],
     queryFn: () => fetchRedditPosts(subreddits, preferences.redditLimit),
     refetchInterval: 5 * 60 * 1000,
     staleTime: 2 * 60 * 1000,
