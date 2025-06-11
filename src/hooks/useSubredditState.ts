@@ -3,7 +3,6 @@ import { useState, useCallback } from 'react';
 import { getStorageItem, setStorageItem } from '@/utils/localStorage';
 
 const STORAGE_KEY = 'selected-subreddits';
-const DEFAULT_SUBREDDITS = ['technology', 'programming', 'webdev', 'reactjs'];
 
 export const useSubredditState = () => {
   const [subreddits, setSubreddits] = useState<string[]>(() => {
@@ -19,13 +18,13 @@ export const useSubredditState = () => {
     })();
     
     if (!isLSAvailable) {
-      return DEFAULT_SUBREDDITS;
+      return [];
     }
     
     const stored = getStorageItem(STORAGE_KEY);
     
     if (stored === null) {
-      return DEFAULT_SUBREDDITS;
+      return [];
     }
     
     try {
@@ -33,10 +32,10 @@ export const useSubredditState = () => {
       if (Array.isArray(parsed)) {
         return parsed;
       } else {
-        return DEFAULT_SUBREDDITS;
+        return [];
       }
     } catch (error) {
-      return DEFAULT_SUBREDDITS;
+      return [];
     }
   });
 

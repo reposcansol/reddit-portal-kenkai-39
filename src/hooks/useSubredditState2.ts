@@ -6,7 +6,6 @@ import {
 } from '@/utils/localStorage';
 
 const STORAGE_KEY_2 = 'selected-subreddits-2';
-const DEFAULT_SUBREDDITS_2 = ['science', 'news', 'worldnews', 'todayilearned'];
 
 export const useSubredditState2 = () => {
   const [subreddits, setSubreddits] = useState<string[]>(() => {
@@ -22,13 +21,13 @@ export const useSubredditState2 = () => {
     })();
     
     if (!isLSAvailable) {
-      return DEFAULT_SUBREDDITS_2;
+      return [];
     }
     
     const stored = getStorageItem(STORAGE_KEY_2);
     
     if (stored === null) {
-      return DEFAULT_SUBREDDITS_2;
+      return [];
     }
     
     try {
@@ -36,10 +35,10 @@ export const useSubredditState2 = () => {
       if (Array.isArray(parsed)) {
         return parsed;
       } else {
-        return DEFAULT_SUBREDDITS_2;
+        return [];
       }
     } catch (error) {
-      return DEFAULT_SUBREDDITS_2;
+      return [];
     }
   });
 

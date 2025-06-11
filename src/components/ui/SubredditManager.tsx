@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Settings, Plus, X, Save } from 'lucide-react';
 import {
@@ -47,8 +46,7 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
   };
 
   const resetToDefaults = () => {
-    const defaultSubreddits = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
-    setLocalSubreddits(defaultSubreddits);
+    setLocalSubreddits([]);
   };
 
   const handleOpenChange = (open: boolean) => {
