@@ -4,6 +4,7 @@ import { ExternalLink } from 'lucide-react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedPostExtensions } from '@/hooks/useEnhancedFilter';
 import { Badge } from '@/components/ui/badge';
+import { getFlairColors } from '@/utils/flairColors';
 
 interface EnhancedCompactArticleCardProps {
   post: RedditPost & EnhancedPostExtensions;
@@ -38,6 +39,11 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
     if (score >= 50) return 'bg-green-100 text-black border-green-100';
     return 'bg-gray-200 text-black border-gray-200';
   };
+
+  // Get flair colors with proper contrast
+  const flairColors = post.link_flair_text 
+    ? getFlairColors(post.link_flair_text, post.link_flair_background_color)
+    : null;
 
   return (
     <div 
@@ -92,14 +98,14 @@ export const EnhancedCompactArticleCard: React.FC<EnhancedCompactArticleCardProp
         </div>
       </div>
 
-      {/* Flair badge at bottom left */}
-      {post.link_flair_text && (
+      {/* Flair badge with proper contrast */}
+      {post.link_flair_text && flairColors && (
         <div className="mt-2 flex items-center justify-start">
           <Badge 
             className="text-xs font-mono px-2 py-0.5 rounded-full border-0"
             style={{
-              backgroundColor: post.link_flair_background_color || '#374151',
-              color: post.link_flair_text_color || '#d1d5db'
+              backgroundColor: flairColors.backgroundColor,
+              color: flairColors.textColor
             }}
           >
             {post.link_flair_text}
