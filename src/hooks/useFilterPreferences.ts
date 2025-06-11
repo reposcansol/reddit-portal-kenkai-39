@@ -12,6 +12,9 @@ export interface FilterPreferences {
   maxPostLength: number | null;
   excludedFlairs: string[];
   excludedAuthors: string[];
+  postsPerSubreddit: number;
+  maxTotalPosts: number;
+  redditLimit: number;
   enabled: boolean;
 }
 
@@ -20,12 +23,32 @@ const DEFAULT_PREFERENCES: FilterPreferences = {
   maxUpvotes: null,
   minComments: 0,
   characterBlacklist: ['?'],
-  keywordBlacklist: ['removed', 'deleted'],
+  keywordBlacklist: [
+    'removed', 
+    'deleted', 
+    'help',
+    'how do you',
+    'how to',
+    'can someone',
+    'need help',
+    'please help',
+    'question',
+    'eli5',
+    'explain like',
+    'what is',
+    'why is',
+    'where is',
+    'when is',
+    'which is'
+  ],
   timeRange: 24, // 24 hours
   minPostLength: 0,
   maxPostLength: null,
-  excludedFlairs: [],
+  excludedFlairs: ['help'],
   excludedAuthors: [],
+  postsPerSubreddit: 15,
+  maxTotalPosts: 80,
+  redditLimit: 25,
   enabled: true
 };
 

@@ -66,12 +66,15 @@ export const FilterControls: React.FC = () => {
     if (preferences.maxUpvotes) count++;
     if (preferences.minComments > 0) count++;
     if (preferences.characterBlacklist.length > 1) count++; // Default has "?"
-    if (preferences.keywordBlacklist.length > 2) count++; // Default has "removed", "deleted"
+    if (preferences.keywordBlacklist.length > 15) count++; // Default has many keywords now
     if (preferences.timeRange < 24) count++;
     if (preferences.minPostLength > 0) count++;
     if (preferences.maxPostLength) count++;
-    if (preferences.excludedFlairs.length > 0) count++;
+    if (preferences.excludedFlairs.length > 1) count++; // Default has "help"
     if (preferences.excludedAuthors.length > 0) count++;
+    if (preferences.postsPerSubreddit !== 15) count++;
+    if (preferences.maxTotalPosts !== 80) count++;
+    if (preferences.redditLimit !== 25) count++;
     return count;
   };
 
@@ -93,7 +96,7 @@ export const FilterControls: React.FC = () => {
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="bg-black border-green-400/50 text-green-400 max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="bg-black border-green-400/50 text-green-400 max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-green-400 font-mono flex items-center justify-between">
             [POST_FILTERS]
@@ -167,6 +170,40 @@ export const FilterControls: React.FC = () => {
             </div>
           </div>
 
+          {/* Post Limits */}
+          <div className="space-y-4">
+            <Label className="text-green-400 font-mono">[POST_LIMITS]</Label>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label className="text-sm text-gray-400">Posts per Subreddit</Label>
+                <Input
+                  type="number"
+                  value={preferences.postsPerSubreddit}
+                  onChange={(e) => updatePreferences({ postsPerSubreddit: parseInt(e.target.value) || 15 })}
+                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
+                />
+              </div>
+              <div>
+                <Label className="text-sm text-gray-400">Max Total Posts</Label>
+                <Input
+                  type="number"
+                  value={preferences.maxTotalPosts}
+                  onChange={(e) => updatePreferences({ maxTotalPosts: parseInt(e.target.value) || 80 })}
+                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
+                />
+              </div>
+              <div>
+                <Label className="text-sm text-gray-400">Reddit API Limit</Label>
+                <Input
+                  type="number"
+                  value={preferences.redditLimit}
+                  onChange={(e) => updatePreferences({ redditLimit: parseInt(e.target.value) || 25 })}
+                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Character Blacklist */}
           <div className="space-y-2">
             <Label className="text-green-400 font-mono">[CHARACTER_BLACKLIST]</Label>
@@ -221,16 +258,51 @@ export const FilterControls: React.FC = () => {
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
               {preferences.keywordBlacklist.map((keyword, index) => (
                 <Badge
                   key={index}
-                  className="bg-red-900/30 text-red-400 border-red-400/30 font-mono"
+                  className="bg-red-900/30 text-red-400 border-red-400/30 font-mono text-xs"
                 >
                   {keyword}
                   <X
                     className="w-3 h-3 ml-1 cursor-pointer"
                     onClick={() => removeFromBlacklist('keyword', keyword)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Flair Blacklist */}
+          <div className="space-y-2">
+            <Label className="text-green-400 font-mono">[FLAIR_BLACKLIST]</Label>
+            <div className="flex gap-2">
+              <Input
+                value={newFlair}
+                onChange={(e) => setNewFlair(e.target.value)}
+                placeholder="Add flair to block"
+                className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
+                onKeyDown={(e) => e.key === 'Enter' && handleAddFlair()}
+              />
+              <Button
+                onClick={handleAddFlair}
+                size="sm"
+                className="bg-green-900/30 border-green-400/50 text-green-400 rounded-none"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {preferences.excludedFlairs.map((flair, index) => (
+                <Badge
+                  key={index}
+                  className="bg-red-900/30 text-red-400 border-red-400/30 font-mono"
+                >
+                  {flair}
+                  <X
+                    className="w-3 h-3 ml-1 cursor-pointer"
+                    onClick={() => removeFromBlacklist('flair', flair)}
                   />
                 </Badge>
               ))}

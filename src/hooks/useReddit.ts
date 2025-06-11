@@ -1,6 +1,8 @@
+
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect } from 'react';
+import { useFilterPreferences } from './useFilterPreferences';
 
 export interface RedditPost {
   id: string;
@@ -20,54 +22,17 @@ export interface RedditPost {
   author_flair_text?: string;
 }
 
-// Negative keywords to filter out
-const NEGATIVE_KEYWORDS = [
-  'help',
-  'how do you',
-  'how to',
-  'can someone',
-  'need help',
-  'please help',
-  'question',
-  'eli5',
-  'explain like',
-  'what is',
-  'why is',
-  'where is',
-  'when is',
-  'which is'
-];
-
-const containsNegativeKeywords = (text: string): boolean => {
-  const lowerText = text.toLowerCase();
-  return NEGATIVE_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
-};
-
-const containsQuestionMark = (text: string): boolean => {
-  return text.includes('?');
-};
-
-const hasHelpFlair = (flairText?: string): boolean => {
-  if (!flairText) return false;
-  return flairText.toLowerCase().includes('help');
-};
-
-const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => {
+const fetchRedditPosts = async (subreddits: string[], redditLimit: number): Promise<RedditPost[]> => {
   try {
     const allPosts: RedditPost[] = [];
     
-    // Calculate 24 hours ago timestamp
-    const twentyFourHoursAgo = Math.floor(Date.now() / 1000) - (24 * 60 * 60);
-    console.log('24 hours ago timestamp:', twentyFourHoursAgo);
-    console.log('Current timestamp:', Math.floor(Date.now() / 1000));
-    console.log('Fetching from subreddits:', subreddits);
-    
-    const postsBySubreddit: Record<string, RedditPost[]> = {};
+    console.log('📡 [REDDIT] Fetching from subreddits:', subreddits);
+    console.log('📡 [REDDIT] API limit per subreddit:', redditLimit);
     
     for (const subreddit of subreddits) {
       try {
         const response = await axios.get(
-          `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
+          `https://www.reddit.com/r/${subreddit}/hot.json?limit=${redditLimit}`,
           {
             headers: {
               'User-Agent': 'AI-News-Aggregator/1.0'
@@ -92,59 +57,26 @@ const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => 
             link_flair_background_color: child.data.link_flair_background_color,
             link_flair_text_color: child.data.link_flair_text_color,
             author_flair_text: child.data.author_flair_text
-          }))
-          .filter((post: RedditPost) => {
-            const isRecent = post.created_utc >= twentyFourHoursAgo;
-            const hasMinUpvotes = (post.score || 0) >= 1; // Minimum 1 upvote required
-            const hasNegativeKeywords = containsNegativeKeywords(post.title);
-            const hasQuestionMark = containsQuestionMark(post.title);
-            const hasHelpInFlair = hasHelpFlair(post.link_flair_text);
-            const hoursAgo = Math.floor((Math.floor(Date.now() / 1000) - post.created_utc) / 3600);
-            
-            const included = isRecent && hasMinUpvotes && !hasNegativeKeywords && !hasQuestionMark && !hasHelpInFlair;
-            console.log(`Post "${post.title.substring(0, 50)}..." from r/${post.subreddit} - ${hoursAgo}h ago, ${post.score} upvotes - ${included ? 'INCLUDED' : 'FILTERED OUT'} (${!isRecent ? 'too old' : !hasMinUpvotes ? 'insufficient upvotes' : hasNegativeKeywords ? 'contains negative keywords' : hasQuestionMark ? 'contains question mark' : hasHelpInFlair ? 'help flair' : 'passed'})`);
-            
-            return included;
-          })
-          .sort((a: RedditPost, b: RedditPost) => b.score - a.score);
+          }));
         
-        postsBySubreddit[subreddit] = posts;
-        console.log(`r/${subreddit}: ${posts.length} posts after filtering (24h + ≥1 upvotes + no negative keywords + no question marks + no help flairs)`);
-        
-        // Take top posts from each subreddit to ensure representation
-        allPosts.push(...posts.slice(0, 15));
+        console.log(`📡 [REDDIT] r/${subreddit}: ${posts.length} raw posts fetched`);
+        allPosts.push(...posts);
       } catch (error) {
-        console.error(`Error fetching posts from r/${subreddit}:`, error);
-        postsBySubreddit[subreddit] = [];
+        console.error(`❌ [REDDIT] Error fetching posts from r/${subreddit}:`, error);
       }
     }
     
-    console.log(`Total posts before final sort: ${allPosts.length}`);
-    console.log('Posts per subreddit:', Object.entries(postsBySubreddit).map(([sub, posts]) => `${sub}: ${posts.length}`).join(', '));
-    
-    // Sort by score and return top posts
-    const finalPosts = allPosts
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 80); // Increased to allow more posts per column
-      
-    console.log(`Final posts count: ${finalPosts.length}`);
-    
-    // Log distribution in final posts
-    const finalDistribution = finalPosts.reduce((acc, post) => {
-      acc[post.subreddit] = (acc[post.subreddit] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    console.log('Final distribution:', finalDistribution);
-    
-    return finalPosts;
+    console.log(`📡 [REDDIT] Total raw posts fetched: ${allPosts.length}`);
+    return allPosts;
   } catch (error) {
-    console.error('Error fetching Reddit posts:', error);
+    console.error('❌ [REDDIT] Error fetching Reddit posts:', error);
     throw new Error('Failed to fetch Reddit posts');
   }
 };
 
 export const useReddit = (subreddits: string[]) => {
   const queryClient = useQueryClient();
+  const { preferences } = useFilterPreferences();
   
   // Create a stable cache key using sorted subreddits
   const stableKey = [...subreddits].sort().join(',');
@@ -163,7 +95,7 @@ export const useReddit = (subreddits: string[]) => {
 
   return useQuery({
     queryKey: ['reddit', stableKey],
-    queryFn: () => fetchRedditPosts(subreddits),
+    queryFn: () => fetchRedditPosts(subreddits, preferences.redditLimit),
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
   });
