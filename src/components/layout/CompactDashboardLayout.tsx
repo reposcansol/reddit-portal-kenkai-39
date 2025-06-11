@@ -12,12 +12,12 @@ export const CompactDashboardLayout = () => {
         <div className="w-full px-4 py-4">
           <div className="w-full flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-400 rounded-none flex items-center justify-center">
-                <Zap className="w-4 h-4 text-black" />
+              <div className="text-2xl">
+                🌐
               </div>
               <div>
                 <h1 className="text-lg font-bold text-green-400 tracking-tight font-mono">
-                  [AI_NEWS_TERMINAL]
+                  PORTAL_TO_REDDIT
                 </h1>
                 <p className="text-gray-500 text-xs font-mono">
                   {'>> Accessing neural network feeds...'}
