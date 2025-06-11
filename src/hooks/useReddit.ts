@@ -80,10 +80,27 @@ export const useReddit = (subreddits: string[], panelId?: string) => {
   const stableKey = [...subreddits].sort().join(',');
   const queryKeyPrefix = panelId ? `reddit-${panelId}` : 'reddit';
   
+  // Create a filter hash to include in query key so data refetches when filters change
+  const filterHash = JSON.stringify({
+    enabled: preferences.enabled,
+    minUpvotes: preferences.minUpvotes,
+    maxUpvotes: preferences.maxUpvotes,
+    minComments: preferences.minComments,
+    timeRange: preferences.timeRange,
+    minPostLength: preferences.minPostLength,
+    maxPostLength: preferences.maxPostLength,
+    characterBlacklist: preferences.characterBlacklist,
+    keywordBlacklist: preferences.keywordBlacklist,
+    excludedFlairs: preferences.excludedFlairs,
+    excludedAuthors: preferences.excludedAuthors,
+    postsPerSubreddit: preferences.postsPerSubreddit,
+    maxTotalPosts: preferences.maxTotalPosts
+  });
+  
   console.log('🌐 [REDDIT_HOOK] Hook called with panelId:', panelId, 'redditLimit:', preferences.redditLimit);
 
   return useQuery({
-    queryKey: [queryKeyPrefix, stableKey, preferences.redditLimit],
+    queryKey: [queryKeyPrefix, stableKey, preferences.redditLimit, filterHash],
     queryFn: () => {
       console.log('🌐 [REDDIT_HOOK] Query function executing for', panelId, 'with limit:', preferences.redditLimit);
       return fetchRedditPosts(subreddits, preferences.redditLimit);
