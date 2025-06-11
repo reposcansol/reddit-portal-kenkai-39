@@ -14,7 +14,7 @@ export interface PostLike {
   subreddit?: string;
   
   // Reddit-specific properties
-  id?: string | number; // Allow both string (Reddit) and number (GitHub)
+  id?: string | number;
   url?: string;
   author?: string;
   created_utc?: number;
@@ -25,27 +25,6 @@ export interface PostLike {
   link_flair_background_color?: string;
   link_flair_text_color?: string;
   author_flair_text?: string;
-  
-  // GitHub-specific properties
-  name?: string;
-  description?: string | null;
-  stargazers_count?: number;
-  forks_count?: number;
-  created_at?: string;
-  updated_at?: string;
-  pushed_at?: string;
-  html_url?: string;
-  full_name?: string;
-  language?: string | null;
-  owner?: {
-    login: string;
-    avatar_url: string;
-    html_url: string;
-  };
-  topics?: string[];
-  license?: {
-    name: string;
-  } | null;
 }
 
 export interface EnhancedPostExtensions {

@@ -4,10 +4,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SourceTabs } from './SourceTabs';
 import { RedditSourcePanel } from './RedditSourcePanel';
 import { HackerNewsSourcePanel } from './HackerNewsSourcePanel';
-import { GitHubSourcePanel } from './GitHubSourcePanel';
 import { useSubreddits } from '@/contexts/SubredditContext';
 
-type NewsSource = 'reddit' | 'hackernews' | 'github';
+type NewsSource = 'reddit' | 'hackernews';
 
 export const SourceNavigator = () => {
   const [activeSource, setActiveSource] = useState<NewsSource>('reddit');
@@ -94,14 +93,6 @@ export const SourceNavigator = () => {
             className="min-w-full snap-start h-full"
           >
             <HackerNewsSourcePanel />
-          </div>
-
-          {/* GitHub Source Panel */}
-          <div 
-            data-source="github"
-            className="min-w-full snap-start h-full"
-          >
-            <GitHubSourcePanel />
           </div>
         </div>
       </div>
