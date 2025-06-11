@@ -11,7 +11,7 @@ import { useEnhancedFilter } from '@/hooks/useEnhancedFilter';
 import { SortControls } from '@/components/ui/SortControls';
 import { CategoryManager } from '@/components/ui/CategoryManager';
 import { SubredditManager } from '@/components/ui/SubredditManager';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Loader2 } from 'lucide-react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedPostExtensions } from '@/types/enhancedFilter';
 
@@ -26,7 +26,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
 }) => {
   console.log('📺 RedditSourcePanel rendering with subreddits:', subreddits);
   
-  const { data: redditData, isLoading, error } = useReddit(subreddits);
+  const { data: redditData, isLoading, error, isFetching } = useReddit(subreddits);
   const { currentSort, setCurrentSort } = useSortPreferences();
   const { preferences } = useHighlightPreferences();
 
@@ -96,6 +96,9 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
     return grouped;
   }, [enhancedPosts, currentSort]);
 
+  // Show loading state when fetching new data for different subreddits
+  const isLoadingNewData = isLoading || isFetching;
+
   return (
     <main 
       className="p-4 h-full flex flex-col overflow-hidden"
@@ -117,17 +120,26 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
           />
         </div>
         
-        <button
-          onClick={resetOrder}
-          className="text-xs text-gray-500 hover:text-green-400 transition-colors 
-                     flex items-center gap-1 font-mono
-                     bg-black border border-green-400/30 rounded-none px-2 py-1
-                     hover:border-green-400/50"
-          title="Reset column order"
-        >
-          <RotateCcw className="w-3 h-3" />
-          [RESET_ORDER]
-        </button>
+        <div className="flex items-center gap-2">
+          {isFetching && (
+            <div className="flex items-center gap-1 text-green-400 text-xs font-mono">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              [UPDATING...]
+            </div>
+          )}
+          
+          <button
+            onClick={resetOrder}
+            className="text-xs text-gray-500 hover:text-green-400 transition-colors 
+                       flex items-center gap-1 font-mono
+                       bg-black border border-green-400/30 rounded-none px-2 py-1
+                       hover:border-green-400/50"
+            title="Reset column order"
+          >
+            <RotateCcw className="w-3 h-3" />
+            [RESET_ORDER]
+          </button>
+        </div>
       </div>
 
       <DraggableContainer
@@ -144,7 +156,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
             <SubredditColumn
               subreddit={subreddit}
               posts={postsBySubreddit[subreddit] || []}
-              isLoading={isLoading}
+              isLoading={isLoadingNewData}
               error={error?.message}
             />
           </DraggableColumn>

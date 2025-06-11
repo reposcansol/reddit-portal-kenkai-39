@@ -5,19 +5,8 @@ import { setGlobalSubreddits, notifyGlobalListeners } from './globalSubredditSta
 const STORAGE_KEY = 'selected-subreddits';
 export const DEFAULT_SUBREDDITS = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
 
-// Centralized localStorage operations with locking
-let isLoading = false;
-let isSaving = false;
-
 export const loadSubredditsFromStorage = (): string[] => {
-  console.log('🔍 loadSubredditsFromStorage called, isLoading:', isLoading);
-  
-  if (isLoading) {
-    console.log('🔒 Already loading, returning defaults');
-    return DEFAULT_SUBREDDITS;
-  }
-  
-  isLoading = true;
+  console.log('🔍 loadSubredditsFromStorage called');
   
   try {
     const stored = getStorageItem(STORAGE_KEY);
@@ -26,7 +15,6 @@ export const loadSubredditsFromStorage = (): string[] => {
     
     if (stored === null || stored === '') {
       console.log('📭 No stored subreddits found, using defaults:', DEFAULT_SUBREDDITS);
-      isLoading = false;
       return DEFAULT_SUBREDDITS;
     }
 
@@ -35,7 +23,6 @@ export const loadSubredditsFromStorage = (): string[] => {
     
     if (!Array.isArray(parsed) || parsed.length === 0) {
       console.warn('⚠️ Invalid stored data, using defaults');
-      isLoading = false;
       return DEFAULT_SUBREDDITS;
     }
 
@@ -43,12 +30,10 @@ export const loadSubredditsFromStorage = (): string[] => {
     
     if (validSubreddits.length === 0) {
       console.warn('⚠️ No valid subreddits, using defaults');
-      isLoading = false;
       return DEFAULT_SUBREDDITS;
     }
 
     console.log('✅ Successfully loaded subreddits from localStorage:', validSubreddits);
-    isLoading = false;
     return validSubreddits;
   } catch (error) {
     console.error('❌ Error parsing stored subreddits:', error);
@@ -59,20 +44,12 @@ export const loadSubredditsFromStorage = (): string[] => {
       console.error('❌ Could not clear corrupted data:', clearError);
     }
     
-    isLoading = false;
     return DEFAULT_SUBREDDITS;
   }
 };
 
 export const saveSubredditsToStorage = (subreddits: string[]): boolean => {
-  console.log('💾 saveSubredditsToStorage called with:', subreddits, 'isSaving:', isSaving);
-  
-  if (isSaving) {
-    console.log('🔒 Already saving, skipping...');
-    return false;
-  }
-  
-  isSaving = true;
+  console.log('💾 saveSubredditsToStorage called with:', subreddits);
   
   try {
     const dataToStore = JSON.stringify(subreddits);
@@ -91,11 +68,9 @@ export const saveSubredditsToStorage = (subreddits: string[]): boolean => {
       console.error('❌ Save verification failed');
     }
     
-    isSaving = false;
     return success;
   } catch (error) {
     console.error('❌ Error saving subreddits to localStorage:', error);
-    isSaving = false;
     return false;
   }
 };

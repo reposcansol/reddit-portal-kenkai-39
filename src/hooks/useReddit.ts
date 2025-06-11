@@ -1,6 +1,6 @@
-
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { useEffect } from 'react';
 
 export interface RedditPost {
   id: string;
@@ -144,8 +144,25 @@ const fetchRedditPosts = async (subreddits: string[]): Promise<RedditPost[]> => 
 };
 
 export const useReddit = (subreddits: string[]) => {
+  const queryClient = useQueryClient();
+  
+  // Create a stable cache key using sorted subreddits
+  const stableKey = [...subreddits].sort().join(',');
+  
+  console.log('🔄 useReddit called with subreddits:', subreddits);
+  console.log('🔄 Cache key:', stableKey);
+  
+  // Invalidate old queries when subreddits change
+  useEffect(() => {
+    console.log('🔄 Invalidating old reddit queries due to subreddit change');
+    queryClient.invalidateQueries({ 
+      queryKey: ['reddit'],
+      exact: false 
+    });
+  }, [stableKey, queryClient]);
+
   return useQuery({
-    queryKey: ['reddit', subreddits],
+    queryKey: ['reddit', stableKey],
     queryFn: () => fetchRedditPosts(subreddits),
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
