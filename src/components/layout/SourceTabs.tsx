@@ -17,14 +17,12 @@ export const SourceTabs: React.FC<SourceTabsProps> = ({
     {
       id: 'reddit' as NewsSource,
       label: '[REDDIT_FEEDS_1]',
-      icon: Hash,
-      description: 'AI coding communities'
+      icon: Hash
     },
     {
       id: 'reddit2' as NewsSource,
       label: '[REDDIT_FEEDS_2]',
-      icon: Hash,
-      description: 'More AI communities'
+      icon: Hash
     }
   ];
 
@@ -65,10 +63,7 @@ export const SourceTabs: React.FC<SourceTabsProps> = ({
               onKeyDown={(e) => handleKeyDown(e, tab.id)}
             >
               <Icon className="w-4 h-4" />
-              <div className="text-left">
-                <div className="font-bold">{tab.label}</div>
-                <div className="text-xs opacity-70">{tab.description}</div>
-              </div>
+              <div className="font-bold">{tab.label}</div>
             </button>
           );
         })}
