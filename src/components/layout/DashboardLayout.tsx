@@ -1,24 +1,20 @@
 
 import React from 'react';
-import { useHackerNews } from '@/hooks/useHackerNews';
 import { useReddit } from '@/hooks/useReddit';
 import { useSubreddits } from '@/contexts/SubredditContext';
 import { useAIFilter } from '@/hooks/useAIFilter';
 import { ContentColumn } from './ContentColumn';
-import { HackerNewsCard } from '@/components/news/HackerNewsCard';
 import { RedditCard } from '@/components/news/RedditCard';
 import { RefreshButton } from '@/components/ui/RefreshButton';
 import { SubredditManager } from '@/components/ui/SubredditManager';
-import { Loader2, Zap, MessageSquare } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 
 export const DashboardLayout = () => {
   const { subreddits, updateSubreddits } = useSubreddits();
-  const { data: hackerNewsData, isLoading: hnLoading, error: hnError } = useHackerNews();
   const { data: redditData, isLoading: redditLoading, error: redditError } = useReddit(subreddits);
   
   console.log('📊 DashboardLayout rendering with subreddits:', subreddits);
   
-  const filteredHN = useAIFilter(hackerNewsData || []);
   const filteredReddit = useAIFilter(redditData || []);
 
   return (
@@ -37,14 +33,14 @@ export const DashboardLayout = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
-                <Zap className="w-5 h-5 text-slate-900" />
+                <MessageSquare className="w-5 h-5 text-slate-900" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-                  AI News Portal
+                  Reddit AI News Portal
                 </h1>
                 <p className="text-slate-400 text-sm">
-                  Curated intelligence from across the web
+                  Curated AI discussions from Reddit communities
                 </p>
               </div>
             </div>
@@ -61,24 +57,7 @@ export const DashboardLayout = () => {
 
       {/* Main content */}
       <main className="relative z-10 container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* Hacker News Column */}
-          <ContentColumn
-            title="Hacker News"
-            icon={<Zap className="w-5 h-5" />}
-            isLoading={hnLoading}
-            error={hnError?.message}
-            count={filteredHN.length}
-          >
-            {filteredHN.map((post, index) => (
-              <HackerNewsCard 
-                key={post.id} 
-                post={post} 
-                index={index}
-              />
-            ))}
-          </ContentColumn>
-
+        <div className="max-w-4xl mx-auto">
           {/* Reddit Column */}
           <ContentColumn
             title="Reddit AI Communities"

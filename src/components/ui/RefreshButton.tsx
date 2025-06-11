@@ -19,7 +19,6 @@ export const RefreshButton = () => {
     try {
       // Invalidate all queries to trigger fresh data fetching
       await queryClient.invalidateQueries({ queryKey: ['reddit'] });
-      await queryClient.invalidateQueries({ queryKey: ['hackerNews'] });
       
       // Update last refreshed time
       setLastRefreshed(new Date());

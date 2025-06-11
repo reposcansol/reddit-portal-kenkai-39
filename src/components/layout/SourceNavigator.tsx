@@ -3,10 +3,9 @@ import React, { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SourceTabs } from './SourceTabs';
 import { RedditSourcePanel } from './RedditSourcePanel';
-import { HackerNewsSourcePanel } from './HackerNewsSourcePanel';
 import { useSubreddits } from '@/contexts/SubredditContext';
 
-type NewsSource = 'reddit' | 'hackernews';
+type NewsSource = 'reddit';
 
 export const SourceNavigator = () => {
   const [activeSource, setActiveSource] = useState<NewsSource>('reddit');
@@ -85,14 +84,6 @@ export const SourceNavigator = () => {
               subreddits={subreddits}
               onSubredditsChange={updateSubreddits}
             />
-          </div>
-
-          {/* HackerNews Source Panel */}
-          <div 
-            data-source="hackernews"
-            className="min-w-full snap-start h-full"
-          >
-            <HackerNewsSourcePanel />
           </div>
         </div>
       </div>

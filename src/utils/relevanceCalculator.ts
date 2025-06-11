@@ -6,7 +6,7 @@ export const calculateRelevanceScore = (
   categories: KeywordCategory[], 
   enabledCategories: string[]
 ): { score: number; matchedCategories: string[]; matchedKeywords: string[] } => {
-  // Handle both Reddit posts and Hacker News posts
+  // Handle Reddit posts only
   const title = post.title || '';
   const content = post.selftext || '';
   const text = `${title} ${content}`.toLowerCase();
@@ -37,7 +37,7 @@ export const calculateRelevanceScore = (
   });
   
   // Boost score based on post engagement (25% of total score potential)
-  // Handle Reddit score and Hacker News score
+  // Handle Reddit score
   const engagementScore = post.score || 0;
   if (engagementScore) {
     score += Math.log(engagementScore + 1) * 0.5;
