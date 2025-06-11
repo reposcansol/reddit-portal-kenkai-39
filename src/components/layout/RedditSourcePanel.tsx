@@ -151,7 +151,7 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
           <DraggableColumn
             key={subreddit}
             id={subreddit}
-            className="w-1/4"
+            className="w-80 flex-shrink-0"
           >
             <SubredditColumn
               subreddit={subreddit}
