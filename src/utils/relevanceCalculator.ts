@@ -6,9 +6,9 @@ export const calculateRelevanceScore = (
   categories: KeywordCategory[], 
   enabledCategories: string[]
 ): { score: number; matchedCategories: string[]; matchedKeywords: string[] } => {
-  // Handle both Reddit posts and GitHub repos
-  const title = post.title || post.name || '';
-  const content = post.selftext || post.description || '';
+  // Handle both Reddit posts and Hacker News posts
+  const title = post.title || '';
+  const content = post.selftext || '';
   const text = `${title} ${content}`.toLowerCase();
   
   let score = 0;
@@ -37,8 +37,8 @@ export const calculateRelevanceScore = (
   });
   
   // Boost score based on post engagement (25% of total score potential)
-  // Handle both Reddit score and GitHub stars
-  const engagementScore = post.score || post.stargazers_count || 0;
+  // Handle Reddit score and Hacker News score
+  const engagementScore = post.score || 0;
   if (engagementScore) {
     score += Math.log(engagementScore + 1) * 0.5;
   }
