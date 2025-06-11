@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Filter } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ import { BlacklistInput } from './filters/BlacklistInput';
 import { FilterActions } from './filters/FilterActions';
 
 export const FilterControls: React.FC = () => {
+  const queryClient = useQueryClient();
   const {
     preferences,
     updatePreferences,
@@ -30,6 +32,16 @@ export const FilterControls: React.FC = () => {
   } = useFilterPreferences();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleSave = () => {
+    console.log('🔧 [FILTER_CONTROLS] Save button clicked, invalidating all reddit queries');
+    // Force refresh all reddit data
+    queryClient.invalidateQueries({ 
+      queryKey: ['reddit'],
+      exact: false 
+    });
+    setIsOpen(false);
+  };
 
   const getActiveFilterCount = () => {
     let count = 0;
@@ -129,6 +141,7 @@ export const FilterControls: React.FC = () => {
           />
 
           <FilterActions
+            onSave={handleSave}
             onReset={resetToDefaults}
             onClose={() => setIsOpen(false)}
           />
