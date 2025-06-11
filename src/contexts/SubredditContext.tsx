@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useSubredditManager } from '@/hooks/useSubredditManager';
+import { useSubredditState } from '@/hooks/useSubredditState';
 
 interface SubredditContextType {
   subreddits: string[];
@@ -16,12 +16,12 @@ interface SubredditProviderProps {
 export const SubredditProvider: React.FC<SubredditProviderProps> = ({ children }) => {
   console.log('🏭 SubredditProvider rendering - this should only happen once');
   
-  const { subreddits, updateSubreddits } = useSubredditManager();
+  const subredditState = useSubredditState();
   
-  console.log('🏭 SubredditProvider state:', { subreddits, timestamp: new Date().toISOString() });
+  console.log('🏭 SubredditProvider state:', { subreddits: subredditState.subreddits, timestamp: new Date().toISOString() });
 
   return (
-    <SubredditContext.Provider value={{ subreddits, updateSubreddits }}>
+    <SubredditContext.Provider value={subredditState}>
       {children}
     </SubredditContext.Provider>
   );

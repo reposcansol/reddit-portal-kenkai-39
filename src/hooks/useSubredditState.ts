@@ -1,12 +1,9 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { 
-  getStoredSubreddits, 
-  setStoredSubreddits, 
-  addGlobalListener, 
-  removeGlobalListener,
-  DEFAULT_SUBREDDITS 
-} from '@/utils/subredditStorage';
+import { useState, useCallback } from 'react';
+import { getStorageItem, setStorageItem } from '@/utils/localStorage';
+
+const STORAGE_KEY = 'selected-subreddits';
+const DEFAULT_SUBREDDITS = ['localllama', 'roocode', 'chatgptcoding', 'cursor'];
 
 export const useSubredditState = () => {
   console.log('🚀 useSubredditState hook initializing at', new Date().toISOString());
@@ -14,24 +11,21 @@ export const useSubredditState = () => {
   // Initialize with stored value or default
   const [subreddits, setSubreddits] = useState<string[]>(() => {
     console.log('🏁 Initializing subreddits state...');
-    const initial = getStoredSubreddits();
-    console.log('🏁 Initial subreddits loaded:', initial);
-    return initial;
+    const stored = getStorageItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          console.log('🏁 Initial subreddits loaded:', parsed);
+          return parsed;
+        }
+      } catch (error) {
+        console.error('Error parsing stored subreddits:', error);
+      }
+    }
+    console.log('🏁 Using default subreddits:', DEFAULT_SUBREDDITS);
+    return DEFAULT_SUBREDDITS;
   });
-
-  // Listen for external changes
-  useEffect(() => {
-    const listener = (newSubreddits: string[]) => {
-      console.log('🔄 External subreddit change detected:', newSubreddits);
-      setSubreddits(newSubreddits);
-    };
-    
-    addGlobalListener(listener);
-    
-    return () => {
-      removeGlobalListener(listener);
-    };
-  }, []);
 
   const updateSubreddits = useCallback((newSubreddits: string[]) => {
     console.log('🔄 updateSubreddits called with:', newSubreddits);
@@ -49,9 +43,9 @@ export const useSubredditState = () => {
     console.log('🔄 Setting new subreddits:', finalSubreddits);
     setSubreddits(finalSubreddits);
     
-    // Save immediately without debouncing
+    // Save immediately
     console.log('💾 Saving subreddits immediately:', finalSubreddits);
-    setStoredSubreddits(finalSubreddits);
+    setStorageItem(STORAGE_KEY, JSON.stringify(finalSubreddits));
   }, [subreddits]);
 
   // Debug current state every render
