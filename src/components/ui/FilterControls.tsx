@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import { Filter } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +19,6 @@ import { BlacklistInput } from './filters/BlacklistInput';
 import { FilterActions } from './filters/FilterActions';
 
 export const FilterControls: React.FC = () => {
-  const queryClient = useQueryClient();
   const {
     preferences,
     updatePreferences,
@@ -34,19 +31,8 @@ export const FilterControls: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSave = () => {
-    console.log('🔧 [FILTER_CONTROLS] Save button clicked, invalidating all reddit queries');
-    // Force refresh all reddit data with more specific patterns
-    queryClient.invalidateQueries({ 
-      predicate: (query) => {
-        const queryKey = query.queryKey;
-        return Array.isArray(queryKey) && 
-               (queryKey[0] === 'reddit-panel1' || 
-                queryKey[0] === 'reddit-panel2' || 
-                queryKey[0] === 'reddit');
-      }
-    });
-    console.log('🔧 [FILTER_CONTROLS] Queries invalidated, closing dialog');
-    setIsOpen(false);
+    console.log('🔧 [FILTER_CONTROLS] Save button clicked, refreshing page');
+    window.location.reload();
   };
 
   const getActiveFilterCount = () => {
