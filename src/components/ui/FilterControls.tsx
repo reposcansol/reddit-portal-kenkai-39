@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Filter, X, Plus, RotateCcw } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -9,12 +9,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { useFilterPreferences } from '@/hooks/useFilterPreferences';
+import { ScoreFilters } from './filters/ScoreFilters';
+import { TimeFilter } from './filters/TimeFilter';
+import { PostLimits } from './filters/PostLimits';
+import { PostLengthFilters } from './filters/PostLengthFilters';
+import { BlacklistInput } from './filters/BlacklistInput';
+import { FilterActions } from './filters/FilterActions';
 
 export const FilterControls: React.FC = () => {
   const {
@@ -27,38 +30,6 @@ export const FilterControls: React.FC = () => {
   } = useFilterPreferences();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [newCharacter, setNewCharacter] = useState('');
-  const [newKeyword, setNewKeyword] = useState('');
-  const [newFlair, setNewFlair] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-
-  const handleAddCharacter = () => {
-    if (newCharacter.trim()) {
-      addToBlacklist('character', newCharacter);
-      setNewCharacter('');
-    }
-  };
-
-  const handleAddKeyword = () => {
-    if (newKeyword.trim()) {
-      addToBlacklist('keyword', newKeyword);
-      setNewKeyword('');
-    }
-  };
-
-  const handleAddFlair = () => {
-    if (newFlair.trim()) {
-      addToBlacklist('flair', newFlair);
-      setNewFlair('');
-    }
-  };
-
-  const handleAddAuthor = () => {
-    if (newAuthor.trim()) {
-      addToBlacklist('author', newAuthor);
-      setNewAuthor('');
-    }
-  };
 
   const getActiveFilterCount = () => {
     let count = 0;
@@ -112,249 +83,55 @@ export const FilterControls: React.FC = () => {
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Score Filters */}
-          <div className="space-y-4">
-            <Label className="text-green-400 font-mono">[SCORE_FILTERS]</Label>
-            
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-400">Minimum Upvotes: {preferences.minUpvotes}</Label>
-              <Slider
-                value={[preferences.minUpvotes]}
-                onValueChange={([value]) => updatePreferences({ minUpvotes: value })}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-            </div>
+          <ScoreFilters 
+            preferences={preferences}
+            updatePreferences={updatePreferences}
+          />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm text-gray-400">Max Upvotes (optional)</Label>
-                <Input
-                  type="number"
-                  value={preferences.maxUpvotes || ''}
-                  onChange={(e) => updatePreferences({ 
-                    maxUpvotes: e.target.value ? parseInt(e.target.value) : null 
-                  })}
-                  placeholder="No limit"
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-              <div>
-                <Label className="text-sm text-gray-400">Min Comments</Label>
-                <Input
-                  type="number"
-                  value={preferences.minComments}
-                  onChange={(e) => updatePreferences({ minComments: parseInt(e.target.value) || 0 })}
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-            </div>
-          </div>
+          <TimeFilter 
+            preferences={preferences}
+            updatePreferences={updatePreferences}
+          />
 
-          {/* Time Filter */}
-          <div className="space-y-2">
-            <Label className="text-green-400 font-mono">[TIME_FILTER]</Label>
-            <Label className="text-sm text-gray-400">Show posts from last {preferences.timeRange} hours</Label>
-            <Slider
-              value={[preferences.timeRange]}
-              onValueChange={([value]) => updatePreferences({ timeRange: value })}
-              min={1}
-              max={168} // 1 week
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>1h</span>
-              <span>1 week</span>
-            </div>
-          </div>
+          <PostLimits 
+            preferences={preferences}
+            updatePreferences={updatePreferences}
+          />
 
-          {/* Post Limits */}
-          <div className="space-y-4">
-            <Label className="text-green-400 font-mono">[POST_LIMITS]</Label>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label className="text-sm text-gray-400">Posts per Subreddit</Label>
-                <Input
-                  type="number"
-                  value={preferences.postsPerSubreddit}
-                  onChange={(e) => updatePreferences({ postsPerSubreddit: parseInt(e.target.value) || 15 })}
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-              <div>
-                <Label className="text-sm text-gray-400">Max Total Posts</Label>
-                <Input
-                  type="number"
-                  value={preferences.maxTotalPosts}
-                  onChange={(e) => updatePreferences({ maxTotalPosts: parseInt(e.target.value) || 80 })}
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-              <div>
-                <Label className="text-sm text-gray-400">Reddit API Limit</Label>
-                <Input
-                  type="number"
-                  value={preferences.redditLimit}
-                  onChange={(e) => updatePreferences({ redditLimit: parseInt(e.target.value) || 25 })}
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-            </div>
-          </div>
+          <BlacklistInput
+            title="CHARACTER_BLACKLIST"
+            placeholder="Add character to block"
+            items={preferences.characterBlacklist}
+            onAdd={(value) => addToBlacklist('character', value)}
+            onRemove={(value) => removeFromBlacklist('character', value)}
+          />
 
-          {/* Character Blacklist */}
-          <div className="space-y-2">
-            <Label className="text-green-400 font-mono">[CHARACTER_BLACKLIST]</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newCharacter}
-                onChange={(e) => setNewCharacter(e.target.value)}
-                placeholder="Add character to block"
-                className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                onKeyDown={(e) => e.key === 'Enter' && handleAddCharacter()}
-              />
-              <Button
-                onClick={handleAddCharacter}
-                size="sm"
-                className="bg-green-900/30 border-green-400/50 text-green-400 rounded-none"
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {preferences.characterBlacklist.map((char, index) => (
-                <Badge
-                  key={index}
-                  className="bg-red-900/30 text-red-400 border-red-400/30 font-mono"
-                >
-                  "{char}"
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => removeFromBlacklist('character', char)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
+          <BlacklistInput
+            title="KEYWORD_BLACKLIST"
+            placeholder="Add keyword to block"
+            items={preferences.keywordBlacklist}
+            onAdd={(value) => addToBlacklist('keyword', value)}
+            onRemove={(value) => removeFromBlacklist('keyword', value)}
+            maxHeight="max-h-32"
+          />
 
-          {/* Keyword Blacklist */}
-          <div className="space-y-2">
-            <Label className="text-green-400 font-mono">[KEYWORD_BLACKLIST]</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newKeyword}
-                onChange={(e) => setNewKeyword(e.target.value)}
-                placeholder="Add keyword to block"
-                className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                onKeyDown={(e) => e.key === 'Enter' && handleAddKeyword()}
-              />
-              <Button
-                onClick={handleAddKeyword}
-                size="sm"
-                className="bg-green-900/30 border-green-400/50 text-green-400 rounded-none"
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
-              {preferences.keywordBlacklist.map((keyword, index) => (
-                <Badge
-                  key={index}
-                  className="bg-red-900/30 text-red-400 border-red-400/30 font-mono text-xs"
-                >
-                  {keyword}
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => removeFromBlacklist('keyword', keyword)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
+          <BlacklistInput
+            title="FLAIR_BLACKLIST"
+            placeholder="Add flair to block"
+            items={preferences.excludedFlairs}
+            onAdd={(value) => addToBlacklist('flair', value)}
+            onRemove={(value) => removeFromBlacklist('flair', value)}
+          />
 
-          {/* Flair Blacklist */}
-          <div className="space-y-2">
-            <Label className="text-green-400 font-mono">[FLAIR_BLACKLIST]</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newFlair}
-                onChange={(e) => setNewFlair(e.target.value)}
-                placeholder="Add flair to block"
-                className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                onKeyDown={(e) => e.key === 'Enter' && handleAddFlair()}
-              />
-              <Button
-                onClick={handleAddFlair}
-                size="sm"
-                className="bg-green-900/30 border-green-400/50 text-green-400 rounded-none"
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {preferences.excludedFlairs.map((flair, index) => (
-                <Badge
-                  key={index}
-                  className="bg-red-900/30 text-red-400 border-red-400/30 font-mono"
-                >
-                  {flair}
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => removeFromBlacklist('flair', flair)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
+          <PostLengthFilters 
+            preferences={preferences}
+            updatePreferences={updatePreferences}
+          />
 
-          {/* Post Length Filters */}
-          <div className="space-y-2">
-            <Label className="text-green-400 font-mono">[POST_LENGTH]</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm text-gray-400">Min Characters</Label>
-                <Input
-                  type="number"
-                  value={preferences.minPostLength}
-                  onChange={(e) => updatePreferences({ minPostLength: parseInt(e.target.value) || 0 })}
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-              <div>
-                <Label className="text-sm text-gray-400">Max Characters (optional)</Label>
-                <Input
-                  type="number"
-                  value={preferences.maxPostLength || ''}
-                  onChange={(e) => updatePreferences({ 
-                    maxPostLength: e.target.value ? parseInt(e.target.value) : null 
-                  })}
-                  placeholder="No limit"
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-4 border-t border-green-400/20">
-            <Button
-              onClick={resetToDefaults}
-              variant="outline"
-              className="bg-black border-yellow-400/30 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-900/30 rounded-none font-mono"
-            >
-              <RotateCcw className="w-3 h-3 mr-1" />
-              [RESET]
-            </Button>
-            
-            <Button
-              onClick={() => setIsOpen(false)}
-              className="bg-green-900/30 text-green-400 border-green-400/50 hover:bg-green-900/50 rounded-none font-mono flex-1"
-            >
-              [CLOSE]
-            </Button>
-          </div>
+          <FilterActions
+            onReset={resetToDefaults}
+            onClose={() => setIsOpen(false)}
+          />
         </div>
       </DialogContent>
     </Dialog>
