@@ -132,18 +132,26 @@ export const RedditSourcePanel: React.FC<RedditSourcePanelProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 grid-rows-4 gap-4 h-full overflow-hidden">
-        {columnOrder.slice(0, 16).map((subreddit) => (
-          <div key={subreddit} className="h-full">
+      <DraggableContainer
+        items={columnOrder}
+        onReorder={setColumnOrder}
+        className="flex gap-4 h-full overflow-hidden"
+      >
+        {columnOrder.map((subreddit) => (
+          <DraggableColumn
+            key={subreddit}
+            id={subreddit}
+            className="w-1/4 min-w-[300px]"
+          >
             <SubredditColumn
               subreddit={subreddit}
               posts={postsBySubreddit[subreddit] || []}
               isLoading={isLoadingNewData}
               error={error?.message}
             />
-          </div>
+          </DraggableColumn>
         ))}
-      </div>
+      </DraggableContainer>
     </main>
   );
 };
