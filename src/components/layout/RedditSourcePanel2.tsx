@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useReddit } from '@/hooks/useReddit';
 import { SubredditColumn } from './SubredditColumn';
@@ -92,7 +91,7 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
 
   return (
     <main 
-      className="p-4 h-full flex flex-col overflow-hidden"
+      className="p-4 min-h-screen flex flex-col"
       role="tabpanel"
       id="reddit2-panel"
       aria-label="Reddit feeds 2"
@@ -135,13 +134,13 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
       <DraggableContainer
         items={columnOrder}
         onReorder={setColumnOrder}
-        className="flex gap-4 h-full overflow-hidden"
+        className="flex gap-4 flex-1 overflow-x-auto pb-8"
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
             key={subreddit}
             id={subreddit}
-            className="w-1/4 min-w-[300px]"
+            className="w-1/4 min-w-[300px] min-h-full"
           >
             <SubredditColumn
               subreddit={subreddit}

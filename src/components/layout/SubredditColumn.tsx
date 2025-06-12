@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
@@ -35,7 +34,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
 
   return (
     <div 
-      className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col h-full card-hover"
+      className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col min-h-full card-hover"
       role="region"
       aria-label={`Posts from r/${subreddit}`}
     >
@@ -79,7 +78,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
       )}
 
       {/* Article List with Scrolling */}
-      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar min-h-[600px]">
         {isLoading ? (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (

@@ -4,7 +4,7 @@ import { CompactDashboardLayout } from '@/components/layout/CompactDashboardLayo
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-slate-800 relative overflow-hidden">
+    <div className="bg-slate-800 relative">
       {/* Main content */}
       <main className="relative z-10">
         <CompactDashboardLayout />
