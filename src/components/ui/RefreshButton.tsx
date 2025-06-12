@@ -40,8 +40,8 @@ export const RefreshButton = () => {
   return (
     <div className="flex items-center gap-3">
       {lastRefreshed && (
-        <span className="text-xs text-gray-500 font-mono">
-          [LAST_REFRESHED: {formatTime(lastRefreshed)}]
+        <span className="text-xs text-slate-500 font-mono">
+          LAST_REFRESHED: {formatTime(lastRefreshed)}
         </span>
       )}
       
@@ -50,7 +50,7 @@ export const RefreshButton = () => {
         size="sm"
         onClick={handleRefresh}
         disabled={isRefreshing}
-        className="bg-black text-green-400 border-green-500 hover:bg-green-900/30 hover:text-green-300 hover:border-green-300 font-mono rounded-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-green-500 text-black border-green-500 hover:bg-green-400 hover:border-green-400 font-mono transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <RefreshCw 
           className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} 

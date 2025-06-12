@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Settings, Plus, X, Save } from 'lucide-react';
 import {
@@ -62,14 +63,14 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="bg-black text-green-400 border-green-500 hover:bg-green-900/30 hover:text-green-300 hover:border-green-300 font-mono rounded-none transition-all duration-200"
+          className="bg-green-500 text-black border-green-500 hover:bg-green-400 hover:border-green-400 font-mono transition-all duration-200"
         >
           <Settings className="w-4 h-4 mr-2" />
           [SUBREDDITS]
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="bg-black border-green-400/50 text-green-400 max-w-md">
+      <DialogContent className="bg-slate-800 border-slate-600 text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-green-400 font-mono">
             [CONFIGURE_SUBREDDITS]
@@ -77,7 +78,7 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
         </DialogHeader>
         
         <div className="space-y-4">
-          <p className="text-gray-400 text-sm font-mono">
+          <p className="text-slate-400 text-sm font-mono">
             Max 4 subreddits. Enter names without r/ prefix.
           </p>
           
@@ -91,13 +92,13 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
                   value={subreddit}
                   onChange={(e) => updateSubreddit(index, e.target.value)}
                   placeholder="subreddit"
-                  className="bg-black border-green-400/30 text-green-400 font-mono rounded-none focus:border-green-400"
+                  className="bg-slate-700 border-slate-600 text-white font-mono focus:border-green-400"
                 />
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => removeSubreddit(index)}
-                  className="bg-black border-red-400/30 text-red-400 hover:border-red-400 hover:bg-red-900/30 rounded-none p-2"
+                  className="bg-slate-700 border-red-400/30 text-red-400 hover:border-red-400 hover:bg-red-900/30 p-2"
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -111,7 +112,7 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
               size="sm"
               onClick={addSubreddit}
               disabled={localSubreddits.length >= 4}
-              className="bg-black border-green-400/30 text-green-400 hover:border-green-400 hover:bg-green-900/30 rounded-none font-mono"
+              className="bg-slate-700 border-green-400/30 text-green-400 hover:border-green-400 hover:bg-green-900/30 font-mono"
             >
               <Plus className="w-3 h-3 mr-1" />
               [ADD]
@@ -121,16 +122,16 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
               variant="outline"
               size="sm"
               onClick={resetToDefaults}
-              className="bg-black border-yellow-400/30 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-900/30 rounded-none font-mono"
+              className="bg-slate-700 border-yellow-400/30 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-900/30 font-mono"
             >
               [RESET]
             </Button>
           </div>
           
-          <div className="flex gap-2 pt-4 border-t border-green-400/20">
+          <div className="flex gap-2 pt-4 border-t border-slate-600">
             <Button
               onClick={saveChanges}
-              className="bg-green-900/30 text-green-400 border-green-400/50 hover:bg-green-900/50 rounded-none font-mono flex-1"
+              className="bg-green-500 text-black hover:bg-green-400 font-mono flex-1"
             >
               <Save className="w-3 h-3 mr-1" />
               [SAVE]
@@ -139,7 +140,7 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
             <Button
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="bg-black border-gray-400/30 text-gray-400 hover:border-gray-400 hover:bg-gray-900/30 rounded-none font-mono"
+              className="bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500 hover:bg-slate-600 font-mono"
             >
               [CANCEL]
             </Button>

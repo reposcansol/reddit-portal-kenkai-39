@@ -60,9 +60,9 @@ export const SourceNavigator = () => {
   };
 
   return (
-    <div className="h-full bg-black flex flex-col overflow-hidden">
+    <div className="h-full bg-slate-900 flex flex-col overflow-hidden">
       {/* Source Navigation Tabs */}
-      <div className="flex-shrink-0 bg-black border-b border-green-400/30">
+      <div className="flex-shrink-0 bg-slate-900 border-b border-slate-700">
         <SourceTabs 
           activeSource={activeSource} 
           onSourceChange={handleSourceChange} 
@@ -74,18 +74,18 @@ export const SourceNavigator = () => {
         {/* Scroll Navigation Buttons */}
         <button
           onClick={scrollLeft}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/80 border border-green-400/50 rounded-none p-2 hover:border-green-400 transition-colors"
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-black rounded p-2 hover:bg-green-400 transition-colors"
           aria-label="Scroll left"
         >
-          <ChevronLeft className="w-4 h-4 text-green-400" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
         
         <button
           onClick={scrollRight}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/80 border border-green-400/50 rounded-none p-2 hover:border-green-400 transition-colors"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-black rounded p-2 hover:bg-green-400 transition-colors"
           aria-label="Scroll right"
         >
-          <ChevronRight className="w-4 h-4 text-green-400" />
+          <ChevronRight className="w-4 h-4" />
         </button>
 
         {/* Horizontal Scroll Container */}

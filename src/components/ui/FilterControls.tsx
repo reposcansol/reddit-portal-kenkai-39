@@ -58,19 +58,19 @@ export const FilterControls: React.FC = () => {
         <Button
           variant="outline"
           size="sm"
-          className="bg-black text-green-400 border-green-500 hover:bg-green-900/30 hover:text-green-300 hover:border-green-300 font-mono rounded-none transition-all duration-200 relative"
+          className="bg-green-500 text-black border-green-500 hover:bg-green-400 hover:border-green-400 font-mono transition-all duration-200 relative"
         >
           <Filter className="w-4 h-4 mr-2" />
           [FILTERS]
           {getActiveFilterCount() > 0 && (
-            <Badge className="ml-2 bg-green-400 text-black text-xs px-1 py-0">
+            <Badge className="ml-2 bg-black text-green-400 text-xs px-1 py-0">
               {getActiveFilterCount()}
             </Badge>
           )}
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="bg-black border-green-400/50 text-green-400 max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="bg-slate-800 border-slate-600 text-white max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-green-400 font-mono flex items-center justify-between">
             [POST_FILTERS]
