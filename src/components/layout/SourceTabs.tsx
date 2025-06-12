@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Hash } from 'lucide-react';
 
 type NewsSource = 'reddit' | 'reddit2';
 
@@ -16,57 +15,62 @@ export const SourceTabs: React.FC<SourceTabsProps> = ({
   const tabs = [
     {
       id: 'reddit' as NewsSource,
-      label: '[REDDIT_FEEDS_1]',
-      icon: Hash
+      label: 'Subreddit Monitor',
+      badge: 'LIVE',
+      feedCount: '6 active feeds'
     },
     {
       id: 'reddit2' as NewsSource,
-      label: '[REDDIT_FEEDS_2]',
-      icon: Hash
+      label: 'Analytics',
+      badge: '',
+      feedCount: 'Community insights'
     }
   ];
 
-  const handleKeyDown = (event: React.KeyboardEvent, source: NewsSource) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onSourceChange(source);
-    }
-  };
-
   return (
-    <div className="w-full px-4 py-3">
-      <div 
-        className="w-full flex space-x-4"
-        role="tablist"
-        aria-label="News source navigation"
-      >
-        {tabs.map((tab) => {
-          const isActive = activeSource === tab.id;
-          const Icon = tab.icon;
-          
-          return (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`${tab.id}-panel`}
-              tabIndex={isActive ? 0 : -1}
-              className={`
-                flex items-center gap-2 px-4 py-2 border rounded-none font-mono text-sm
-                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400
-                ${isActive 
-                  ? 'bg-green-900/20 text-green-300 border-green-300 shadow-green-400/20 shadow-lg' 
-                  : 'bg-black text-green-400 border-green-500 hover:border-green-300 hover:bg-green-900/10'
-                }
-              `}
-              onClick={() => onSourceChange(tab.id)}
-              onKeyDown={(e) => handleKeyDown(e, tab.id)}
-            >
-              <Icon className="w-4 h-4" />
-              <div className="font-bold">{tab.label}</div>
-            </button>
-          );
-        })}
+    <div className="w-full px-6 py-4 bg-slate-900">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          {tabs.map((tab) => {
+            const isActive = activeSource === tab.id;
+            
+            return (
+              <button
+                key={tab.id}
+                className={`
+                  flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200
+                  ${isActive 
+                    ? 'bg-slate-700 text-white' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }
+                `}
+                onClick={() => onSourceChange(tab.id)}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">{tab.label}</span>
+                  {tab.badge && (
+                    <span className="bg-green-500 text-white text-xs px-2 py-1 rounded">
+                      {tab.badge}
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm text-slate-500">{tab.feedCount}</span>
+              </button>
+            );
+          })}
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button className="bg-white text-slate-800 px-3 py-1 rounded text-sm font-medium">
+            Sort: Activity
+          </button>
+          <button className="bg-slate-700 text-white px-3 py-1 rounded text-sm">
+            Filters
+          </button>
+          <button className="bg-slate-700 text-white px-3 py-1 rounded text-sm">
+            Analytics
+          </button>
+        </div>
       </div>
     </div>
   );

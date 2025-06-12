@@ -23,18 +23,13 @@ export const CompactArticleCard: React.FC<CompactArticleCardProps> = ({
     return 'now';
   };
 
-  const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return date.toISOString().slice(0, 16).replace('T', ' ');
-  };
-
   const handleClick = () => {
-    window.open(post.permalink, '_blank', 'noopener,noreferrer');
+    window.open(`https://reddit.com${post.permalink}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <div 
-      className="p-2 bg-gray-900 border border-green-400/30 rounded-none hover:border-green-400 hover:shadow-green-400/20 shadow-lg shadow-green-400/10 transition-all duration-200 cursor-pointer group active:scale-[0.98] font-mono"
+      className="p-3 bg-slate-700 hover:bg-slate-650 rounded-lg transition-all duration-200 cursor-pointer group"
       onClick={handleClick}
       tabIndex={0}
       role="article"
@@ -47,32 +42,35 @@ export const CompactArticleCard: React.FC<CompactArticleCardProps> = ({
       }}
     >
       {/* Title */}
-      <h3 className="text-xs md:text-sm text-green-300 font-bold line-clamp-2 leading-tight mb-2 group-hover:text-green-200 transition-colors">
+      <h4 className="text-sm text-white font-medium line-clamp-2 leading-tight mb-2 group-hover:text-orange-200 transition-colors">
         {post.title}
-      </h3>
+      </h4>
       
       {/* Metadata */}
-      <div className="flex items-center justify-between text-xs text-gray-500 font-mono">
+      <div className="flex items-center justify-between text-xs text-slate-400">
         <div className="flex items-center gap-3">
           <div 
-            className="flex items-center gap-1 text-green-400"
+            className="flex items-center gap-1 text-orange-400"
             aria-label={`${post.score} upvotes`}
           >
-            <span>[+{post.score}]</span>
+            <TrendingUp className="w-3 h-3" />
+            <span>{post.score}</span>
           </div>
           
-          <div className="flex items-center gap-1 text-amber-400">
-            <span>({post.num_comments})</span>
+          <div className="flex items-center gap-1 text-blue-400">
+            <MessageSquare className="w-3 h-3" />
+            <span>{post.num_comments}</span>
           </div>
           
-          <div className="flex items-center gap-1 text-gray-400">
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
             <span>{formatTimeAgo(post.created_utc)}</span>
           </div>
         </div>
         
         <div className="flex items-center gap-1 truncate">
-          <span className="text-amber-400 truncate">@{post.author}</span>
-          <ExternalLink className="w-3 h-3 group-hover:text-green-400 transition-colors flex-shrink-0" />
+          <span className="text-slate-400 truncate text-xs">u/{post.author}</span>
+          <ExternalLink className="w-3 h-3 group-hover:text-orange-400 transition-colors flex-shrink-0" />
         </div>
       </div>
     </div>
