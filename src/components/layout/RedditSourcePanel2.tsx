@@ -124,7 +124,7 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
                        flex items-center gap-1 font-mono
                        bg-black border border-green-400/30 rounded-none px-2 py-1
                        hover:border-green-400/50"
-            title="Reset-column order"
+            title="Reset column order"
           >
             <RotateCcw className="w-3 h-3" />
             [RESET_ORDER]
@@ -132,26 +132,18 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
         </div>
       </div>
 
-      <DraggableContainer
-        items={columnOrder}
-        onReorder={setColumnOrder}
-        className="flex gap-4 h-full overflow-hidden"
-      >
-        {columnOrder.map((subreddit) => (
-          <DraggableColumn
-            key={subreddit}
-            id={subreddit}
-            className="w-1/4"
-          >
+      <div className="grid grid-cols-4 grid-rows-4 gap-4 h-full overflow-hidden">
+        {columnOrder.slice(0, 16).map((subreddit) => (
+          <div key={subreddit} className="h-full">
             <SubredditColumn
               subreddit={subreddit}
               posts={postsBySubreddit[subreddit] || []}
               isLoading={isLoadingNewData}
               error={error?.message}
             />
-          </DraggableColumn>
+          </div>
         ))}
-      </DraggableContainer>
+      </div>
     </main>
   );
 };
