@@ -92,7 +92,7 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
 
   return (
     <main 
-      className="p-4 w-full h-full flex flex-col"
+      className="p-4 w-full flex flex-col"
       role="tabpanel"
       id="reddit2-panel"
       aria-label="Reddit feeds 2"
@@ -135,13 +135,13 @@ export const RedditSourcePanel2: React.FC<RedditSourcePanel2Props> = ({
       <DraggableContainer
         items={columnOrder}
         onReorder={setColumnOrder}
-        className="flex gap-4 flex-1 overflow-x-auto pb-8 w-full"
+        className="flex gap-4 overflow-x-auto pb-8 w-full"
       >
         {columnOrder.map((subreddit) => (
           <DraggableColumn
             key={subreddit}
             id={subreddit}
-            className="flex-1 min-w-[300px] h-full"
+            className="flex-shrink-0 min-w-[300px]"
           >
             <SubredditColumn
               subreddit={subreddit}
