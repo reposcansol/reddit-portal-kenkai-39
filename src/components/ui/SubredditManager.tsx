@@ -24,9 +24,7 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
   const [localSubreddits, setLocalSubreddits] = useState<string[]>(subreddits);
 
   const addSubreddit = () => {
-    if (localSubreddits.length < 4) {
-      setLocalSubreddits([...localSubreddits, '']);
-    }
+    setLocalSubreddits([...localSubreddits, '']);
   };
 
   const removeSubreddit = (index: number) => {
@@ -79,7 +77,7 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
         
         <div className="space-y-4">
           <p className="text-slate-400 text-sm font-mono">
-            Max 4 subreddits. Enter names without r/ prefix.
+            Enter subreddit names without r/ prefix.
           </p>
           
           <div className="space-y-2">
@@ -111,7 +109,6 @@ export const SubredditManager: React.FC<SubredditManagerProps> = ({
               variant="outline"
               size="sm"
               onClick={addSubreddit}
-              disabled={localSubreddits.length >= 4}
               className="bg-slate-700 border-green-400/30 text-green-400 hover:border-green-400 hover:bg-green-900/30 font-mono"
             >
               <Plus className="w-3 h-3 mr-1" />

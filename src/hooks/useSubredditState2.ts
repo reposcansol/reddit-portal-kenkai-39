@@ -44,8 +44,7 @@ export const useSubredditState2 = () => {
 
   const updateSubreddits = useCallback((newSubreddits: string[]) => {
     const filtered = newSubreddits
-      .filter(sub => typeof sub === 'string' && sub.trim() !== '')
-      .slice(0, 4);
+      .filter(sub => typeof sub === 'string' && sub.trim() !== '');
     
     setSubreddits(filtered);
     
