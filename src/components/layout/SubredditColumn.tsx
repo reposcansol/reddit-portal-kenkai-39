@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { RedditPost } from '@/hooks/useReddit';
 import { EnhancedCompactArticleCard } from '@/components/news/EnhancedCompactArticleCard';
@@ -34,7 +35,7 @@ export const SubredditColumn: React.FC<SubredditColumnProps> = ({
 
   return (
     <div 
-      className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col min-h-full card-hover"
+      className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col h-full card-hover"
       role="region"
       aria-label={`Posts from r/${subreddit}`}
     >
