@@ -60,17 +60,17 @@ export const SourceNavigator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col">
+    <div className="w-full h-full bg-slate-900 flex flex-col">
       {/* Source Navigation Tabs */}
-      <div className="flex-shrink-0 bg-slate-900 border-b border-slate-700">
+      <div className="flex-shrink-0 bg-slate-900 border-b border-slate-700 w-full">
         <SourceTabs 
           activeSource={activeSource} 
           onSourceChange={handleSourceChange} 
         />
       </div>
 
-      {/* Content Container with Horizontal Scroll - takes remaining height */}
-      <div className="flex-1 relative">
+      {/* Content Container with Horizontal Scroll - takes remaining height and full width */}
+      <div className="flex-1 relative w-full">
         {/* Scroll Navigation Buttons */}
         <button
           onClick={scrollLeft}
@@ -91,13 +91,13 @@ export const SourceNavigator = () => {
         {/* Horizontal Scroll Container */}
         <div 
           ref={scrollContainerRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide min-h-full"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-full w-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {/* Reddit Source Panel 1 */}
           <div 
             data-source="reddit"
-            className="min-w-full snap-start min-h-full"
+            className="min-w-full snap-start h-full w-full"
           >
             <RedditSourcePanel 
               subreddits={subreddits}
@@ -108,7 +108,7 @@ export const SourceNavigator = () => {
           {/* Reddit Source Panel 2 */}
           <div 
             data-source="reddit2"
-            className="min-w-full snap-start min-h-full"
+            className="min-w-full snap-start h-full w-full"
           >
             <RedditSourcePanel2 
               subreddits={subreddits2}
